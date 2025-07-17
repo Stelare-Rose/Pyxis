@@ -1,5 +1,6 @@
+
 <template>
   <div>
-	  <DirectoryCheck />
+	  <DirectoriesCheck />
   </div>
 </template>
