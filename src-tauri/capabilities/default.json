@@ -1,21 +1,24 @@
 {
-  "$schema": "../gen/schemas/desktop-schema.json",
-  "identifier": "default",
-  "description": "enables the default permissions",
-  "windows": [
-    "main"
+	"$schema": "../gen/schemas/desktop-schema.json",
+	"identifier": "default",
+	"description": "enables the default permissions",
+	"windows": [
+		"main"
   ],
   "permissions": [
-    "core:default",
-    "fs:default",
-    {
-      "identifier": "fs:scope-app",
-      "allow": [
-        {
-          "path": "$DATA/**"
-        }
-      ]
-    },
-    "log:default"
+	  "core:default",
+	  "fs:default",
+	  {
+		  "identifier": "fs:scope-app",
+		  "allow": [
+			  {
+				  "path": "$DATA/**"
+			  },
+			  {
+				  "path": "$CACHE/**"
+			  }
+		  ]
+	  },
+	  "log:default"
   ]
 }
