@@ -3,5 +3,11 @@ export default defineNuxtConfig({
   ssr: false,
   compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
-  srcDir: './app/'
+  srcDir: './app/',
+  components: [ 
+	  {
+		  path: '~/components/',
+		  pathPrefix: false,
+	  }
+  ],
 })
