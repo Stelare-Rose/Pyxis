@@ -7,6 +7,7 @@
 	CheckCacheDirectory("Pyxis/index-completed", true)
 	const tempItem = await ReadFile("Items/Example2.task");
 	console.log(tempItem);
+	console.log(await ReadCacheFile("items.json"));
 
 </script>
 <template>

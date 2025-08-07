@@ -11,4 +11,13 @@ declare global {
 		afterTask?: string[];
 		tags?: string[];
 	}
+	interface IndexItem {
+		type: "Task" | "Event" | null;
+		id: string,
+		name: string;
+		path: string;
+		status: string;
+		hardDeadline?: DateTime;
+		tags?: string[];
+	}
 }
