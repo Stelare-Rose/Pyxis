@@ -7,10 +7,13 @@
 	CheckCacheDirectory("Pyxis/index-completed", true)
 	const tempItem = await ReadFile("Items/Example2.task");
 	console.log(tempItem);
-	console.log(await ReadCacheFile("items.json"));
+	const Items = await ReadActiveCacheFile("items.json")
+	console.log(Items);
 
 </script>
 <template>
   <div> I forgot to tell you this but yes it loaded! </div>
-		  <TaskItem task='Items/2025-08/Example2.task' />
+  <div v-for="i in Items">
+	  <TaskItem :task="'Items/'+i.path" />
+  </div>
 </template>
