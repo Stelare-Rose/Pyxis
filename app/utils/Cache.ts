@@ -14,7 +14,7 @@ export const isCacheLocked = async () => {
 	return await exists("Pyxis/index.lock", { baseDir: BaseDirectory.Cache });
 };
 
-export const ReadCacheFile = async (dir: string) => {
+export const ReadActiveCacheFile = async (dir: string) => {
 	if(await isCacheLocked()) return;
 	const data = await readTextFile(("Pyxis/index-ongoing/" + dir), { baseDir: BaseDirectory.Cache });
 	const returnObject: IndexItem = JSON.parse(data);
