@@ -3,9 +3,8 @@
 	const props = defineProps<{
 		task: IndexItem,
 	}>()
-	console.log(props.task);
 	const task = props.task
-	let afterTasks: any;
+	let afterTasks: (undefined | IndexItem)[];
 	if(task.afterTask){
 		afterTasks = await Promise.all(task.afterTask.map(x => SearchCache(x)));
 	}
@@ -23,9 +22,7 @@
 		</div>
 	</div>
 	<div v-if="task.tags">Tags = 
-		<div v-for="tag in task.tags">
-			{{tag}}
-		</div>
+		<span v-for="tag in task.tags">{{tag}}<span v-if="tag != task.tags[task.tags.length - 1]">, </span></span>
 	</div>
 	</div>
 </template>
