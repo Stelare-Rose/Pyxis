@@ -54,7 +54,7 @@
 				webkitgtk_4_1
 				openssl
 			];
-			shellHook = "tmux new-session -A -t Pyxis";
+			shellHook = "tmux -L Pyxis new-session -A -t Pyxis";
 		};
 	};
 }
