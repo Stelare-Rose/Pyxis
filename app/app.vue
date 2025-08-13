@@ -13,7 +13,7 @@
 </script>
 <template>
   <div> I forgot to tell you this but yes it loaded! </div>
-  <div v-for="i in Items">
-	  <TaskItem :task="'Items/'+i.path" />
+  <div v-for="item in Items">
+	  <TaskItem :task="item" />
   </div>
 </template>

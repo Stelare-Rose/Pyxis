@@ -1,30 +1,29 @@
 <script setup lang=ts>
 	import moment from 'moment';
-	const props = defineProps({
-		task: String,
-	})
-	const object: Item = await ReadFile(props.task); //TODO: Use Task object rather than unessecarily reading files in shorthand view
+	const props = defineProps<{
+		task: IndexItem,
+	}>()
 	console.log(props.task);
+	const task = props.task
 	let afterTasks: any;
-	if(object.afterTask){
-		afterTasks = await Promise.all(object.afterTask.map(x => SearchCache(x)));
+	if(task.afterTask){
+		afterTasks = await Promise.all(task.afterTask.map(x => SearchCache(x)));
 	}
 </script>
 
 <template>
 	<div class="container">
-	<div>Type = {{object.type}}</div>
-	<div>Name = {{object.name}}</div>
-	<div>Status = {{object.status}}</div>
-	<div v-if="object.hardDeadline">Deadline = {{moment(object.hardDeadline).format('LLL')}}</div>
-	<div v-if="object.softDeadline">Soft Deadline = {{moment(object.softDeadline).format('LLL')}}</div>
-	<div v-if="object.afterTask">After Tasks =
+	<div>Type = {{task.type}}</div>
+	<div>Name = {{task.name}}</div>
+	<div>Status = {{task.status}}</div>
+	<div v-if="task.hardDeadline">Deadline = {{moment(task.hardDeadline).format('LLL')}}</div>
+	<div v-if="task.afterTask">After Tasks =
 		<div v-for="task in afterTasks">
 			{{task}}
 		</div>
 	</div>
-	<div v-if="object.tags">Tags = 
-		<div v-for="tag in object.tags">
+	<div v-if="task.tags">Tags = 
+		<div v-for="tag in task.tags">
 			{{tag}}
 		</div>
 	</div>

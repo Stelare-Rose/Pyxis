@@ -18,6 +18,7 @@ declare global {
 		path: string;
 		status: string;
 		hardDeadline?: DateTime;
+		afterTask?: string[];
 		tags?: string[];
 	}
 }
