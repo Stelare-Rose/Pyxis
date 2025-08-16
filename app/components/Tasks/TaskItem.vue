@@ -4,9 +4,12 @@
 		task: IndexItem,
 	}>()
 	const task = props.task
+	console.log(task);
 	let afterTasks: (undefined | IndexItem)[];
 	if(task.afterTask){
+		console.log("Searching..");
 		afterTasks = await Promise.all(task.afterTask.map(x => SearchCache(x)));
+		console.log(afterTasks);
 	}
 </script>
 
@@ -15,10 +18,11 @@
 	<div>Type = {{task.type}}</div>
 	<div>Name = {{task.name}}</div>
 	<div>Status = {{task.status}}</div>
-	<div v-if="task.hardDeadline">Deadline = {{moment(task.hardDeadline).format('LLL')}}</div>
+	<div v-if="task.hardDeadline.includes('T')">Deadline = {{moment(task.hardDeadline).format('LLL')}}</div>
+	<div v-else-if="task">Deadline = {{moment(task.hardDeadline).format('LL')}}</div>
 	<div v-if="task.afterTask">After Tasks =
 		<div v-for="task in afterTasks">
-			{{task}}
+			This should show you the task, but it's a wip.
 		</div>
 	</div>
 	<div v-if="task.tags">Tags = 
