@@ -1,4 +1,4 @@
-import { BaseDirectory, exists, mkdir, readTextFileLines } from '@tauri-apps/plugin-fs';
+import { BaseDirectory, exists, mkdir, readTextFileLines, writeTextFile } from '@tauri-apps/plugin-fs';
 import { info } from '@tauri-apps/plugin-log';
 
 export const CheckDataDirectory = async (dir: string, create?: boolean) => {
@@ -13,7 +13,7 @@ export const CheckDataDirectory = async (dir: string, create?: boolean) => {
 export const ReadFile = async (dir?: string) => {
 	let processedDir = "Pyxis/" + dir;
 	const fileExists = await exists(processedDir, {baseDir: BaseDirectory.Data});
-	let returnObject: Item = {type: null, id: "0", name: "0", status: null};
+	let returnObject: Item = {type: null};
 	if(!fileExists) return returnObject;
 	
 	const lines = await readTextFileLines(processedDir, {baseDir: BaseDirectory.Data});
@@ -74,4 +74,26 @@ export const ReadFile = async (dir?: string) => {
 		}
 	}
 	return returnObject;
+}
+
+export const updateItem = async (item: IndexItem) => {
+	console.log("Hello");
+	let processedDir = "Pyxis/Items/" + item.path;
+	console.log(processedDir);
+	const fileExists = await exists(processedDir, {baseDir: BaseDirectory.Data});
+	if(!fileExists) return false;
+	
+	let contents = "";
+	contents += ItemToPlainTextRow("ID", item.id);
+	contents += ItemToPlainTextRow("Type", item.type);
+	contents += ItemToPlainTextRow("Name", item.name);
+	contents += ItemToPlainTextRow("Status", item.status);
+	contents += ItemToPlainTextRow("Hard-Deadline", item.hardDeadline);
+	contents += ItemToPlainTextRow("Soft-Deadline", item.softDeadline);
+	if(item.tags){
+		const tagNames = item.tags.map(x => x.name);
+		contents += ItemToPlainTextRow("Tags", tagNames.join(','));
+	}
+
+	await writeTextFile(processedDir, contents, {baseDir: BaseDirectory.Data});
 }

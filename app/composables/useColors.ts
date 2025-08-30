@@ -1,0 +1,39 @@
+export const useColors = () => {
+	return {
+		foam: '#FFFCF2',
+		cream: '#FCF7E6',
+		base: '#F6F3E6',
+		highlight: '#2E2E2E',
+		text_1: '#3B3B3B',
+		subtext_1: '#4D4D4D',
+		subtext_2: '#616161',
+		pastel: {
+			strawberry: '#CF8282',
+			orange: '#D4A266',
+			lemon: '#E3CD7F',
+			leaf: '#9CCC96',
+			mint: '#99CFAC',
+			sky: '#90CDDE',
+			blueberry: '#9BB0DE',
+			grape: '#9B98D6',
+			plum: '#AA99D1',
+			lavender: '#CCA3D6',
+			lilac: '#DBB4D3',
+			pink: '#EDB7CA'
+		},
+		text: {
+			strawberry: '#B55354',
+			orange: '#BD873F',
+			lemon: '#CCB256',
+			leaf: '#81B062',
+			mint: '#6DB585',
+			sky: '#60ABC2',
+			blueberry: '#6E88C3',
+			grape: '#6560B9',
+			plum: '#7E67B7',
+			lavender: '#B36FC2',
+			lilac: '#C776B8',
+			pink: '#EB8EAD',
+		},
+	}
+}

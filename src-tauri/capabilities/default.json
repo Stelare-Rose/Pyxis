@@ -9,16 +9,37 @@
 	  "core:default",
 	  "fs:default",
 	  {
-		  "identifier": "fs:scope-app",
+		  "identifier": "fs:scope",
 		  "allow": [
 			  {
 				  "path": "$DATA/**"
 			  },
 			  {
 				  "path": "$CACHE/**"
+			  },
+			  {
+				  "path": "$CONFIG/**"
 			  }
 		  ]
 	  },
-	  "log:default"
+	  {
+		  "identifier": "fs:allow-watch",
+		  "allow": [
+			  {
+				  "path": "$CONFIG/**"
+			  }
+		  ]
+	  },
+	  {
+		  "identifier": "fs:allow-write-text-file",
+		  "allow": [
+			  {
+				  "path": "$DATA/**"
+			  }
+		  ]
+	  },
+	  "log:default",
+	  "sql:default",
+	  "sql:allow-execute"
   ]
 }
