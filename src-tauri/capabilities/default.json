@@ -38,6 +38,14 @@
 			  }
 		  ]
 	  },
+	  {
+		  "identifier": "fs:allow-remove",
+		  "allow": [
+			  {
+				  "path": "$DATA/**"
+			  }
+		  ]
+	  },
 	  "log:default",
 	  "sql:default",
 	  "sql:allow-execute"

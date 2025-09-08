@@ -1,4 +1,4 @@
-import { BaseDirectory, exists, mkdir, readTextFileLines, writeTextFile } from '@tauri-apps/plugin-fs';
+import { BaseDirectory, exists, mkdir, readTextFileLines, writeTextFile, remove } from '@tauri-apps/plugin-fs';
 import { info } from '@tauri-apps/plugin-log';
 
 export const CheckDataDirectory = async (dir: string, create?: boolean) => {
@@ -77,11 +77,9 @@ export const ReadFile = async (dir?: string) => {
 }
 
 export const updateItem = async (item: IndexItem) => {
-	console.log("Hello");
+	console.log("Saving!");
 	let processedDir = "Pyxis/Items/" + item.path;
 	console.log(processedDir);
-	const fileExists = await exists(processedDir, {baseDir: BaseDirectory.Data});
-	if(!fileExists) return false;
 	
 	let contents = "";
 	contents += ItemToPlainTextRow("ID", item.id);
@@ -91,9 +89,46 @@ export const updateItem = async (item: IndexItem) => {
 	contents += ItemToPlainTextRow("Hard-Deadline", item.hardDeadline);
 	contents += ItemToPlainTextRow("Soft-Deadline", item.softDeadline);
 	if(item.tags){
-		const tagNames = item.tags.map(x => x.name);
+		console.log("Tags detected!")
+		const tagNames = item.tags.map(x => x.tag);
 		contents += ItemToPlainTextRow("Tags", tagNames.join(','));
 	}
 
 	await writeTextFile(processedDir, contents, {baseDir: BaseDirectory.Data});
+}
+
+export const writeFile = async (item: IndexItem, newPath: string) => {
+	console.log("Saving!");
+	let processedDir = "Pyxis/Items/" + item.path;
+	console.log(processedDir);
+	let newDir = "Pyxis/Items/" + newPath;
+	console.log(newDir);
+	console.log(item);
+	
+	let contents = "";
+	contents += ItemToPlainTextRow("ID", item.id);
+	contents += ItemToPlainTextRow("Type", item.type);
+	contents += ItemToPlainTextRow("Name", item.name);
+	contents += ItemToPlainTextRow("Status", item.status);
+	contents += ItemToPlainTextRow("Hard-Deadline", item.hardDeadline);
+	contents += ItemToPlainTextRow("Soft-Deadline", item.softDeadline);
+	if(item.tags){
+		console.log("Tags detected!")
+		const tagNames = item.tags.map(x => x.tag);
+		contents += ItemToPlainTextRow("Tags", tagNames.join(','));
+	}
+
+	if(newDir == processedDir) await writeTextFile(processedDir, contents, {baseDir: BaseDirectory.Data});
+	else {
+		item.path = newPath;
+		await writeTextFile(newDir, contents, {baseDir: BaseDirectory.Data});
+		await remove(processedDir, {baseDir: BaseDirectory.Data});
+	}
+}
+
+export const deleteFile = async (item: IndexItem) => {
+	let processedDir = "Pyxis/Items/" + item.path;
+	if(await exists(processedDir, {baseDir: BaseDirectory.Data})){
+		await remove(processedDir, {baseDir: BaseDirectory.Data});
+	} else return;
 }

@@ -18,18 +18,22 @@
 			event.data.status = event.to.id;
 			switch(event.to.id){
 				case 'Todo': {
+					ItemsTodo.value = ItemsTodo.value.map(i => i.id == event.data.id ? { ...i, status: 'Todo' } : i);
 					ItemsTodo.value = ItemsTodo.value.sort(Sort());
 					break;
 				}
 				case 'Doing': {
+					ItemsDoing.value = ItemsDoing.value.map(i => i.id == event.data.id ? { ...i, status: 'Doing' } : i);
 					ItemsDoing.value = ItemsDoing.value.sort(Sort());
 					break;
 				}
 				case 'Scheduled': {
+					ItemsScheduled.value = ItemsScheduled.value.map(i => i.id == event.data.id ? { ...i, status: 'Scheduled' } : i);
 					ItemsScheduled.value = ItemsScheduled.value.sort(Sort());
 					break;
 				}
 				case 'Done': {
+					ItemsDone.value = ItemsDone.value.map(i => i.id == event.data.id ? { ...i, status: 'Done' } : i);
 					ItemsDone.value = ItemsDone.value.sort(Sort()).reverse();
 					break;
 				}
@@ -43,12 +47,18 @@
 		if (event.data.type == "Event" && !(event.to.id == "Scheduled" || event.to.id == "Done")) return false;
 	}
 	const color = useColors();
+	onMounted(async () => {
+		DatabaseBus.on('reload', () => Reload());
+	})
+	onUnmounted(() => {
+		DatabaseBus.off('reload');
+	})
 	Reload();
 </script>
 <template>
 	<ClientOnly>
 	<div class="container">
-		<section>
+		<section style="min-width: 320px">
 			<TagsContainer :color='[color.pastel.strawberry]' :textColor='[color.text.strawberry]' :text="`Todo (${ItemsTodo.length.toString()})`" size="medium" style="margin: 8px 0px 8px 0px" />
 			<VueDraggable
 				v-model="ItemsTodo" 
@@ -65,7 +75,7 @@
 				</div>
 			</VueDraggable>
 		</section>
-		<section style="margin-left: 8px">
+		<section style="min-width: 320px; margin-left: 8px">
 			<TagsContainer :color='[color.pastel.orange]' :textColor='[color.text.orange]' :text="`Doing (${ItemsDoing.length.toString()})`" size="medium" style="margin: 8px 0px 8px 0px" />
 			<VueDraggable 
 				v-model="ItemsDoing" 
@@ -82,7 +92,7 @@
 				</div>
 			</VueDraggable>
 		</section>		
-		<section style="margin-left: 8px">
+		<section style="min-width: 320px; margin-left: 8px">
 			<TagsContainer :color='[color.pastel.blueberry]' :textColor='[color.text.blueberry]' :text="`Scheduled (${ItemsScheduled.length.toString()})`" size="medium" style="margin: 8px 0px 8px 0px" />
 			<VueDraggable 
 				v-model="ItemsScheduled" 
@@ -99,7 +109,7 @@
 				</div>
 			</VueDraggable>
 		</section>
-		<section style="margin-left: 8px">
+		<section style="min-width: 320px; margin-left: 8px">
 			<TagsContainer :color='[color.pastel.leaf]' :textColor='[color.text.leaf]' :text="`Done (${ItemsDone.length.toString()})`" size="medium" style="margin: 8px 0px 8px 0px" />
 			<VueDraggable 
 				v-model="ItemsDone" 

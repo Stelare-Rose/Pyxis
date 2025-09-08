@@ -1,6 +1,4 @@
 <script setup lang=ts>
-import { info } from '@tauri-apps/plugin-log';
-
 	CheckDataDirectory("Pyxis", true)
 	CheckDataDirectory("Pyxis/Items", true)
 	CheckDataDirectory("Pyxis/Repeatables", true)
@@ -15,19 +13,20 @@ import { info } from '@tauri-apps/plugin-log';
 <style>
 	:root {
 		--ms-bg: #FFFCF2;
-		--ms-ring-color: #DBB4D340;
+		--ms-ring-color: #EDB7CA;
 		--ms-dropdown-bg: #FCF7E6;
 		--ms-option-line-height: auto;
-		--ms-dropdown-border-color: #F7F3E6;
-		--ms-dropdown-border-width: 3px;
+		--ms-dropdown-border-color: #DBB4D3;
+		--ms-dropdown-border-width: 1px;
 		--ms-dropdown-radius: 16px;
-		--ms-ring-width: 3px;
-		--ms-option-bg-selected: #F7F3E6;
-		--ms-option-bg-pointed: #EDB7CA20;
-		--ms-option-bg-selected-pointed: #EDB7CA20;
+		--ms-ring-width: 1px;
+		--ms-option-bg-selected: #F7F1DC;
+		--ms-option-bg-disabled: #CF828240;
+		--ms-option-bg-pointed: #DBB4D340;
+		--ms-option-bg-selected-pointed: #DBB4D340;
 		--foam: #FFFCF2;
 		--cream: #FCF7E6;
-		--base: #F7F3E6;
+		--base: #F7F1DC;
 		--strawberry: #CF8282;
 		--orange: #D4A266;
 		--lemon: #E3CD7F;
@@ -41,6 +40,7 @@ import { info } from '@tauri-apps/plugin-log';
 		--lilac: #DBB4D3;
 		--pink: #EDB7CA;
 	}
+
 	body {
 		margin: 0;
 		font-family: "Open Sans", sans-serif;

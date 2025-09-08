@@ -12,18 +12,7 @@
 	}
 	const colors = useColors();
 	let statusColor: string[];
-	if(!item.hardDeadline && item.softDeadline) item.hardDeadline = item.softDeadline
-	let currentDate = item.softDeadline ? (moment(item.softDeadline).unix() > moment().unix() ? item.softDeadline : item.hardDeadline) : item.hardDeadline;
-	let dateColor = item.softDeadline ? (
-		moment(item.softDeadline).unix() > moment().unix() ? colors.text.mint : 
-		moment(item.hardDeadline).unix() > moment().unix() ? colors.text.lemon : colors.text.strawberry) : 
-		item.hardDeadline ? (
-		moment(item.hardDeadline).unix() > moment().unix() ? colors.text.mint : colors.text.strawberry) :
-		colors.highlight;
 
-	if(props.remove?.includes('dateColor')){
-		dateColor = colors.text.mint;
-	}
 	if(item.status){
 		switch(item.status){
 			case 'Todo':
@@ -45,12 +34,15 @@
 	const getTagTextColor: string[] = (t: Tag) => {
 		return t.color.map(x => colors.text[x as string] as string);
 	}
+	const OpenItem = () => {
+		TaskModalBus.emit('item', item);
+		TaskModalBus.emit('active', true);
+	}
 </script>
 
 <template>
-	<div v-if="item.type != null" class="container" :class="{'hovered-animation': props.isHovered}">
+	<div v-if="item.type != null" class="container" :class="{'hovered-animation': props.isHovered}" @click="OpenItem">
 		<div class="content">
-			<Icon :height='18' :width='18' class="top-right" v-if="currentDate"><Star :strokeColor='dateColor'/></Icon>
 			<div class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" >
 				<template v-if="item.type == 'Task'"><Clipboard /></template>
@@ -66,16 +58,21 @@
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Question /></Icon>
 				<TagsContainer :textColor='[statusColor[0]]' :color='[statusColor[1]]' :text='item.status'/>
 			</div>
+			<div v-if="item.softDeadline" class="row">
+				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarCheck /></Icon>
+				<span v-if="!item.softDeadline.includes('T') || (moment(item.softDeadline).isSame(moment(item.softDeadline).startOf('day')))" class="medium-text" >{{moment(item.softDeadline).format("LL")}}</span>
+				<span v-else class="medium-text">{{moment(item.softDeadline).format("LLL")}}</span>
+			</div>
 			<div v-if="item.hardDeadline" class="row">
-				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Calendar /></Icon>
-				<span v-if="item.hardDeadline.includes('T')" :style="{'color': dateColor == colors.text.strawberry ? dateColor : '#000000'}" class="medium-text">{{moment(currentDate).format("LLL")}}</span>
-				<span v-else class="medium-text" :style="{'color': dateColor == colors.text.strawberry ? dateColor : '#000000'}">{{moment(currentDate).format("LL")}}</span>
+				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarExclamation /></Icon>
+				<span v-if="!item.hardDeadline.includes('T') || (moment(item.hardDeadline).isSame(moment(item.hardDeadline).startOf('day')))" class="medium-text" >{{moment(item.hardDeadline).format("LL")}}</span>
+				<span v-else class="medium-text">{{moment(item.hardDeadline).format("LLL")}}</span>
 			</div>
 			<div v-if="item.tags" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Tags /></Icon>
 				<div class="tags">
 					<template v-for="tag in item.tags">
-						<TagsContainer :textColor='getTagTextColor(tag)' :color='getTagColor(tag)' :text='tag.name' />
+						<TagsContainer :textColor='getTagTextColor(tag)' :color='getTagColor(tag)' :text='tag.tag' />
 					</template>
 				</div>
 			</div>

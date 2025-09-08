@@ -1,4 +1,5 @@
 <script setup lang=ts>
+
 	const props = defineProps<{
 		fillColor?: string;
 		strokeColor?: string;

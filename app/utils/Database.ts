@@ -14,7 +14,7 @@ await watch('fingerprint', async (e) => {
 	const f = await readTextFile('fingerprint', {baseDir: BaseDirectory.AppConfig});
 	await ReadDatabase(f);
 	ReloadDatabase();
-},{ baseDir: BaseDirectory.AppConfig, delayMs: 500 });
+},{ baseDir: BaseDirectory.AppConfig, delayMs: 20 });
 
 export const GetAllItems = async () => {
 	const result: IndexRow[] = await db.select(`
@@ -33,8 +33,9 @@ export const GetAllItems = async () => {
 										status: x.status,
 										hardDeadline: x.hardDeadline,
 										softDeadline: x.softDeadline,
-										tags: x.tags ? x.tags.split(';').map(t => {let [name, rawColor] = t.split(':'); const color = rawColor.split(','); return {name, color} as Tag}) : undefined})
+										tags: x.tags ? x.tags.split(';').map(t => {let [tag, rawColor] = t.split(':'); const color = rawColor.split(','); return {tag, color} as Tag}) : undefined})
 									   );
+   console.log(res)
 
 	return res;
 }
@@ -56,7 +57,7 @@ export const GetAllByStatus = async (filter: string) => {
 										status: x.status,
 										hardDeadline: x.hardDeadline,
 										softDeadline: x.softDeadline,
-										tags: x.tags ? x.tags.split(';').map(t => {let [name, rawColor] = t.split(':'); const color = rawColor.split(','); return {name, color} as Tag}) : undefined})
+										tags: x.tags ? x.tags.split(';').map(t => {let [tag, rawColor] = t.split(':'); const color = rawColor.split(','); return {tag, color} as Tag}) : undefined})
 									   );
 
 	res = res.sort(Sort());
@@ -85,9 +86,12 @@ export const GetById = async (id: string) => {
 
 
 export const GetAllTags = async () => {
-	const result: Tag[] = await db.select(`
+	const resultRaw: TagRow[] = await db.select(`
 										  SELECT tag, color FROM tags
 										  WHERE verified = 1
 										  `);
+	const result: Tag[] = resultRaw.map(x => ({tag: x.tag, color: x.color.split(',')}));
+	console.log(result);
+
 	return result;
 }

@@ -1,17 +1,48 @@
 <script setup lang=ts>
 	import Multiselect from '@vueform/multiselect';
-	const item = ref<Item>({id: '0'});
+	import VueDatePicker from '@vuepic/vue-datepicker';
+	import moment from 'moment';
+	import { v4 as uuidv4 } from 'uuid'
+	import { uiStore } from '~/stores/ui';
+	import '@vuepic/vue-datepicker/dist/main.css'
+	import '@vueform/multiselect/themes/default.css'
+	const trashColor = ref('#000');
+	const titleInput = ref();
+	const item = ref<IndexItem>({id: '0', name:'', type:'Task', status:'Todo'});
 	const enabled = ref(false);
 	const event = (e:boolean) => {
 		enabled.value = e;
-		if(e) document.body.style.overflow = 'hidden'; else document.body.style.overflow = "scroll";
+		if(e) uiStore.canscroll = false; else {
+			uiStore.canscroll = true;
+			item.value = {id: '0', name:'', type:'Task', status: 'Todo'};
+			return;
+		}
+		if(item.value.id == '0'){
+			item.value.id = uuidv4();
+			nextTick(() => {
+			    titleInput.value.focus()
+			})
+		}
+		type.value = types.value.find(x => x.label == item.value.type) ?? {value: ['Task', 'orange,lemon'], label: 'Task', color: 'orange,lemon'};
+		status.value = statuses.value.find(x => x.label == item.value.status) ?? {value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry'};
+		startDate.value = item.value.softDeadline;
+		endDate.value = item.value.hardDeadline;
+		tagList.value = item.value.tags?.flatMap(x => (tagsOptions.value.find(t => t.label == x.tag))) ?? [];
 	}
-	const tags = ref((await GetAllTags()).map(x => ({label: x.tag, value: [x.tag, x.color], color: x.color})));
-	console.log(tags);
+	const loadItem = (i: IndexItem) => {
+		item.value = i;
+	}
+	const startDate = ref();
+	const endDate = ref();
+	const startTime = ref({ hours: 0, minutes: 0 });
+	const tags = ref((await GetAllTags()));
+	const tagsOptions = ref(tags.value.map(x => ({label: x.tag, value: x.tag, color: x.color})));
 	const disable = () => {
+		if(item.value.name && item.value.type && item.value.status) SaveData();
 		HideTaskModal();
 	}
 	onMounted(async () => {
+		TaskModalBus.on('item', i => loadItem(i));
 		TaskModalBus.on('active', e => event(e));
 		DatabaseBus.on('reload', async () => tags.value = await GetAllTags());
 	})
@@ -20,89 +51,198 @@
 		DatabaseBus.off('reload');
 	})
 	const colors = useColors();
-	const tagList = ref<[{value: string[], label: string, color: string}]>();
+
+	const type = ref<{value: string[], label:string, color: string}>({value: ['Task', 'orange,lemon'], label: 'Task', color: 'orange,lemon'});
+	const types = ref([
+		{value: ['Task', 'orange, lemon'], label: 'Task', color: 'orange,lemon'},
+		{value: ['Event', 'blueberry, grape'], label: 'Event', color: 'blueberry,grape'}
+	])
+	const tagList = ref<[{value: string, label: string, color: string[]}] | undefined>();
 	const status = ref<{value: string[], label: string, color: string}>({value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry'});
 	const statuses = ref([
-		{value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry'},
-		{value: ['Doing', 'orange'], label: 'Doing', color: 'orange'},
+		{value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry', disabled: type.value.label == 'Event'},
+		{value: ['Doing', 'orange'], label: 'Doing', color: 'orange', disabled: type.value.label == 'Event'},
 		{value: ['Scheduled', 'blueberry'], label: 'Scheduled', color: 'blueberry'},
 		{value: ['Done', 'mint'], label: 'Done', color: 'mint'}
 	])
+
 	const getTagColor: (t: string) => string[] = (t: string) => {
 		return t.split(',').map(x => colors.pastel[x as string] as string);
 	}
 	const getTagTextColor: (t: string) => string[] = (t: string) => {
 		return t.split(',').map(x => colors.text[x as string] as string);
 	}
+	const getTagsColor: (t: string) => string[] = (t: string) => {
+		return t.map(x => colors.pastel[x as string] as string);
+	}
+	const getTagsTextColor: (t: string) => string[] = (t: string) => {
+		return t.map(x => colors.text[x as string] as string);
+	}
+
+	const UpdateType = (option: any) => {
+		statuses.value = statuses.value.map(x => { x.disabled = (x.label == 'Todo' || x.label == 'Doing') && option.label == 'Event'; return x});
+		if(option.label == 'Event' && status.value.label == 'Todo'){
+			status.value = {value: ['Scheduled', 'blueberry'], label: 'Scheduled', color: 'blueberry'}
+			item.value.status = status.value.label;
+		}
+		item.value.type = option.label;
+	}
+	const UpdateStatus = (option: any) => {
+		item.value.status = option.label;
+	}
+	const UpdateTags = (option: any) => {
+		item.value.tags = option.map(x => {
+			return tags.value.find(t => t.tag == x.label);
+		});
+		if(option.length == 0){
+			delete item.value.tags;
+		}
+	}
+	const UpdateStartDate = (modelData) => {
+		item.value.softDeadline = moment(modelData).toISOString(true);
+	}
+	const UpdateEndDate = (modelData) => {
+		item.value.hardDeadline = moment(modelData).toISOString(true);
+	}
+	const SaveData = () => {
+		const path = "Active/" + item.value.name + ".task";
+		console.log("Saving!");
+		writeFile(item.value, path);
+	}
+	const Delete =() => {
+		deleteFile(item.value);
+		HideTaskModal();
+	}
 </script>
 <template>
 	<transition name="modal">
-		<section class="modal-background" v-if="enabled" @click.self="disable">
-	<transition name="modal-content" appear>
+	<section class="modal-background" v-if="enabled" @click.self="disable">
+		<transition name="modal-content" appear>
 		<section class="modal" v-if="enabled">
-			<section class="modal-metadata">
-				<input class="large-text-input" :value="item.name" placeholder="Title"></input>
-				<div class="properties">
-					<div class="property">
-						<div class="row">
-							<Icon :height='24' :width='24' style="margin-right: 8px"><Question /></Icon>
-							<div class="medium-text">Status</div>
-						</div>
-						<div class="row-property">
-							<Multiselect :options="statuses" mode="single" v-model="status" :can-deselect="false" :can-clear="false" :object="true" >
+			<section class="modal-top">
+				<Icon :height='20' :width='20' @mouseenter="trashColor = '#CF8282'" @mouseleave="trashColor ='#000'" @click="Delete"><Trash :stroke-color="trashColor" /></Icon>
+			</section>
+			<section class="modal-data">
+				<section class="modal-metadata">
+					<input class="large-text-input" ref="titleInput" v-model="item.name" placeholder="Title" />
+					<div class="properties">
+						<div class="property">
+							<div class="row">
+								<Icon :height='24' :width='24' style="margin-right: 8px"><FileInfo /></Icon>
+								<div class="medium-text">Type</div>
+							</div>
+							<div class="row-property">
+								<Multiselect :options="types" mode="single" v-model="type" :can-deselect="false" :can-clear="false" :object="true" @change="UpdateType" class="hovered" :caret="false">
 								<template #singlelabel="{value}">
 									<TagsContainer style="margin-right: auto; margin-left: 8px" :color="getTagColor(value.color)" :textColor="getTagTextColor(value.color)" :text="value.label" :key="value.label"/>
 								</template>
 								<template #option="{option}">
 									<TagsContainer :color="getTagColor(option.color)" :textColor="getTagTextColor(option.color)" :text="option.label" :key="option.label"/>
 								</template>
-							</Multiselect>
+								</Multiselect>
+							</div>
 						</div>
-					</div>
-					<div class="property">
-						<div class="row">
-							<Icon :height='24' :width='24' style="margin-right: 8px"><Calendar /></Icon>
-							<div class="medium-text">Soft Deadline</div>
-						</div>
-					</div>
-					<div class="property">
-						<div class="row">
-							<Icon :height='24' :width='24' style="margin-right: 8px"><CalendarExclamation /></Icon>
-							<div class="medium-text">Hard Deadline</div>
-						</div>
-					</div>
-					<div class="property">
-						<div class="row">
-							<Icon :height='24' :width='24' style="margin-right: 8px"><Tags /></Icon>
-							<div class="medium-text">Tags</div>
-						</div>
-						<div class="row-property">
-							<Multiselect :placeholder="'Click to select tags..'" :options="tags" mode="tags" v-model="tagList" :close-on-select="false">
-								<template #tag="{option, handleTagRemove}">
-									<TagsContainer style="margin-right: 8px" :color="getTagColor(option.color)" :textColor="getTagTextColor(option.color)" :text="option.label" @click="handleTagRemove(option, $event)"/>
+						<div class="property">
+							<div class="row">
+								<Icon :height='24' :width='24' style="margin-right: 8px"><Question /></Icon>
+								<div class="medium-text">Status</div>
+							</div>
+							<div class="row-property">
+								<Multiselect :options="statuses" mode="single" v-model="status" :can-deselect="false" :can-clear="false" :object="true" @change="UpdateStatus" :caret="false">
+								<template #singlelabel="{value}">
+									<TagsContainer style="margin-right: auto; margin-left: 8px" :color="getTagColor(value.color)" :textColor="getTagTextColor(value.color)" :text="value.label" :key="value.label"/>
 								</template>
 								<template #option="{option}">
 									<TagsContainer :color="getTagColor(option.color)" :textColor="getTagTextColor(option.color)" :text="option.label" :key="option.label"/>
 								</template>
-							</Multiselect>
+								</Multiselect>
+							</div>
+						</div>
+						<div class="property">
+							<div class="row">
+								<Icon :height='24' :width='24' style="margin-right: 8px"><CalendarCheck /></Icon>
+								<div class="medium-text">Start Date</div>
+							</div>
+							<div class="row-property">
+								<vue-date-picker v-model="startDate" :start-time="startTime" @update:model-value="UpdateStartDate"></vue-date-picker>
+							</div>
+						</div>
+						<div class="property">
+							<div class="row">
+								<Icon :height='24' :width='24' style="margin-right: 8px"><CalendarExclamation /></Icon>
+								<div class="medium-text">End Date</div>
+							</div>
+							<div class="row-property">
+								<vue-date-picker v-model="endDate" :start-time="startTime" @update:model-value="UpdateEndDate"></vue-date-picker>
+							</div>
+						</div>
+						<div class="property">
+							<div class="row">
+								<Icon :height='24' :width='24' style="margin-right: 8px"><Tags /></Icon>
+								<div class="medium-text">Tags</div>
+							</div>
+							<div class="row-property">
+								<Multiselect :placeholder="'Click to select tags..'" :options="tagsOptions" mode="tags" v-model="tagList" :object="true" :close-on-select="false" @change="UpdateTags" :caret="false">
+								<template #tag="{option, handleTagRemove}">
+									<TagsContainer style="margin-right: 8px" :color="getTagsColor(option.color)" :textColor="getTagsTextColor(option.color)" :text="option.label ?? option.tag" @click="handleTagRemove(option, $event)"/>
+								</template>
+								<template #option="{option}">
+									<TagsContainer :color="getTagsColor(option.color)" :textColor="getTagsTextColor(option.color)" :text="option.label" :key="option.label ?? option.tag"/>
+								</template>
+								</Multiselect>
+							</div>
 						</div>
 					</div>
-				</div>
-			</section>
-			<section class="modal-description">
+				</section>
+				<section class="modal-description">
+					<div> Input Debugging </div>
+					<div>
+						{{item}}
+					</div>
+					<div> Sample Item </div>
+					<TaskItem :item="item" :key="Math.random()"/>
+				</section>
 			</section>
 		</section>
 	</transition>
 		</section>
 	</transition>
 </template>
-<style src="@vueform/multiselect/themes/default.css">
-</style>
 <style scoped>
+	.dp__theme_light {
+		--dp-background-color: var(--foam);
+		--dp-text-color: #212121;
+		--dp-hover-color: #CF8282;
+		--dp-hover-text-color: #212121;
+		--dp-hover-icon-color: #959595;
+		--dp-primary-color: #CF8282;
+		--dp-primary-disabled-color: #6bacea;
+		--dp-primary-text-color: #f8f5f5;
+		--dp-secondary-color: #c0c4cc;
+		--dp-border-color: var(--foam);
+		--dp-menu-border-color: #EDB7CA;
+		--dp-border-color-hover: #EDB7CA;
+		--dp-border-color-focus: #EDB7CA;
+		--dp-disabled-color: #f6f6f6;
+		--dp-scroll-bar-background: #f3f3f3;
+		--dp-scroll-bar-color: #959595;
+		--dp-success-color: #76d275;
+		--dp-success-color-disabled: #a3d9b1;
+		--dp-icon-color: #959595;
+		--dp-danger-color: #ff6f60;
+		--dp-marker-color: #ff6f60;
+		--dp-tooltip-color: #fafafa;
+		--dp-disabled-color-text: #8e8e8e;
+		--dp-highlight-color: rgb(25 118 210 / 10%);
+		--dp-range-between-dates-background-color: var(--dp-hover-color, #f3f3f3);
+		--dp-range-between-dates-text-color: var(--dp-hover-text-color, #212121);
+		--dp-range-between-border-color: var(--dp-hover-color, #f3f3f3);
+	}
+
 	.multiselect {
 		background-color: var(--foam);
-		border: none;
-		margin-right: 24px;
+		border: 1px #EDB7CA;
+		width: 100%;
 	}
 	.properties {
 		display: grid;
@@ -136,8 +276,13 @@
 		width: 40%;
 		height: 100%;
 		box-sizing: border-box;
-		margin: 16px 0px;
 		border-right: 2px solid var(--base);
+		padding: 8px;
+	}
+	.modal-description{
+		width: 60%;
+		height: 100%;
+		box-sizing: border-box;
 		padding: 8px;
 	}
 	.large-text-input {
@@ -153,7 +298,11 @@
 		background-color: var(--foam);
 		border-radius: 24px;
 		z-index: 10001;
-		padding: 16px;
+		padding: 32px 16px;
+	}
+	.modal-data {
+		display: flex;
+		flex-direction: row;
 	}
 	.modal-background {
 		width: 100vw;
@@ -187,6 +336,17 @@
 		opacity: 1;
 	}
 	.modal-enter-active, .modal-leave-active {
+		transition: all 0.25s ease;
+	}
+	.fade-enter-from, .fade-leave-to {
+		background: rgba(0,0,0,0);
+		opacity: 0;
+	}
+	.fade-enter-to, .fade-leave-from {
+		background: rgba(0,0,0,0.3);
+		opacity: 1;
+	}
+	.fade-enter-active, .fade-leave-active {
 		transition: all 0.25s ease;
 	}
 </style>
