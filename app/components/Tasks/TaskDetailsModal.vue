@@ -1,14 +1,83 @@
 <script setup lang=ts>
+	// Imports
 	import Multiselect from '@vueform/multiselect';
 	import VueDatePicker from '@vuepic/vue-datepicker';
 	import moment from 'moment';
 	import { v4 as uuidv4 } from 'uuid'
 	import { uiStore } from '~/stores/ui';
+	
+	//Style Imports
 	import '@vuepic/vue-datepicker/dist/main.css'
 	import '@vueform/multiselect/themes/default.css'
+
+	//Styling
 	const trashColor = ref('#000');
-	const titleInput = ref();
+	const colors = useColors();
+	const getTagColor: (t: string) => string[] = (t: string) => {
+		return t.split(',').map(x => colors.pastel[x as string] as string);
+	}
+	const getTagTextColor: (t: string) => string[] = (t: string) => {
+		return t.split(',').map(x => colors.text[x as string] as string);
+	}
+	const getTagsColor: (t: string) => string[] = (t: string) => {
+		return t.map(x => colors.pastel[x as string] as string);
+	}
+	const getTagsTextColor: (t: string) => string[] = (t: string) => {
+		return t.map(x => colors.text[x as string] as string);
+	}
+
+	//Input Bindings
 	const item = ref<IndexItem>({id: '0', name:'', type:'Task', status:'Todo'});
+	const titleInput = ref();
+	const type = ref<{value: string[], label:string, color: string}>({value: ['Task', 'orange,lemon'], label: 'Task', color: 'orange,lemon'});
+	const status = ref<{value: string[], label: string, color: string}>({value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry'});
+	const startDate = ref();
+	const endDate = ref();
+	const tagList = ref<[{value: string, label: string, color: string[]}] | undefined>();
+
+	//Default Values
+	const tags = ref((await GetAllTags()));
+	const tagsOptions = ref(tags.value.map(x => ({label: x.tag, value: x.tag, color: x.color})));
+	const startTime = ref({ hours: 0, minutes: 0 });
+	const types = ref([
+		{value: ['Task', 'orange, lemon'], label: 'Task', color: 'orange,lemon'},
+		{value: ['Event', 'blueberry, grape'], label: 'Event', color: 'blueberry,grape'}
+	])
+	const statuses = ref([
+		{value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry', disabled: type.value.label == 'Event'},
+		{value: ['Doing', 'orange'], label: 'Doing', color: 'orange', disabled: type.value.label == 'Event'},
+		{value: ['Scheduled', 'blueberry'], label: 'Scheduled', color: 'blueberry'},
+		{value: ['Done', 'mint'], label: 'Done', color: 'mint'}
+	])
+
+	// Data Updating
+	const UpdateType = (option: any) => {
+		statuses.value = statuses.value.map(x => { x.disabled = (x.label == 'Todo' || x.label == 'Doing') && option.label == 'Event'; return x});
+		if(option.label == 'Event' && status.value.label == 'Todo'){
+			status.value = {value: ['Scheduled', 'blueberry'], label: 'Scheduled', color: 'blueberry'}
+			item.value.status = status.value.label;
+		}
+		item.value.type = option.label;
+	}
+	const UpdateStatus = (option: any) => {
+		item.value.status = option.label;
+	}
+	const UpdateTags = (option: any) => {
+		item.value.tags = option.map(x => {
+			return tags.value.find(t => t.tag == x.label);
+		});
+		if(option.length == 0){
+			delete item.value.tags;
+		}
+	}
+	const UpdateStartDate = (modelData: any) => {
+		item.value.startDate = moment(modelData).toISOString(true);
+	}
+	const UpdateEndDate = (modelData: any) => {
+		item.value.endDate = moment(modelData).toISOString(true);
+	}
+	
+	// Event Handlers
 	const enabled = ref(false);
 	const event = (e:boolean) => {
 		enabled.value = e;
@@ -29,18 +98,15 @@
 		endDate.value = item.value.endDate;
 		tagList.value = item.value.tags?.flatMap(x => (tagsOptions.value.find(t => t.label == x.tag))) ?? [];
 	}
-	const loadItem = (i: IndexItem) => {
-		item.value = i;
-	}
-	const startDate = ref();
-	const endDate = ref();
-	const startTime = ref({ hours: 0, minutes: 0 });
-	const tags = ref((await GetAllTags()));
-	const tagsOptions = ref(tags.value.map(x => ({label: x.tag, value: x.tag, color: x.color})));
 	const disable = () => {
 		if(item.value.name && item.value.type && item.value.status) SaveData();
 		HideTaskModal();
 	}
+	const loadItem = (i: IndexItem) => {
+		item.value = i;
+	}
+
+	// Event Listeners
 	onMounted(async () => {
 		TaskModalBus.on('item', i => loadItem(i));
 		TaskModalBus.on('active', e => event(e));
@@ -50,60 +116,8 @@
 		TaskModalBus.off('active');
 		DatabaseBus.off('reload');
 	})
-	const colors = useColors();
 
-	const type = ref<{value: string[], label:string, color: string}>({value: ['Task', 'orange,lemon'], label: 'Task', color: 'orange,lemon'});
-	const types = ref([
-		{value: ['Task', 'orange, lemon'], label: 'Task', color: 'orange,lemon'},
-		{value: ['Event', 'blueberry, grape'], label: 'Event', color: 'blueberry,grape'}
-	])
-	const tagList = ref<[{value: string, label: string, color: string[]}] | undefined>();
-	const status = ref<{value: string[], label: string, color: string}>({value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry'});
-	const statuses = ref([
-		{value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry', disabled: type.value.label == 'Event'},
-		{value: ['Doing', 'orange'], label: 'Doing', color: 'orange', disabled: type.value.label == 'Event'},
-		{value: ['Scheduled', 'blueberry'], label: 'Scheduled', color: 'blueberry'},
-		{value: ['Done', 'mint'], label: 'Done', color: 'mint'}
-	])
-
-	const getTagColor: (t: string) => string[] = (t: string) => {
-		return t.split(',').map(x => colors.pastel[x as string] as string);
-	}
-	const getTagTextColor: (t: string) => string[] = (t: string) => {
-		return t.split(',').map(x => colors.text[x as string] as string);
-	}
-	const getTagsColor: (t: string) => string[] = (t: string) => {
-		return t.map(x => colors.pastel[x as string] as string);
-	}
-	const getTagsTextColor: (t: string) => string[] = (t: string) => {
-		return t.map(x => colors.text[x as string] as string);
-	}
-
-	const UpdateType = (option: any) => {
-		statuses.value = statuses.value.map(x => { x.disabled = (x.label == 'Todo' || x.label == 'Doing') && option.label == 'Event'; return x});
-		if(option.label == 'Event' && status.value.label == 'Todo'){
-			status.value = {value: ['Scheduled', 'blueberry'], label: 'Scheduled', color: 'blueberry'}
-			item.value.status = status.value.label;
-		}
-		item.value.type = option.label;
-	}
-	const UpdateStatus = (option: any) => {
-		item.value.status = option.label;
-	}
-	const UpdateTags = (option: any) => {
-		item.value.tags = option.map(x => {
-			return tags.value.find(t => t.tag == x.label);
-		});
-		if(option.length == 0){
-			delete item.value.tags;
-		}
-	}
-	const UpdateStartDate = (modelData) => {
-		item.value.startDate = moment(modelData).toISOString(true);
-	}
-	const UpdateEndDate = (modelData) => {
-		item.value.endDate = moment(modelData).toISOString(true);
-	}
+	//Filesystem Bindings
 	const SaveData = () => {
 		const path = "Active/" + item.value.name + ".task";
 		console.log("Saving!");
