@@ -18,7 +18,7 @@ await watch('fingerprint', async (e) => {
 
 export const GetAllItems = async () => {
 	const result: IndexRow[] = await db.select(`
-												SELECT i.id, i.name, i.type, i.path, i.status, i.hardDeadline, i.softDeadline, GROUP_CONCAT(t.tag || ':' || t.color, ';') AS tags FROM items i
+												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.tag || ':' || t.color, ';') AS tags FROM items i
 												LEFT JOIN items_tags it ON i.id = it.item_id
 												LEFT JOIN tags t ON it.tag_name = t.tag
 												WHERE i.isArchived = 0
@@ -31,8 +31,8 @@ export const GetAllItems = async () => {
 										name: x.name,
 										path: x.path,
 										status: x.status,
-										hardDeadline: x.hardDeadline,
-										softDeadline: x.softDeadline,
+										endDate: x.endDate,
+										startDate: x.startDate,
 										tags: x.tags ? x.tags.split(';').map(t => {let [tag, rawColor] = t.split(':'); const color = rawColor.split(','); return {tag, color} as Tag}) : undefined})
 									   );
    console.log(res)
@@ -42,7 +42,7 @@ export const GetAllItems = async () => {
 
 export const GetAllByStatus = async (filter: string) => {
 	const result: IndexRow[] = await db.select(`
-												SELECT i.id, i.name, i.type, i.path, i.status, i.hardDeadline, i.softDeadline, GROUP_CONCAT(t.tag || ':' || t.color, ';') AS tags FROM items i
+												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.tag || ':' || t.color, ';') AS tags FROM items i
 												LEFT JOIN items_tags it ON i.id = it.item_id
 												LEFT JOIN tags t ON it.tag_name = t.tag
 												WHERE i.isArchived = 0 AND i.status = $1
@@ -55,8 +55,8 @@ export const GetAllByStatus = async (filter: string) => {
 										name: x.name,
 										path: x.path,
 										status: x.status,
-										hardDeadline: x.hardDeadline,
-										softDeadline: x.softDeadline,
+										endDate: x.endDate,
+										startDate: x.startDate,
 										tags: x.tags ? x.tags.split(';').map(t => {let [tag, rawColor] = t.split(':'); const color = rawColor.split(','); return {tag, color} as Tag}) : undefined})
 									   );
 
@@ -66,7 +66,7 @@ export const GetAllByStatus = async (filter: string) => {
 
 export const GetById = async (id: string) => {
 	const result: IndexRow = await db.select(`
-											 SELECT i.id, i.name, i.type, i.path, i.status, i.hardDeadline, i.softDeadline, GROUP_CONCAT(t.tag || ':' || t.color, ',') AS tags FROM items i
+											 SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.tag || ':' || t.color, ',') AS tags FROM items i
 											 LEFT JOIN items_tags it ON i.id = it.item_id
 											 LEFT JOIN tags t ON it.tag_name = t.tag
 											 WHERE i.id = $1
@@ -78,8 +78,8 @@ export const GetById = async (id: string) => {
 												 name: result.name,
 												 path: result.path,
 												 status: result.status,
-												 hardDeadline: result.hardDeadline,
-												 softDeadline: result.softDeadline,
+												 endDate: result.endDate,
+												 startDate: result.startDate,
 												 tags: result.tags ? result.tags.split(',').map(t => {let [name, rawColor] = t.split(':'); const color = rawColor.split(','); return {name, color} as Tag}) : undefined})
 	return res;
 }

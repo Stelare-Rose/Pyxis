@@ -58,10 +58,10 @@ export const ReadFile = async (dir?: string) => {
 						break;
 				}
 			case "[Hard-Deadline]":
-				returnObject.hardDeadline = Date.parse(value);
+				returnObject.endDate = Date.parse(value);
 				break;
 			case "[Soft-Deadline]":
-				returnObject.softDeadline = Date.parse(value);
+				returnObject.startDate = Date.parse(value);
 				break;
 			case "[After-Task]":
 				returnObject.afterTask = value.split(',').map(s => s.trim());
@@ -86,8 +86,8 @@ export const updateItem = async (item: IndexItem) => {
 	contents += ItemToPlainTextRow("Type", item.type);
 	contents += ItemToPlainTextRow("Name", item.name);
 	contents += ItemToPlainTextRow("Status", item.status);
-	contents += ItemToPlainTextRow("Hard-Deadline", item.hardDeadline);
-	contents += ItemToPlainTextRow("Soft-Deadline", item.softDeadline);
+	contents += ItemToPlainTextRow("Hard-Deadline", item.endDate);
+	contents += ItemToPlainTextRow("Soft-Deadline", item.startDate);
 	if(item.tags){
 		console.log("Tags detected!")
 		const tagNames = item.tags.map(x => x.tag);
@@ -110,8 +110,8 @@ export const writeFile = async (item: IndexItem, newPath: string) => {
 	contents += ItemToPlainTextRow("Type", item.type);
 	contents += ItemToPlainTextRow("Name", item.name);
 	contents += ItemToPlainTextRow("Status", item.status);
-	contents += ItemToPlainTextRow("Hard-Deadline", item.hardDeadline);
-	contents += ItemToPlainTextRow("Soft-Deadline", item.softDeadline);
+	contents += ItemToPlainTextRow("Hard-Deadline", item.endDate);
+	contents += ItemToPlainTextRow("Soft-Deadline", item.startDate);
 	if(item.tags){
 		console.log("Tags detected!")
 		const tagNames = item.tags.map(x => x.tag);

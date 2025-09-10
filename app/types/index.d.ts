@@ -6,8 +6,8 @@ declare global {
 		id: string;
 		name?: string;
 		status?: "Todo" | "Doing" | "Done" | "Scheduled";
-		hardDeadline?: DateTime;
-		softDeadline?: DateTime;
+		endDate?: DateTime;
+		startDate?: DateTime;
 		afterTask?: string[];
 		tags?: string[];
 	}
@@ -17,8 +17,8 @@ declare global {
 		name?: string;
 		path?: string;
 		status?: string;
-		hardDeadline?: DateTime;
-		softDeadline?: DateTime;
+		endDate?: DateTime;
+		startDate?: DateTime;
 		afterTask?: string[];
 		tags?: Tag[];
 	}
@@ -28,8 +28,8 @@ declare global {
 		name?: string;
 		path?: string;
 		status?: string;
-		hardDeadline?: DateTime;
-		softDeadline?: DateTime;
+		endDate?: DateTime;
+		startDate?: DateTime;
 		afterTask?: string[];
 		tags?: string;
 	}

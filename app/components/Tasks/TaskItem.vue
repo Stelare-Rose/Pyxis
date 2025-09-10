@@ -53,20 +53,20 @@
 			<div class="large-text">
 				{{item.name}}
 			</div>
-			<div v-if="(item.status && !(remove?.includes('status'))) || item.hardDeadline || item.tags" class="divider" />
+			<div v-if="(item.status && !(remove?.includes('status'))) || item.endDate || item.tags" class="divider" />
 			<div v-if="item.status && !(remove?.includes('status'))" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Question /></Icon>
 				<TagsContainer :textColor='[statusColor[0]]' :color='[statusColor[1]]' :text='item.status'/>
 			</div>
-			<div v-if="item.softDeadline" class="row">
+			<div v-if="item.startDate" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarCheck /></Icon>
-				<span v-if="!item.softDeadline.includes('T') || (moment(item.softDeadline).isSame(moment(item.softDeadline).startOf('day')))" class="medium-text" >{{moment(item.softDeadline).format("LL")}}</span>
-				<span v-else class="medium-text">{{moment(item.softDeadline).format("LLL")}}</span>
+				<span v-if="!item.startDate.includes('T') || (moment(item.startDate).isSame(moment(item.startDate).startOf('day')))" class="medium-text" >{{moment(item.startDate).format("LL")}}</span>
+				<span v-else class="medium-text">{{moment(item.startDate).format("LLL")}}</span>
 			</div>
-			<div v-if="item.hardDeadline" class="row">
+			<div v-if="item.endDate" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarExclamation /></Icon>
-				<span v-if="!item.hardDeadline.includes('T') || (moment(item.hardDeadline).isSame(moment(item.hardDeadline).startOf('day')))" class="medium-text" >{{moment(item.hardDeadline).format("LL")}}</span>
-				<span v-else class="medium-text">{{moment(item.hardDeadline).format("LLL")}}</span>
+				<span v-if="!item.endDate.includes('T') || (moment(item.endDate).isSame(moment(item.endDate).startOf('day')))" class="medium-text" >{{moment(item.endDate).format("LL")}}</span>
+				<span v-else class="medium-text">{{moment(item.endDate).format("LLL")}}</span>
 			</div>
 			<div v-if="item.tags" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Tags /></Icon>

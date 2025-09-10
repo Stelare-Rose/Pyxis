@@ -25,8 +25,8 @@
 		}
 		type.value = types.value.find(x => x.label == item.value.type) ?? {value: ['Task', 'orange,lemon'], label: 'Task', color: 'orange,lemon'};
 		status.value = statuses.value.find(x => x.label == item.value.status) ?? {value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry'};
-		startDate.value = item.value.softDeadline;
-		endDate.value = item.value.hardDeadline;
+		startDate.value = item.value.startDate;
+		endDate.value = item.value.endDate;
 		tagList.value = item.value.tags?.flatMap(x => (tagsOptions.value.find(t => t.label == x.tag))) ?? [];
 	}
 	const loadItem = (i: IndexItem) => {
@@ -99,10 +99,10 @@
 		}
 	}
 	const UpdateStartDate = (modelData) => {
-		item.value.softDeadline = moment(modelData).toISOString(true);
+		item.value.startDate = moment(modelData).toISOString(true);
 	}
 	const UpdateEndDate = (modelData) => {
-		item.value.hardDeadline = moment(modelData).toISOString(true);
+		item.value.endDate = moment(modelData).toISOString(true);
 	}
 	const SaveData = () => {
 		const path = "Active/" + item.value.name + ".task";
