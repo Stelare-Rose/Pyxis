@@ -1,5 +1,3 @@
-export { colors };
-
 declare global {
 	interface Item {
 		type?: "Task" | "Event";
