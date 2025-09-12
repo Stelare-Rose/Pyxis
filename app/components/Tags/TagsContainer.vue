@@ -22,9 +22,9 @@
 			fontSize = '12pt';
 			break;
 		case 'large':
-			paddingVer = '0px';
-			paddingHor = '8px';
-			fontSize = '11pt';
+			paddingVer = '4px';
+			paddingHor = '14px';
+			fontSize = '13pt';
 			break;
 
 	}
