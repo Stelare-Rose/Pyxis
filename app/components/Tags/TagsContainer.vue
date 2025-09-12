@@ -4,7 +4,8 @@
 		color: string[];
 		textColor: string[];
 		text: string;
-		size?: "small" | "medium" | "large"
+		size?: "small" | "medium" | "large";
+		opaque?: boolean
 	}>(),{size: 'small'})
 	const color = props.color.map((x) => x + "70");
 	const backgroundGradient = `linear-gradient(45deg, ${color.join(',')})`;
@@ -31,8 +32,10 @@
 </script>
 
 <template>
+	<div :style="{backgroundColor: opaque ? '#FFFCF2' : '#00000000', borderRadius: '8px'}">
 	<div :style="{backgroundImage: backgroundGradient}" class=tags-container >
 		<span :style="{'backgroundImage': textGradient}" class=text >{{text}}</span>
+	</div>
 	</div>
 </template>
 
