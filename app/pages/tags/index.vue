@@ -44,6 +44,6 @@
 	}
 	.hovered {
 		background-color: var(--cream);
-		box-shadow: 4px 4px 4px #61616140;
+		box-shadow: 4px 4px 4px #61616120;
 	}
 </style>
