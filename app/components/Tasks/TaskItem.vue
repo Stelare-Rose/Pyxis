@@ -28,12 +28,6 @@
 				statusColor = [colors.text.leaf, colors.pastel.leaf];
 		}
 	}
-	const getTagColor: string[] = (t: Tag) => {
-		return t.color.map(x => colors.pastel[x as string] as string);
-	}
-	const getTagTextColor: string[] = (t: Tag) => {
-		return t.color.map(x => colors.text[x as string] as string);
-	}
 	const OpenItem = () => {
 		TaskModalBus.emit('item', item);
 		TaskModalBus.emit('active', true);
