@@ -71,7 +71,7 @@
 			<div v-if="item.tags" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Tags /></Icon>
 				<div class="tags">
-					<template v-for="tag in item.tags">
+					<template v-for="tag in item.tags" key="tag">
 						<TagsContainer :textColor='getTagTextColor(tag)' :color='getTagColor(tag)' :text='tag.tag' />
 					</template>
 				</div>
@@ -139,7 +139,7 @@
 		height: 100%;
 		width: 100%;
 		position: absolute;
-		box-shadow: 0 4px 5px #00000040;
+		box-shadow: 0 4px 5px #61616150;
 		border-radius: 12px;
 		z-index: -2;
 	}
