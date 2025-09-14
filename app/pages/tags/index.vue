@@ -8,7 +8,7 @@
 		<section class="browser">
 			<template v-for="tag in tags" :key="tag.tag">
 				<div class="tag" @mouseenter="hovered=tag.tag" @mouseleave="hovered=''" @click="selected = tag.tag" :class="{hovered: (hovered == tag.tag || selected == tag.tag)}">
-					<TagsContainer :color="getTagColor(tag)" :textColor="getTagTextColor(tag)" :text="tag.tag" size="medium" opaque />
+					<TagsContainer :color="getTagColor(tag)" :textColor="getTagTextColor(tag)" :text="tag.tag" size="small" opaque />
 				</div>
 			</template>
 		</section>
@@ -37,7 +37,7 @@
 	}
 	.tag {
 		border-radius: 8px;
-		padding: 8px;
+		padding: 4px;
 		align-items: center;
 		display: flex;
 		transition: 0.2s all ease;
