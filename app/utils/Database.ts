@@ -26,7 +26,7 @@ export const GetAllItems = async () => {
 												`);
 
 	let res: IndexItem[] = result.map(x => ({
-										id: x.id,
+										id: x.id ?? 0,
 										type: x.type,
 										name: x.name,
 										path: x.path,
@@ -93,5 +93,15 @@ export const GetAllTags = async () => {
 	const result: Tag[] = resultRaw.map(x => ({tag: x.tag, color: x.color.split(',')}));
 	console.log(result);
 
+	return result;
+}
+
+export const GetTagById = async (id: string) => {
+	const resultRaw: TagRow[] = await db.select(`
+												SELECT tag, color FROM tags
+												WHERE verified = 1 AND tag = $1
+												`, [id])
+
+	const result: Tag[] = resultRaw.map(x => ({tag: x.tag, color: x.color.split(',')}));
 	return result;
 }
