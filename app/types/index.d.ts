@@ -34,11 +34,13 @@ declare global {
 		tags?: string;
 	}
 	interface Tag {
+		id: string;
 		tag: string;
 		color: string[];
 	}
 	interface TagRow {
-		tag: string;
+		id: string;
+		name: string;
 		color: string;
 	}
 }

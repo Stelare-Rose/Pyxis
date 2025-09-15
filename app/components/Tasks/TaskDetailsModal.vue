@@ -31,7 +31,7 @@
 
 	//Default Values
 	const tags = ref((await GetAllTags()));
-	const tagsOptions = ref(tags.value.map(x => ({label: x.tag, value: x.tag, color: x.color})));
+	const tagsOptions = ref(tags.value.map(x => ({label: x.tag, value: x.id, color: x.color})));
 	const startTime = ref({ hours: 0, minutes: 0 });
 	const types = ref([
 		{value: ['Task', 'orange, lemon'], label: 'Task', color: 'orange,lemon'},
@@ -58,7 +58,7 @@
 	}
 	const UpdateTags = (option: any) => {
 		item.value.tags = option.map(x => {
-			return tags.value.find(t => t.tag == x.label);
+			return tags.value.find(t => t.id == x.value);
 		});
 		if(option.length == 0){
 			delete item.value.tags;
@@ -195,7 +195,7 @@
 									<TagsContainer style="margin-right: 8px" :color="getTagColor(option)" :textColor="getTagTextColor(option)" :text="option.label ?? option.tag" @click="handleTagRemove(option, $event)"/>
 								</template>
 								<template #option="{option}">
-									<TagsContainer :color="getTagColor(option)" :textColor="getTagTextColor(option)" :text="option.label" :key="option.label ?? option.tag"/>
+									<TagsContainer :color="getTagColor(option)" :textColor="getTagTextColor(option)" :text="option.label" :key="option.value"/>
 								</template>
 								</Multiselect>
 							</div>

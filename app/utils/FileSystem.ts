@@ -95,8 +95,7 @@ export const updateItem = async (item: IndexItem) => {
 	contents += ItemToPlainTextRow("Hard-Deadline", item.endDate);
 	contents += ItemToPlainTextRow("Soft-Deadline", item.startDate);
 	if(item.tags){
-		console.log("Tags detected!")
-		const tagNames = item.tags.map(x => x.tag);
+		const tagNames = item.tags.map(x => x.tag + '::' + x.id);
 		contents += ItemToPlainTextRow("Tags", tagNames.join(','));
 	}
 
@@ -119,8 +118,7 @@ export const writeFile = async (item: IndexItem, newPath: string) => {
 	contents += ItemToPlainTextRow("Hard-Deadline", item.endDate);
 	contents += ItemToPlainTextRow("Soft-Deadline", item.startDate);
 	if(item.tags){
-		console.log("Tags detected!")
-		const tagNames = item.tags.map(x => x.tag);
+		const tagNames = item.tags.map(x => x.tag + '::' + x.id);
 		contents += ItemToPlainTextRow("Tags", tagNames.join(','));
 	}
 

@@ -18,9 +18,9 @@ await watch('fingerprint', async (e) => {
 
 export const GetAllItems = async () => {
 	const result: IndexRow[] = await db.select(`
-												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.tag || ':' || t.color, ';') AS tags FROM items i
+												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
 												LEFT JOIN items_tags it ON i.id = it.item_id
-												LEFT JOIN tags t ON it.tag_name = t.tag
+												LEFT JOIN tags t ON it.tag_id = t.id
 												WHERE i.isArchived = 0
 												GROUP BY i.id
 												`);
@@ -33,18 +33,18 @@ export const GetAllItems = async () => {
 										status: x.status,
 										endDate: x.endDate,
 										startDate: x.startDate,
-										tags: x.tags ? x.tags.split(';').map(t => {let [tag, rawColor] = t.split(':'); const color = rawColor.split(','); return {tag, color} as Tag}) : undefined})
+										tags: x.tags ? x.tags.split(';').map(t => {let [id, tag, rawColor] = t.split(':'); const color = rawColor.split(','); return {id, tag, color} as Tag}) : undefined})
 									   );
-   console.log(res)
+	console.log(res)
 
 	return res;
 }
 
 export const GetAllByStatus = async (filter: string) => {
 	const result: IndexRow[] = await db.select(`
-												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.tag || ':' || t.color, ';') AS tags FROM items i
+												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
 												LEFT JOIN items_tags it ON i.id = it.item_id
-												LEFT JOIN tags t ON it.tag_name = t.tag
+												LEFT JOIN tags t ON it.tag_id = t.id
 												WHERE i.isArchived = 0 AND i.status = $1
 												GROUP BY i.id
 												`, [filter]);
@@ -57,9 +57,10 @@ export const GetAllByStatus = async (filter: string) => {
 										status: x.status,
 										endDate: x.endDate,
 										startDate: x.startDate,
-										tags: x.tags ? x.tags.split(';').map(t => {let [tag, rawColor] = t.split(':'); const color = rawColor.split(','); return {tag, color} as Tag}) : undefined})
+										tags: x.tags ? x.tags.split(';').map(t => {let [id, tag, rawColor] = t.split(':'); const color = rawColor.split(','); return {id, tag, color} as Tag}) : undefined})
 									   );
 
+	console.log(res)
 	res = res.sort(Sort());
 	return res;
 }
@@ -87,10 +88,10 @@ export const GetById = async (id: string) => {
 
 export const GetAllTags = async () => {
 	const resultRaw: TagRow[] = await db.select(`
-										  SELECT tag, color FROM tags
+										  SELECT * FROM tags
 										  WHERE verified = 1
 										  `);
-	const result: Tag[] = resultRaw.map(x => ({tag: x.tag, color: x.color.split(',')}));
+	const result: Tag[] = resultRaw.map(x => ({id: x.id, tag: x.name, color: x.color.split(',')}));
 	console.log(result);
 
 	return result;
@@ -98,10 +99,10 @@ export const GetAllTags = async () => {
 
 export const GetTagById = async (id: string) => {
 	const resultRaw: TagRow[] = await db.select(`
-												SELECT tag, color FROM tags
-												WHERE verified = 1 AND tag = $1
+												SELECT * FROM tags
+												WHERE verified = 1 AND id = $1
 												`, [id])
 
-	const result: Tag[] = resultRaw.map(x => ({tag: x.tag, color: x.color.split(',')}));
+	const result: Tag[] = resultRaw.map(x => ({id: x.id, tag: x.name, color: x.color.split(',')}));
 	return result;
 }

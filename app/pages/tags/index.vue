@@ -1,18 +1,27 @@
 <script setup lang=ts>
+	// UI Bindings
 	const hovered = ref();
 	const selected = ref();
+	
+	watch(selected, async () => {
+		console.log(selected.value);
+		selectedItem.value = await GetTagById(selected.value);
+	});
+	const selectedItem = ref();
 	const tags = ref(await GetAllTags());
 </script>
 <template>
 	<section class="container">
 		<section class="browser">
-			<template v-for="tag in tags" :key="tag.tag">
-				<div class="tag" @mouseenter="hovered=tag.tag" @mouseleave="hovered=''" @click="selected = tag.tag" :class="{hovered: (hovered == tag.tag || selected == tag.tag)}">
+			<template v-for="tag in tags" :key="tag.id">
+				<div class="tag" @mouseenter="hovered=tag.id" @mouseleave="hovered=''" @click="selected = tag.id" :class="{hovered: (hovered == tag.id || selected == tag.id)}">
 					<TagsContainer :color="getTagColor(tag)" :textColor="getTagTextColor(tag)" :text="tag.tag" size="small" opaque />
 				</div>
 			</template>
 		</section>
-		<div> item 2 </div>
+		<section class="data">
+			<div>{{selectedItem}}</div>
+		</section>
 	</section>
 </template>
 
