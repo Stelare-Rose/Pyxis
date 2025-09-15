@@ -8,7 +8,6 @@ export const CheckCacheDirectory = async (dir: string, create?: boolean) => {
 	if(!directoryExists && create){
 		await mkdir(dir, { baseDir: BaseDirectory.AppConfig });
 	}
-	info(`${dir} ${directoryExists ? "Exists!" : "Does Not Exist"}`);
 	return directoryExists;
 };
 

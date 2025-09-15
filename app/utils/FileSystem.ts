@@ -6,7 +6,6 @@ export const CheckDataDirectory = async (dir: string, create?: boolean) => {
 	if(!directoryExists && create){
 		await mkdir(dir, { baseDir: BaseDirectory.Data });
 	}
-	info(`${dir} ${directoryExists ? "Exists!" : "Does Not Exist"}`);
 	return directoryExists;
 };
 
