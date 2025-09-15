@@ -40,7 +40,6 @@
 			}
 			await updateItem(event.data);
 		}
-		// UpdateItem(id), GetAllByStatus('event.to.id') and 'event.from.id'
 	}
 	const checkMove = (event: any) => {
 		console.log(event);
