@@ -1,10 +1,17 @@
 import { BaseDirectory, exists, mkdir, readTextFileLines, writeTextFile, remove } from '@tauri-apps/plugin-fs';
-import { info } from '@tauri-apps/plugin-log';
 
 export const CheckDataDirectory = async (dir: string, create?: boolean) => {
 	const directoryExists = await exists(dir, { baseDir: BaseDirectory.Data });
 	if(!directoryExists && create){
 		await mkdir(dir, { baseDir: BaseDirectory.Data });
+	}
+	return directoryExists;
+};
+
+export const CheckCacheDirectory = async (dir: string, create?: boolean) => {
+	const directoryExists = await exists(dir, { baseDir: BaseDirectory.AppConfig });
+	if(!directoryExists && create){
+		await mkdir(dir, { baseDir: BaseDirectory.AppConfig });
 	}
 	return directoryExists;
 };

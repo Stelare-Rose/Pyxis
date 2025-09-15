@@ -3,13 +3,6 @@ import { info } from '@tauri-apps/plugin-log';
 
 let cachedIndex: IndexItem[] | null = null;
 let fingerprint: string | null = null;
-export const CheckCacheDirectory = async (dir: string, create?: boolean) => {
-	const directoryExists = await exists(dir, { baseDir: BaseDirectory.AppConfig });
-	if(!directoryExists && create){
-		await mkdir(dir, { baseDir: BaseDirectory.AppConfig });
-	}
-	return directoryExists;
-};
 
 export const isCacheLocked = async () => {
 	return await exists("Pyxis/index.lock", { baseDir: BaseDirectory.Cache });
