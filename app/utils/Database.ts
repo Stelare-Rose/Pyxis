@@ -91,9 +91,14 @@ export const GetAllTags = async () => {
 										  SELECT * FROM tags
 										  WHERE verified = 1
 										  `);
-	const result: Tag[] = resultRaw.map(x => ({id: x.id, tag: x.name, color: x.color.split(',')}));
+	let result: Tag[] = resultRaw.map(x => ({id: x.id, tag: x.name, color: x.color.split(',')}));
 	console.log(result);
 
+	result = result.sort((a, b) => {
+		if(a.tag > b.tag) return 1; 
+		if(a.tag < b.tag) return -1;
+		return 0;
+	});
 	return result;
 }
 
