@@ -23,6 +23,7 @@ export const GetAllItems = async () => {
 												LEFT JOIN tags t ON it.tag_id = t.id
 												WHERE i.isArchived = 0
 												GROUP BY i.id
+												ORDER BY i.name ASC
 												`);
 
 	let res: IndexItem[] = result.map(x => ({
@@ -47,6 +48,7 @@ export const GetAllByStatus = async (filter: string) => {
 												LEFT JOIN tags t ON it.tag_id = t.id
 												WHERE i.isArchived = 0 AND i.status = $1
 												GROUP BY i.id
+												ORDER BY i.name ASC
 												`, [filter]);
 
 	let res: IndexItem[] = result.map(x => ({
@@ -62,6 +64,36 @@ export const GetAllByStatus = async (filter: string) => {
 
 	console.log(res)
 	res = res.sort(Sort());
+	return res;
+}
+
+export const GetAllByTag = async (filter: string) => {
+	const result: IndexRow[] = await db.select(`
+												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
+												LEFT JOIN items_tags it ON i.id = it.item_id
+												LEFT JOIN tags t ON it.tag_id = t.id
+												WHERE i.isArchived = 0 AND i.id IN (
+													SELECT item_id 
+													FROM items_tags 
+													WHERE tag_id = $1
+												)
+												GROUP BY i.id
+												ORDER BY i.name ASC
+												`, [filter]);
+
+	let res: IndexItem[] = result.map(x => ({
+										id: x.id,
+										type: x.type,
+										name: x.name,
+										path: x.path,
+										status: x.status,
+										endDate: x.endDate,
+										startDate: x.startDate,
+										tags: x.tags ? x.tags.split(';').map(t => {let [id, tag, rawColor] = t.split(':'); const color = rawColor.split(','); return {id, tag, color} as Tag}) : undefined})
+									   );
+
+	console.log(res)
+	res = res.sort(Sort('doneLast'));
 	return res;
 }
 
@@ -90,15 +122,11 @@ export const GetAllTags = async () => {
 	const resultRaw: TagRow[] = await db.select(`
 										  SELECT * FROM tags
 										  WHERE verified = 1
+									      ORDER BY name ASC
 										  `);
 	let result: Tag[] = resultRaw.map(x => ({id: x.id, tag: x.name, color: x.color.split(',')}));
 	console.log(result);
 
-	result = result.sort((a, b) => {
-		if(a.tag > b.tag) return 1; 
-		if(a.tag < b.tag) return -1;
-		return 0;
-	});
 	return result;
 }
 
@@ -106,8 +134,8 @@ export const GetTagById = async (id: string) => {
 	const resultRaw: TagRow[] = await db.select(`
 												SELECT * FROM tags
 												WHERE verified = 1 AND id = $1
+									            ORDER BY name ASC
 												`, [id])
-
-	const result: Tag[] = resultRaw.map(x => ({id: x.id, tag: x.name, color: x.color.split(',')}));
+	const result: Tag = {id: resultRaw[0].id, tag: resultRaw[0].name, color: resultRaw[0].color.split(',')};
 	return result;
 }
