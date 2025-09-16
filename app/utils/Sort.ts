@@ -6,6 +6,10 @@ export const Sort = (prop?: string) => {
 		const ua: number | null = ta ? moment(ta).unix() : null;
 		const ub: number | null = tb ? moment(tb).unix() : null;
 
+		if(prop == "doneLast"){
+			if(a.status == 'Done') return 1;
+			if(b.status == 'Done') return -1;
+		}
 		if(!ua) return 1;
 		if(!ub) return -1;
 		if(ua === ub){
