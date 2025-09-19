@@ -73,13 +73,15 @@
 	
 	// Event Handlers
 	const enabled = ref(false);
-	const event = (e:boolean) => {
+	const event = async (e:boolean) => {
 		enabled.value = e;
 		if(e) uiStore.canscroll = false; else {
 			uiStore.canscroll = true;
 			item.value = {id: '0', name:'', type:'Task', status: 'Todo'};
 			return;
 		}
+		tags.value = await GetAllTags();
+		tagsOptions.value = tags.value.map(x => ({label: x.tag, value: x.id, color: x.color}));
 		if(item.value.id == '0'){
 			item.value.id = uuidv4();
 			nextTick(() => {
@@ -254,11 +256,10 @@
 	}
 	.properties {
 		display: grid;
-		grid-template-columns: auto 1fr; /* left = icon+label, right = value */
-		gap: 0.5rem 1rem; /* vertical & horizontal spacing */
+		grid-template-columns: auto 1fr;		
+		gap: 0.5rem 1rem;	
 		align-items: center;
 		margin-top: 8px;
-		grid-auto-rows: minmax(32px, auto);
 	}
 	.property {
 		display: contents;
@@ -268,7 +269,7 @@
 		width: 100%;
 		align-items: center;
 		flex-direction: row;
-		grid-column: 1; /* stick together in the left column */
+		grid-column: 1;	
 	}
 	.row-property {
 		grid-column: 2;
