@@ -6,6 +6,7 @@
 	const color = useColors();
 	const backgroundGradient = ref();
 	watch(selected, async () => {
+		if(selected.value == 'new') return;
 		await Reload();
 		console.log(selectedItem.value);
 	});
@@ -16,6 +17,10 @@
 		selectedItem.value = await GetTagById(selected.value);
 		selectedTasks.value = await GetAllByTag(selectedItem.value.id);
 		backgroundGradient.value = `linear-gradient(90deg, ${getTagColor(selectedItem.value).map(x => x + '25').join(',')})`;
+	}
+	const removeItem = (index: number) => {
+		if(selectedItem.value.color.length > 1)
+		selectedItem.value.color = selectedItem.value.color.slice(0, index).concat(selectedItem.value.color.slice(index + 1))
 	}
 	onMounted(async () => {
 		DatabaseBus.on('reload', () => Reload());
@@ -33,28 +38,47 @@
 					<TagsContainer :color="getTagColor(tag)" :textColor="getTagTextColor(tag)" :text="tag.tag" size="small" opaque />
 				</div>
 			</template>
+			<div class="tag" @mouseenter="hovered='new'" @mouseleave="hovered=''" @click="selected = 'new'" :class="{hovered: (hovered == 'new' || selected == 'new')}" style="justify-content: center; display: flex;"> <Icon :height="18" :width="18"><Plus /></Icon>
+			</div>
 		</section>
 		<section v-if="selectedItem" class="tag-content">
 			<section class="data">
-				<section class="visual-data">
-					<section class="preview">
-						<TagsContainer :color="getTagColor(selectedItem)" :textColor="getTagTextColor(selectedItem)" :text="selectedItem.tag" size="large" :key="selectedItem.id"/>
-						<div>Preview</div>
-					</section>
-					<section class="tag-data">
-						<div>Name: {{selectedItem.tag}}</div>
-						<div>Colors: {{selectedItem.color.map(x => x.charAt(0).toUpperCase() + x.slice(1)).join(", ")}}</div>
-					</section>
+				<section class="preview">
+					<TagsContainer :color="getTagColor(selectedItem)" :textColor="getTagTextColor(selectedItem)" :text="selectedItem.tag" size="large" :key="Math.random()"/>
+					<div>Preview</div>
 				</section>
-				<section class="visual-data">
-					<section class="tag-data">
-						<div>Number of Tasks: {{selectedTasks.length}}</div>
-					</section>
+				<section class="tag-data">
+					<div class="property">
+						<div>
+							<Icon style="margin-right: 2px" :height='18' :width='18'><Tags /></Icon>Name
+						</div>
+						<div>
+							{{selectedItem.tag}}
+						</div>
+					</div>
+					<div class="property">
+						<div>
+							<Icon style="margin-right: 2px" :height='18' :width='18'><Palette /></Icon>Colors 
+						</div>
+						<div style="flex-wrap: wrap">
+							<template v-for="(c, index) in selectedItem.color">
+								<span style="transition: 0.2s all ease; padding: 0px 4px; border-radius: 8px; display: inline-block;" @mouseenter="hovered=selectedItem.id + c + index" @mouseleave="hovered=''" :style="{backgroundColor: (color.pastel[c] + ((hovered == selectedItem.id + c + index) ? '60' : '00'))}" @click="removeItem(index)">
+									<Icon style="margin-right: 2px":height='12' :width='12'><Circle :fillColor="color.pastel[c]" :strokeColor="color.pastel[c]"/></Icon>{{c.charAt(0).toUpperCase() + c.substring(1)}} 
+								</span>
+							</template>
+						</div>
+					</div>
+				</section>
+				<section class="color-picker">
+					<template v-for="(c, name) in color.pastel">
+						<span @click="selectedItem.color.push(name)">
+							<Icon style="margin-right: 4px":height='18' :width='18'><Circle :fillColor="c" :strokeColor="c"/></Icon>
+						</span>
+					</template>
 				</section>
 			</section>
 			<section class="tags-tasks">
 				<section style="width: 320px; height: 100%;">
-					<TagsContainer :color="getTagColor(selectedItem)" :textColor="getTagTextColor(selectedItem)" :text="selectedItem.tag" size="medium" :key="selectedItem.id+'med'"/>
 					<div :style="{backgroundImage: backgroundGradient, 'width': 'auto', 'padding': '8px 0px', 'border-radius': '12px', 'box-sizing': 'border-box', 'margin': '8px 0px'}">
 						<div v-for="item in selectedTasks" :key="item.id">
 							<TaskItem :item="item" :isHovered="Hovered == item.id" @mouseenter="Hovered = item.id"  @mouseleave="Hovered = ''"/>
@@ -62,6 +86,8 @@
 					</div>
 				</section>
 			</section>
+			{{hovered}}
+			{{selectedItem}}
 		</section>
 	</section>
 </template>
@@ -91,27 +117,38 @@
 		align-items: center;
 		display: flex;
 		transition: 0.2s all ease;
+		min-height: 24px;
 	}
 	.hovered {
 		background-color: var(--cream);
 		box-shadow: 4px 4px 4px #61616120;
 	}
 	.data {
+		display: grid;
+		width: 100%;
+		gap: 12px;
+		grid-template-columns: 0.5fr 1fr 1fr 1fr;
+	}
+	.color-picker {
+		padding: 24px;
+		background-color: var(--foam);
+		border-radius: 12px;
+		height: fit-content;
+		grid-column: 2;
 		display: flex;
 		flex-direction: row;
-		justify-content: space-between;
-		align-items: flex-start;
-		width: 100%;
+		justify-content: center;
+		align-items: center;
 	}
 	.visual-data {
 		display: flex;
 		flex-direction: row;
 		gap: 24px;
-		height: 100%;
 		height: fit-content;
 	}
 	.preview {
 		align-items: center;
+		justify-content: center;
 		display: flex;
 		flex-direction: column;
 		padding: 24px;
@@ -119,19 +156,27 @@
 		border-radius: 12px;
 		gap: 8px;
 		min-width: 100px;
+		grid-column: 1;
+		grid-row-start: 1;
+		grid-row-end: 3;
 	}	
 	.tag-data {
-		display: flex;
-		flex-direction: column;
+		display: grid;
+		grid-template-columns: auto 1fr;		
+		gap: 0.5rem 1rem;	
+		align-items: center;
 		padding: 24px;
 		background-color: var(--foam);
 		border-radius: 12px;
-		gap: 4px;
+		grid-column: 2;
+	}
+	.property {
+		display: contents;
 	}
 	.tag-content {
 		display: flex;
 		flex-direction: column;
-		width: 100%;
+		width: 80%;
 		max-height: 100%;
 		padding: 0 12px;
 		gap: 8px;
