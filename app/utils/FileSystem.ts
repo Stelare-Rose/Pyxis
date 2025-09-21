@@ -1,7 +1,7 @@
 import { BaseDirectory, exists, mkdir, readTextFileLines, writeTextFile, remove, readTextFile } from '@tauri-apps/plugin-fs';
 import { info } from '@tauri-apps/plugin-log';
-
 import toml from '@iarna/toml'
+import { cloneDeep } from 'lodash';
 
 export const CheckDataDirectory = async (dir: string, create?: boolean) => {
 	const directoryExists = await exists(dir, { baseDir: BaseDirectory.Data });
@@ -91,20 +91,21 @@ export const readTags = async () => {
 	if(!fileExists) return null;
 	const tags = await readTextFile(processedDir, {baseDir: BaseDirectory.Data});
 	const returnObject = toml.parse(tags);
-	return returnObject.tags;
+	return returnObject;
 }
 
 export const updateTags = async (tag: Tag) => {	
-	let tags = await readTags();
-	console.log(tag);
-	Object.entries(tags).forEach(([key, value]) => {
+	let rawTags = cloneDeep(await readTags());
+	let tags = cloneDeep(rawTags);
+	Object.entries(tags.tags).forEach(([key, value]) => {
 		if(key == tag.id){
 			value.name = tag.tag;
 			value.colors = tag.color;
-			console.log(value);
 		}
 	})
-	console.log(tags);
+	if(JSON.stringify(tags) == JSON.stringify(rawTags)) return;
+	await writeTextFile("Pyxis/tags.toml", toml.stringify(tags), {baseDir: BaseDirectory.Data});
+
 }
 
 export const updateItem = async (item: IndexItem) => {

@@ -16,8 +16,6 @@
 		selectedItem.value = await GetTagById(selected.value);
 		selectedTasks.value = await GetAllByTag(selectedItem.value.id);
 		backgroundGradient.value = `linear-gradient(90deg, ${getTagColor(selectedItem.value).map(x => x + '25').join(',')})`;
-
-		updateTags(selectedItem.value);
 	}
 	const removeItem = (index: number) => {
 		if(selectedItem.value.color.length > 1)
