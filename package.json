@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@iarna/toml": "^2.2.5",
     "@studio-freight/lenis": "^1.0.42",
     "@tauri-apps/plugin-fs": "^2.4.0",
     "@tauri-apps/plugin-log": "^2.6.0",
