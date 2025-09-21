@@ -1,4 +1,7 @@
-import { BaseDirectory, exists, mkdir, readTextFileLines, writeTextFile, remove } from '@tauri-apps/plugin-fs';
+import { BaseDirectory, exists, mkdir, readTextFileLines, writeTextFile, remove, readTextFile } from '@tauri-apps/plugin-fs';
+import { info } from '@tauri-apps/plugin-log';
+
+import toml from '@iarna/toml'
 
 export const CheckDataDirectory = async (dir: string, create?: boolean) => {
 	const directoryExists = await exists(dir, { baseDir: BaseDirectory.Data });
@@ -80,6 +83,28 @@ export const ReadFile = async (dir?: string) => {
 		}
 	}
 	return returnObject;
+}
+
+export const readTags = async () => {
+	let processedDir = "Pyxis/tags.toml";
+	const fileExists = await exists(processedDir, {baseDir: BaseDirectory.Data});
+	if(!fileExists) return null;
+	const tags = await readTextFile(processedDir, {baseDir: BaseDirectory.Data});
+	const returnObject = toml.parse(tags);
+	return returnObject.tags;
+}
+
+export const updateTags = async (tag: Tag) => {	
+	let tags = await readTags();
+	console.log(tag);
+	Object.entries(tags).forEach(([key, value]) => {
+		if(key == tag.id){
+			value.name = tag.tag;
+			value.colors = tag.color;
+			console.log(value);
+		}
+	})
+	console.log(tags);
 }
 
 export const updateItem = async (item: IndexItem) => {

@@ -8,7 +8,6 @@
 	watch(selected, async () => {
 		if(selected.value == 'new') return;
 		await Reload();
-		console.log(selectedItem.value);
 	});
 	const selectedItem = ref();
 	const selectedTasks = ref();
@@ -17,13 +16,19 @@
 		selectedItem.value = await GetTagById(selected.value);
 		selectedTasks.value = await GetAllByTag(selectedItem.value.id);
 		backgroundGradient.value = `linear-gradient(90deg, ${getTagColor(selectedItem.value).map(x => x + '25').join(',')})`;
+
+		updateTags(selectedItem.value);
 	}
 	const removeItem = (index: number) => {
 		if(selectedItem.value.color.length > 1)
 		selectedItem.value.color = selectedItem.value.color.slice(0, index).concat(selectedItem.value.color.slice(index + 1))
 	}
+	watch(selectedItem, async () => {
+		updateTags(toRaw(selectedItem.value));
+	}, {deep: true});
 	onMounted(async () => {
-		DatabaseBus.on('reload', () => Reload());
+		DatabaseBus.on('reload', () => Reload())
+
 	})
 	onUnmounted(() => {
 		DatabaseBus.off('reload');
