@@ -144,10 +144,10 @@
 							<div class="row-property">
 								<Multiselect :options="types" mode="single" v-model="type" :can-deselect="false" :can-clear="false" :object="true" @change="UpdateType" class="hovered" :caret="false">
 								<template #singlelabel="{value}">
-									<TagsContainer style="margin-right: auto; margin-left: 8px" :color="getOtherColor(value.color)" :textColor="getOtherTextColor(value.color)" :text="value.label" :key="value.label"/>
+									<TagsContainer style="margin-right: auto; margin-left: 8px" :color="getOtherColor(value.color)" :textColor="getOtherTextColor(value.color)" :text="value.label" :key="value.value"/>
 								</template>
 								<template #option="{option}">
-									<TagsContainer :color="getOtherColor(option.color)" :textColor="getOtherTextColor(option.color)" :text="option.label" :key="option.label"/>
+									<TagsContainer :color="getOtherColor(option.color)" :textColor="getOtherTextColor(option.color)" :text="option.label" :key="option.value"/>
 								</template>
 								</Multiselect>
 							</div>
@@ -160,10 +160,10 @@
 							<div class="row-property">
 								<Multiselect :options="statuses" mode="single" v-model="status" :can-deselect="false" :can-clear="false" :object="true" @change="UpdateStatus" :caret="false">
 								<template #singlelabel="{value}">
-									<TagsContainer style="margin-right: auto; margin-left: 8px" :color="getOtherColor(value.color)" :textColor="getOtherTextColor(value.color)" :text="value.label" :key="value.label"/>
+									<TagsContainer style="margin-right: auto; margin-left: 8px" :color="getOtherColor(value.color)" :textColor="getOtherTextColor(value.color)" :text="value.label" :key="value.value"/>
 								</template>
 								<template #option="{option}">
-									<TagsContainer :color="getOtherColor(option.color)" :textColor="getOtherTextColor(option.color)" :text="option.label" :key="option.label"/>
+									<TagsContainer :color="getOtherColor(option.color)" :textColor="getOtherTextColor(option.color)" :text="option.label" :key="option.value"/>
 								</template>
 								</Multiselect>
 							</div>
@@ -194,7 +194,7 @@
 							<div class="row-property">
 								<Multiselect :placeholder="'Click to select tags..'" :options="tagsOptions" mode="tags" v-model="tagList" :object="true" :close-on-select="false" @change="UpdateTags" :caret="false">
 								<template #tag="{option, handleTagRemove}">
-									<TagsContainer style="margin-right: 8px" :color="getTagColor(option)" :textColor="getTagTextColor(option)" :text="option.label ?? option.tag" @click="handleTagRemove(option, $event)"/>
+									<TagsContainer style="margin-right: 8px" :color="getTagColor(option)" :textColor="getTagTextColor(option)" :text="option.label ?? option.tag" @click="handleTagRemove(option, $event)" :key="option.value"/>
 								</template>
 								<template #option="{option}">
 									<TagsContainer :color="getTagColor(option)" :textColor="getTagTextColor(option)" :text="option.label" :key="option.value"/>

@@ -72,7 +72,7 @@ import { nanoid } from 'nanoid'
 		<section v-if="selectedItem" class="tag-content">
 			<section class="data">
 				<section class="preview">
-					<TagsContainer :color="getTagColor(selectedItem)" :textColor="getTagTextColor(selectedItem)" :text="selectedItem.tag" size="large" :key="Math.random()"/>
+					<TagsContainer :color="getTagColor(selectedItem)" :textColor="getTagTextColor(selectedItem)" :text="selectedItem.tag" size="medium" :key="Math.random()"/>
 					<div>Preview</div>
 				</section>
 				<section class="tag-data">
@@ -181,7 +181,6 @@ import { nanoid } from 'nanoid'
 		background-color: var(--foam);
 		border-radius: 12px;
 		gap: 8px;
-		min-width: 100px;
 		grid-column: 1;
 		grid-row-start: 1;
 		grid-row-end: 3;
