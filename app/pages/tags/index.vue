@@ -1,32 +1,54 @@
 <script setup lang=ts>
+import { debounce } from 'lodash';
+import { nanoid } from 'nanoid'
+
 	// UI Bindings
 	const hovered = ref();
 	const Hovered = ref();
 	const selected = ref();
 	const color = useColors();
 	const backgroundGradient = ref();
+	const titleInput = ref();
 	watch(selected, async () => {
-		if(selected.value == 'new') return;
+		console.log(selected.value);
+		if(selected.value == 'new'){
+			selectedItem.value = {id: nanoid(8), tag: 'New Tag', color: ['strawberry']}; 
+			//TODO: Random Color Generator for Fun !!
+			selectedTasks.value = null;
+			selected.value = selectedItem.value.id;
+			return;
+		}
 		await Reload();
 	});
 	const selectedItem = ref();
 	const selectedTasks = ref();
 	const tags = ref(await GetAllTags());
-	const Reload = async () => {
-		selectedItem.value = await GetTagById(selected.value);
+	const Reload = async (partial?: boolean) => {
+		tags.value = await GetAllTags();
+		if(!partial) selectedItem.value = await GetTagById(selected.value) ?? null;
 		selectedTasks.value = await GetAllByTag(selectedItem.value.id);
+		selected.value = selectedItem.value.id;
 		backgroundGradient.value = `linear-gradient(90deg, ${getTagColor(selectedItem.value).map(x => x + '25').join(',')})`;
+		nextTick(() => {
+			titleInput.value.focus()
+		})
 	}
 	const removeItem = (index: number) => {
 		if(selectedItem.value.color.length > 1)
 		selectedItem.value.color = selectedItem.value.color.slice(0, index).concat(selectedItem.value.color.slice(index + 1))
 	}
 	watch(selectedItem, async () => {
-		updateTags(toRaw(selectedItem.value));
+		debounceUpdate();
 	}, {deep: true});
-	onMounted(async () => {
-		DatabaseBus.on('reload', () => Reload())
 
+	const debounceUpdate = debounce(() => {
+		if(selectedItem.value.tag == 'New Tag' && tags.value.find(x => x.id == selectedItem.value.id) == undefined){
+			return;
+		}
+		updateTags(selectedItem.value);
+	}, 500);
+	onMounted(async () => {
+		DatabaseBus.on('reload', () => Reload(true))
 	})
 	onUnmounted(() => {
 		DatabaseBus.off('reload');
@@ -38,11 +60,14 @@
 		<section class="browser">
 			<template v-for="tag in tags" :key="tag.id">
 				<div class="tag" @mouseenter="hovered=tag.id" @mouseleave="hovered=''" @click="selected = tag.id" :class="{hovered: (hovered == tag.id || selected == tag.id)}">
-					<TagsContainer :color="getTagColor(tag)" :textColor="getTagTextColor(tag)" :text="tag.tag" size="small" opaque />
+					<TagsContainer :color="getTagColor(tag)" :textColor="getTagTextColor(tag)" :text="tag.tag" size="small" opaque :key="Math.random()"/>
 				</div>
 			</template>
-			<div class="tag" @mouseenter="hovered='new'" @mouseleave="hovered=''" @click="selected = 'new'" :class="{hovered: (hovered == 'new' || selected == 'new')}" style="justify-content: center; display: flex;"> <Icon :height="18" :width="18"><Plus /></Icon>
+			<div class="tag" @mouseenter="hovered='new'" @mouseleave="hovered=''" @click="selected = 'new'" :class="{hovered: (hovered == 'new')}" style="justify-content: center; display: flex;"> <Icon :height="18" :width="18"><Plus /></Icon>
 			</div>
+			{{hovered}}
+			{{selectedItem}}
+			{{selected}}
 		</section>
 		<section v-if="selectedItem" class="tag-content">
 			<section class="data">
@@ -56,7 +81,7 @@
 							<Icon style="margin-right: 2px" :height='18' :width='18'><Tags /></Icon>Name
 						</div>
 						<div>
-							{{selectedItem.tag}}
+							<input class="text-input" ref="titleInput" v-model="selectedItem.tag" placeholder="Untitled" />
 						</div>
 					</div>
 					<div class="property">
@@ -80,7 +105,7 @@
 					</template>
 				</section>
 			</section>
-			<section class="tags-tasks">
+			<section class="tags-tasks" v-if="selectedTasks && selectedTasks.length > 0">
 				<section style="width: 320px; height: 100%;">
 					<div :style="{backgroundImage: backgroundGradient, 'width': 'auto', 'padding': '8px 0px', 'border-radius': '12px', 'box-sizing': 'border-box', 'margin': '8px 0px'}">
 						<div v-for="item in selectedTasks" :key="item.id">
@@ -89,8 +114,6 @@
 					</div>
 				</section>
 			</section>
-			{{hovered}}
-			{{selectedItem}}
 		</section>
 	</section>
 </template>
@@ -188,6 +211,13 @@
 	.tags-tasks {
 		width: auto;
 		gap: 8px;
+	}
+	.text-input {
+		font-size: 13pt;
+		background: none;
+		border: none;
+		width: 100%;
+		outline: none;
 	}
 
 </style>

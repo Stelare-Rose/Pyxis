@@ -1,5 +1,6 @@
 import Database from '@tauri-apps/plugin-sql';
 import { watch, BaseDirectory, readTextFile } from '@tauri-apps/plugin-fs';
+import { info } from '@tauri-apps/plugin-log';
 
 var db = await Database.load('sqlite:main.db');
 var fingerprint: string;

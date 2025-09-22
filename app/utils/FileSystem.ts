@@ -95,14 +95,21 @@ export const readTags = async () => {
 }
 
 export const updateTags = async (tag: Tag) => {	
+	let found = false;
+
 	let rawTags = cloneDeep(await readTags());
-	let tags = cloneDeep(rawTags);
+	let tags = cloneDeep(rawTags) ?? {tags: {}};
 	Object.entries(tags.tags).forEach(([key, value]) => {
 		if(key == tag.id){
+			found = true;
 			value.name = tag.tag;
 			value.colors = tag.color;
 		}
 	})
+	
+	if(!found) {
+		tags.tags[tag.id] = {name: tag.tag, colors: tag.color}
+	}
 	if(JSON.stringify(tags) == JSON.stringify(rawTags)) return;
 	await writeTextFile("Pyxis/tags.toml", toml.stringify(tags), {baseDir: BaseDirectory.Data});
 
