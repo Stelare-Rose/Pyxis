@@ -17,6 +17,23 @@ await watch('fingerprint', async (e) => {
 	ReloadDatabase();
 },{ baseDir: BaseDirectory.AppConfig, delayMs: 20 });
 
+/*
+export const GetDebug = async () => {
+	const result: IndexRow[] = await db.select(`
+												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags,
+												JULIANDAY('now') - JULIANDAY(i.endDate)
+												FROM items i
+												LEFT JOIN items_tags it ON i.id = it.item_id
+												LEFT JOIN tags t ON it.tag_id = t.id
+												WHERE i.isArchived = 0
+												GROUP BY i.id
+												ORDER BY i.name ASC
+												`);
+
+	return result;
+}
+*/
+
 export const GetAllItems = async () => {
 	const result: IndexRow[] = await db.select(`
 												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
