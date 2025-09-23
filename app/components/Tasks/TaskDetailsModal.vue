@@ -194,10 +194,10 @@
 							<div class="row-property">
 								<Multiselect :placeholder="'Click to select tags..'" :options="tagsOptions" mode="tags" v-model="tagList" :object="true" :close-on-select="false" @change="UpdateTags" :caret="false">
 								<template #tag="{option, handleTagRemove}">
-									<TagsContainer style="margin-right: 8px" :color="getTagColor(option)" :textColor="getTagTextColor(option)" :text="option.label ?? option.tag" @click="handleTagRemove(option, $event)" :key="option.value"/>
+									<TagsContainer style="margin-right: 8px" :color="getTagColor(option)" :textColor="getTagTextColor(option)" :text="option.label ?? option.tag" @click="handleTagRemove(option, $event)" :key="Math.random()"/>
 								</template>
 								<template #option="{option}">
-									<TagsContainer :color="getTagColor(option)" :textColor="getTagTextColor(option)" :text="option.label" :key="option.value"/>
+									<TagsContainer :color="getTagColor(option)" :textColor="getTagTextColor(option)" :text="option.label" :key="Math.random()"/>
 								</template>
 								</Multiselect>
 							</div>
