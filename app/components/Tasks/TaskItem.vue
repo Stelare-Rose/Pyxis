@@ -1,5 +1,6 @@
 <script setup lang=ts>
-	import moment from 'moment';
+	import { isNaN } from 'lodash';
+import moment from 'moment';
 	const props = defineProps<{
 		item: IndexItem,
 		remove?: string[];
@@ -32,10 +33,26 @@
 		TaskModalBus.emit('item', item);
 		TaskModalBus.emit('active', true);
 	}
+	const isOverdue = () => {
+		const start = moment(item.startDate).unix();
+		const end = moment(item.endDate).unix();
+		const now = moment().unix();
+		if(item.status == 'Done') return null;
+		if(start < now && now < end && !isNaN(start) && !isNaN(end)){
+			return 'In Progress'
+		}
+		if(now < (isNaN(start) ? end : start)){
+			return 'Not Started'
+		}
+		if(now > (isNaN(end) ? start : end)){
+			return 'Overdue'
+		}
+	}
 </script>
 
 <template>
 	<div v-if="item.type != null" class="container" :class="{'hovered-animation': props.isHovered}" @click="OpenItem">
+		<Icon :height='18' :width='18' class='top-right'><Star /></Icon>
 		<div class="content">
 			<div class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" >
@@ -54,12 +71,12 @@
 			</div>
 			<div v-if="item.startDate" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarCheck /></Icon>
-				<span v-if="!item.startDate.includes('T') || (moment(item.startDate).isSame(moment(item.startDate).startOf('day')))" class="medium-text" >{{moment(item.startDate).format("LL")}}</span>
+				<span v-if="!item.startDate.includes('T') || (moment(item.startDate).isSame(moment(item.startDate).endOf('day').seconds(0).milliseconds(0)))" class="medium-text" >{{moment(item.startDate).format("LL")}}</span>
 				<span v-else class="medium-text">{{moment(item.startDate).format("LLL")}}</span>
 			</div>
 			<div v-if="item.endDate" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarExclamation /></Icon>
-				<span v-if="!item.endDate.includes('T') || (moment(item.endDate).isSame(moment(item.endDate).startOf('day')))" class="medium-text" >{{moment(item.endDate).format("LL")}}</span>
+				<span v-if="!item.endDate.includes('T') || (moment(item.endDate).isSame(moment(item.endDate).endOf('day').seconds(0).milliseconds(0)))" class="medium-text" >{{moment(item.endDate).format("LL")}}</span>
 				<span v-else class="medium-text">{{moment(item.endDate).format("LLL")}}</span>
 			</div>
 			<div v-if="item.tags" class="row">

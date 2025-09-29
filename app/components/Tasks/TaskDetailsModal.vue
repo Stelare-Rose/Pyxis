@@ -32,7 +32,7 @@
 	//Default Values
 	const tags = ref((await GetAllTags()));
 	const tagsOptions = ref(tags.value.map(x => ({label: x.tag, value: x.id, color: x.color})));
-	const startTime = ref({ hours: 0, minutes: 0 });
+	const startTime = ref({ hours: 23, minutes: 59 });
 	const types = ref([
 		{value: ['Task', 'orange, lemon'], label: 'Task', color: 'orange,lemon'},
 		{value: ['Event', 'blueberry, grape'], label: 'Event', color: 'blueberry,grape'}
