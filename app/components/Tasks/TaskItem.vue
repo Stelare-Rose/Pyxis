@@ -41,6 +41,9 @@
 		if(start < now && now < end && !isNaN(start) && !isNaN(end)){
 			return 'In Progress'
 		}
+		if(moment(item.startDate).startOf('day').unix() == moment().startOf('day').unix() || moment(item.endDate).startOf('day').unix() == moment().startOf('day').unix()){
+			return 'Today'
+		}
 		if(now < (isNaN(start) ? end : start)){
 			return 'Not Started'
 		}
@@ -61,6 +64,8 @@
 				return colors.pastel.leaf;
 			case 'Overdue':
 				return colors.pastel.strawberry;
+			case 'Today':
+				return colors.pastel.plum;
 		}
 	}
 
