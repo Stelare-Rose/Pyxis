@@ -1,6 +1,6 @@
 <script setup lang=ts>
 	import { isNaN } from 'lodash';
-import moment from 'moment';
+	import moment from 'moment';
 	const props = defineProps<{
 		item: IndexItem,
 		remove?: string[];
@@ -37,22 +37,38 @@ import moment from 'moment';
 		const start = moment(item.startDate).unix();
 		const end = moment(item.endDate).unix();
 		const now = moment().unix();
-		if(item.status == 'Done') return null;
+		if(item.status == 'Done') return 'none';
 		if(start < now && now < end && !isNaN(start) && !isNaN(end)){
 			return 'In Progress'
 		}
 		if(now < (isNaN(start) ? end : start)){
 			return 'Not Started'
 		}
-		if(now > (isNaN(end) ? start : end)){
+		if(now > (isNaN(start) ? now : start)){
+			return 'In Progress'
+		}
+		if(now > (isNaN(end) ? now : end)){
 			return 'Overdue'
 		}
+		return 'none'
 	}
+
+	const starColor = (s: string) => {
+		switch(s){
+			case 'In Progress':
+				return colors.pastel.lemon;
+			case 'Not Started':
+				return colors.pastel.leaf;
+			case 'Overdue':
+				return colors.pastel.strawberry;
+		}
+	}
+
 </script>
 
 <template>
 	<div v-if="item.type != null" class="container" :class="{'hovered-animation': props.isHovered}" @click="OpenItem">
-		<Icon :height='18' :width='18' class='top-right'><Star /></Icon>
+		<Icon v-if="isOverdue() != 'none'" :height='18' :width='18' class='top-right'><Star :strokeColor="starColor(isOverdue())" :fillColor="starColor(isOverdue())"/></Icon>
 		<div class="content">
 			<div class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" >
