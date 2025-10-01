@@ -38,11 +38,11 @@
 		const end = moment(item.endDate).unix();
 		const now = moment().unix();
 		if(item.status == 'Done') return 'none';
-		if(start < now && now < end && !isNaN(start) && !isNaN(end)){
-			return 'In Progress'
-		}
 		if(moment(item.startDate).startOf('day').unix() == moment().startOf('day').unix() || moment(item.endDate).startOf('day').unix() == moment().startOf('day').unix()){
 			return 'Today'
+		}
+		if(start < now && now < end && !isNaN(start) && !isNaN(end)){
+			return 'In Progress'
 		}
 		if(now < (isNaN(start) ? end : start)){
 			return 'Not Started'
