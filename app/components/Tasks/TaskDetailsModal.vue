@@ -115,7 +115,7 @@
 
 	//Filesystem Bindings
 	const SaveData = () => {
-		const path = "Active/" + item.value.name + ".task";
+		const path = "Active/" + item.value.name;
 		console.log("Saving!");
 		writeFile(item.value, path);
 	}
