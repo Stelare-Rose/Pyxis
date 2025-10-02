@@ -139,7 +139,7 @@ export const writeFile = async (item: IndexItem, newPath: string) => {
 	console.log("Saving!");
 	let processedDir = "Pyxis/Items/" + item.path;
 	console.log(processedDir);
-	let newDir = "Pyxis/Items/" + newPath + "__id-" + item.id + ".task";
+	let newDir = "Pyxis/Items/" + newPath + " id-" + item.id + ".task";
 	console.log(newDir);
 	console.log(item);
 	
