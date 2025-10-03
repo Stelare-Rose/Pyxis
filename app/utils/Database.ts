@@ -70,7 +70,7 @@ export const GetAllByStatus = async (filter: string) => {
 												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, i.priorityDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
 												LEFT JOIN items_tags it ON i.id = it.item_id
 												LEFT JOIN tags t ON it.tag_id = t.id
-												WHERE i.isArchived = 0 AND i.status = $1 AND (substr(i.priorityDate, 1, 10) != DATE('now') or i.priorityDate == '')
+												WHERE i.isArchived = 0 AND i.status = $1 AND (substr(i.priorityDate, 1, 10) != DATE('now', 'localtime') or i.priorityDate == '')
 												GROUP BY i.id
 												ORDER BY i.name ASC
 												`, [filter]);
@@ -97,7 +97,7 @@ export const GetLimitedByStatus = async (filter: string, limit: number) => {
 												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, i.priorityDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
 												LEFT JOIN items_tags it ON i.id = it.item_id
 												LEFT JOIN tags t ON it.tag_id = t.id
-												WHERE i.isArchived = 0 AND i.status = $1 AND (substr(i.priorityDate, 1, 10) != DATE('now') or i.priorityDate == '')
+												WHERE i.isArchived = 0 AND i.status = $1 AND (substr(i.priorityDate, 1, 10) != DATE('now', 'localtime') or i.priorityDate == '')
 												GROUP BY i.id
 												ORDER BY i.name ASC
 												LIMIT $2
@@ -123,7 +123,7 @@ export const GetPriority = async () => {
 												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, i.priorityDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
 												LEFT JOIN items_tags it ON i.id = it.item_id
 												LEFT JOIN tags t ON it.tag_id = t.id
-												WHERE i.isArchived = 0 AND substr(i.priorityDate, 1, 10) == DATE('now')
+												WHERE i.isArchived = 0 AND substr(i.priorityDate, 1, 10) == DATE('now', 'localtime')
 												GROUP BY i.id
 												ORDER BY i.name ASC
 												`);
