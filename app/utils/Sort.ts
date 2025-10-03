@@ -1,8 +1,8 @@
 import moment from 'moment'
 export const Sort = (prop?: string) => {
 	return function(a: any, b: any){
-		const ta = a.startDate ? a.startDate: a.endDate;
-		const tb = b.startDate ? b.startDate : b.endDate;
+		const ta = a.startDate ? a.startDate : a.endDate ? a.endDate : a.priorityDate;
+		const tb = b.startDate ? b.startDate : b.endDate ? b.endDate : b.priorityDate;
 		const ua: number | null = ta ? moment(ta).unix() : null;
 		const ub: number | null = tb ? moment(tb).unix() : null;
 
