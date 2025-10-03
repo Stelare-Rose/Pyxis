@@ -8,10 +8,24 @@
 	let ItemsPriority = ref<IndexItem[]>([]);
 	let Hovered = ref<string>();
 	const Reload = async () => {
-		ItemsTodo.value = await GetAllByStatus('Todo');
-		ItemsDoing.value = await GetAllByStatus('Doing');
-		ItemsScheduled.value = await GetAllByStatus('Scheduled');
-		ItemsDone.value = (await GetLimitedByStatus('Done', 10)).reverse();
+		ItemsTodo.value = [];
+		ItemsDoing.value = [];
+		ItemsScheduled.value = [];
+		ItemsDone.value = [];
+		const allItems = await GetAllItems();
+
+		const statusMap = {
+		  Todo: ItemsTodo.value,
+		  Doing: ItemsDoing.value,
+		  Scheduled: ItemsScheduled.value,
+		  Done: ItemsDone.value,
+		};
+
+		allItems.forEach(item => {
+		  const list = statusMap[item.status];
+		  if (list) list.push(item);
+		});
+		console.log(allItems);
 		ItemsPriority.value = await GetPriority();
 	}
 	const onListChange = async (event: any) => {

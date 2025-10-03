@@ -7,7 +7,9 @@ var fingerprint: string;
 
 init();
 
-async function ReadDatabase(f: string) {
+async function ReadDatabase() {
+	const f = await readTextFile('fingerprint', {baseDir: BaseDirectory.AppConfig});
+	if(f == fingerprint) return;
 	db = await Database.load('sqlite:main.db');
 	fingerprint = f;
 }
@@ -15,11 +17,10 @@ async function ReadDatabase(f: string) {
 async function init(){
 	await watch('fingerprint', async (e) => {
 		if(e.type['access']) return;
-		const f = await readTextFile('fingerprint', {baseDir: BaseDirectory.AppConfig});
-		await ReadDatabase(f);
+		await ReadDatabase();
 		ReloadDatabase();
 	},{ baseDir: BaseDirectory.AppConfig, delayMs: 20 });
-	await ReadDatabase("b");
+	await ReadDatabase();
 }
 
 /*
@@ -40,14 +41,17 @@ export const GetDebug = async () => {
 */
 
 export const GetAllItems = async () => {
+	if(!db) await ReadDatabase();
+	console.time("query");
 	const result: IndexRow[] = await db.select(`
-												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
+												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, i.priorityDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
 												LEFT JOIN items_tags it ON i.id = it.item_id
 												LEFT JOIN tags t ON it.tag_id = t.id
-												WHERE i.isArchived = 0
+												WHERE i.isArchived = 0 AND (substr(i.priorityDate, 1, 10) != DATE('now', 'localtime') or i.priorityDate == '')
 												GROUP BY i.id
-												ORDER BY i.name ASC
+												ORDER BY sortDate is NULL, sortDate ASC, i.name
 												`);
+	console.timeEnd("query");
 
 	let res: IndexItem[] = result.map(x => ({
 										id: x.id ?? 0,
@@ -57,14 +61,15 @@ export const GetAllItems = async () => {
 										status: x.status,
 										endDate: x.endDate,
 										startDate: x.startDate,
+										priorityDate: x.priorityDate,
 										tags: x.tags ? x.tags.split(';').map(t => {let [id, tag, rawColor] = t.split(':'); const color = rawColor.split(','); return {id, tag, color} as Tag}) : undefined})
 									   );
-	console.log(res)
 
 	return res;
 }
 
 export const GetAllByStatus = async (filter: string) => {
+	if(!db) await ReadDatabase();
 	console.time("query" + filter);
 	const result: IndexRow[] = await db.select(`
 												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, i.priorityDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
@@ -72,7 +77,7 @@ export const GetAllByStatus = async (filter: string) => {
 												LEFT JOIN tags t ON it.tag_id = t.id
 												WHERE i.isArchived = 0 AND i.status = $1 AND (substr(i.priorityDate, 1, 10) != DATE('now', 'localtime') or i.priorityDate == '')
 												GROUP BY i.id
-												ORDER BY i.name ASC
+												ORDER BY sortDate is NULL, sortDate ASC, i.name
 												`, [filter]);
 	
 	let res: IndexItem[] = result.map(x => ({
@@ -88,18 +93,18 @@ export const GetAllByStatus = async (filter: string) => {
 									   );
 
 	console.timeEnd("query" + filter);
-	res = res.sort(Sort());
 	return res;
 }
 
 export const GetLimitedByStatus = async (filter: string, limit: number) => {
+	if(!db) await ReadDatabase();
 	const result: IndexRow[] = await db.select(`
 												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, i.priorityDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
 												LEFT JOIN items_tags it ON i.id = it.item_id
 												LEFT JOIN tags t ON it.tag_id = t.id
 												WHERE i.isArchived = 0 AND i.status = $1 AND (substr(i.priorityDate, 1, 10) != DATE('now', 'localtime') or i.priorityDate == '')
 												GROUP BY i.id
-												ORDER BY i.name ASC
+												ORDER BY sortDate is NULL, sortDate DESC, i.name 
 												LIMIT $2
 												`, [filter, limit]);
 
@@ -119,6 +124,7 @@ export const GetLimitedByStatus = async (filter: string, limit: number) => {
 	return res;
 }
 export const GetPriority = async () => {
+	if(!db) await ReadDatabase();
 	const result: IndexRow[] = await db.select(`
 												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, i.priorityDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
 												LEFT JOIN items_tags it ON i.id = it.item_id
@@ -147,6 +153,7 @@ export const GetPriority = async () => {
 
 
 export const GetAllByTag = async (filter: string) => {
+	if(!db) await ReadDatabase();
 	const result: IndexRow[] = await db.select(`
 												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
 												LEFT JOIN items_tags it ON i.id = it.item_id
@@ -176,6 +183,7 @@ export const GetAllByTag = async (filter: string) => {
 }
 
 export const GetById = async (id: string) => {
+	if(!db) await ReadDatabase();
 	const result: IndexRow = await db.select(`
 											 SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.tag || ':' || t.color, ',') AS tags FROM items i
 											 LEFT JOIN items_tags it ON i.id = it.item_id
@@ -197,6 +205,7 @@ export const GetById = async (id: string) => {
 
 
 export const GetAllTags = async () => {
+	if(!db) await ReadDatabase();
 	const resultRaw: TagRow[] = await db.select(`
 										  SELECT * FROM tags
 										  WHERE verified = 1
@@ -208,6 +217,7 @@ export const GetAllTags = async () => {
 }
 
 export const GetTagById = async (id: string) => {
+	if(!db) await ReadDatabase();
 	const resultRaw: TagRow[] = await db.select(`
 												SELECT * FROM tags
 												WHERE verified = 1 AND id = $1
