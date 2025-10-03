@@ -38,7 +38,13 @@
 		const end = moment(item.endDate).unix();
 		const now = moment().unix();
 		if(item.status == 'Done') return 'none';
+		if(now > (isNaN(end) ? now : end)){
+			return 'Overdue'
+		}
 		if(moment(item.startDate).startOf('day').unix() == moment().startOf('day').unix() || moment(item.endDate).startOf('day').unix() == moment().startOf('day').unix()){
+			return 'Today'
+		}
+		if(moment(item.priorityDate).startOf('day').unix() == moment().startOf('day').unix()){
 			return 'Today'
 		}
 		if(start < now && now < end && !isNaN(start) && !isNaN(end)){
@@ -49,9 +55,6 @@
 		}
 		if(now > (isNaN(start) ? now : start)){
 			return 'In Progress'
-		}
-		if(now > (isNaN(end) ? now : end)){
-			return 'Overdue'
 		}
 		return 'none'
 	}
@@ -91,14 +94,19 @@
 				<TagsContainer :textColor='[statusColor[0]]' :color='[statusColor[1]]' :text='item.status'/>
 			</div>
 			<div v-if="item.startDate" class="row">
-				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarCheck /></Icon>
+				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarCheck :strokeColor="colors.text.leaf" /></Icon>
 				<span v-if="!item.startDate.includes('T') || (moment(item.startDate).isSame(moment(item.startDate).endOf('day').seconds(0).milliseconds(0)))" class="medium-text" >{{moment(item.startDate).format("LL")}}</span>
 				<span v-else class="medium-text">{{moment(item.startDate).format("LLL")}}</span>
 			</div>
 			<div v-if="item.endDate" class="row">
-				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarExclamation /></Icon>
+				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarExclamation :strokeColor="colors.text.strawberry" /></Icon>
 				<span v-if="!item.endDate.includes('T') || (moment(item.endDate).isSame(moment(item.endDate).endOf('day').seconds(0).milliseconds(0)))" class="medium-text" >{{moment(item.endDate).format("LL")}}</span>
 				<span v-else class="medium-text">{{moment(item.endDate).format("LLL")}}</span>
+			</div>
+			<div v-if="item.priorityDate && !(remove?.includes('priorityDate')) && moment(item.priorityDate).unix() > moment().unix()" class="row">
+				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Star :strokeColor="colors.text.lilac" /></Icon>
+				<span v-if="!item.priorityDate.includes('T') || (moment(item.priorityDate).isSame(moment(item.priorityDate).endOf('day').seconds(0).milliseconds(0)))" class="medium-text" >{{moment(item.priorityDate).format("LL")}}</span>
+				<span v-else class="medium-text">{{moment(item.priorityDate).format("LLL")}}</span>
 			</div>
 			<div v-if="item.tags" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Tags /></Icon>

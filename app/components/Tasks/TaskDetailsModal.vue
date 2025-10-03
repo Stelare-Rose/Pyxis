@@ -27,6 +27,7 @@
 	const status = ref<{value: string[], label: string, color: string}>({value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry'});
 	const startDate = ref();
 	const endDate = ref();
+	const priorityDate = ref();
 	const tagList = ref<[{value: string, label: string, color: string[]}] | undefined>();
 
 	//Default Values
@@ -70,6 +71,9 @@
 	const UpdateEndDate = (modelData: any) => {
 		item.value.endDate = moment(modelData).toISOString(true);
 	}
+	const UpdatePriorityDate = (modelData: any) => {
+		item.value.priorityDate = moment(modelData).toISOString(true);
+	}
 	
 	// Event Handlers
 	const enabled = ref(false);
@@ -92,6 +96,7 @@
 		status.value = statuses.value.find(x => x.label == item.value.status) ?? {value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry'};
 		startDate.value = item.value.startDate;
 		endDate.value = item.value.endDate;
+		priorityDate.value = item.value.priorityDate;
 		tagList.value = item.value.tags?.flatMap(x => (tagsOptions.value.find(t => t.label == x.tag))) ?? [];
 	}
 	const disable = () => {
@@ -170,7 +175,7 @@
 						</div>
 						<div class="property">
 							<div class="row">
-								<Icon :height='24' :width='24' style="margin-right: 8px"><CalendarCheck /></Icon>
+								<Icon :height='24' :width='24' style="margin-right: 8px"><CalendarCheck :strokeColor="colors.text.leaf" /></Icon>
 								<div class="medium-text">Start Date</div>
 							</div>
 							<div class="row-property">
@@ -179,11 +184,20 @@
 						</div>
 						<div class="property">
 							<div class="row">
-								<Icon :height='24' :width='24' style="margin-right: 8px"><CalendarExclamation /></Icon>
+								<Icon :height='24' :width='24' style="margin-right: 8px"><CalendarExclamation :strokeColor="colors.text.strawberry" /></Icon>
 								<div class="medium-text">End Date</div>
 							</div>
 							<div class="row-property">
 								<vue-date-picker v-model="endDate" :start-time="startTime" @update:model-value="UpdateEndDate"></vue-date-picker>
+							</div>
+						</div>
+						<div class="property">
+							<div class="row">
+								<Icon :height='24' :width='24' style="margin-right: 8px"><Star :strokeColor="colors.text.lilac"/></Icon>
+								<div class="medium-text">Priority Date</div>
+							</div>
+							<div class="row-property">
+								<vue-date-picker v-model="priorityDate" :start-time="startTime" @update:model-value="UpdatePriorityDate"></vue-date-picker>
 							</div>
 						</div>
 						<div class="property">
@@ -205,12 +219,7 @@
 					</div>
 				</section>
 				<section class="modal-description">
-					<div> Input Debugging </div>
-					<div>
-						{{item}}
-					</div>
-					<div> Sample Item </div>
-					<TaskItem :item="item" :key="Math.random()"/>
+
 				</section>
 			</section>
 		</section>

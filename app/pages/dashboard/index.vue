@@ -11,7 +11,7 @@
 		ItemsTodo.value = await GetAllByStatus('Todo');
 		ItemsDoing.value = await GetAllByStatus('Doing');
 		ItemsScheduled.value = await GetAllByStatus('Scheduled');
-		ItemsDone.value = (await GetAllByStatus('Done')).reverse();
+		ItemsDone.value = (await GetLimitedByStatus('Done', 10)).reverse();
 		ItemsPriority.value = await GetPriority();
 	}
 	const onListChange = async (event: any) => {
@@ -86,7 +86,7 @@
 				:style="{'background-color': (color.pastel.lilac + '20'), 'height': '100%', 'padding-top': '8px', 'border-radius': '12px'}"
 				id="Priority"> 
 				<div v-for="item in ItemsPriority" :key="item.id">
-					<TaskItem :item="item" :isHovered="Hovered == item.id" @mouseenter="Hovered = item.id"  @mouseleave="Hovered = ''"/>
+					<TaskItem :item="item" :remove="['priorityDate']" :isHovered="Hovered == item.id" @mouseenter="Hovered = item.id"  @mouseleave="Hovered = ''"/>
 				</div>
 			</VueDraggable>
 		</section>
