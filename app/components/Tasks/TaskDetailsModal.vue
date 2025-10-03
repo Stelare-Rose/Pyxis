@@ -72,7 +72,7 @@
 		item.value.endDate = moment(modelData).toISOString(true);
 	}
 	const UpdatePriorityDate = (modelData: any) => {
-		item.value.priorityDate = moment(modelData).toISOString(true);
+		item.value.priorityDate = moment(modelData).toISOString(false);
 	}
 	
 	// Event Handlers
@@ -197,7 +197,7 @@
 								<div class="medium-text">Priority Date</div>
 							</div>
 							<div class="row-property">
-								<vue-date-picker v-model="priorityDate" :start-time="startTime" @update:model-value="UpdatePriorityDate"></vue-date-picker>
+								<vue-date-picker v-model="priorityDate" :start-time="startTime" @update:model-value="UpdatePriorityDate" :enable-time-picker="false"></vue-date-picker>
 							</div>
 						</div>
 						<div class="property">
