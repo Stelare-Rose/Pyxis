@@ -8,12 +8,12 @@
 	let ItemsPriority = ref<IndexItem[]>([]);
 	let Hovered = ref<string>();
 	const Reload = async () => {
+		const allItems = await GetAllItems();
+
 		ItemsTodo.value = [];
 		ItemsDoing.value = [];
 		ItemsScheduled.value = [];
 		ItemsDone.value = [];
-		const allItems = await GetAllItems();
-
 		const statusMap = {
 		  Todo: ItemsTodo.value,
 		  Doing: ItemsDoing.value,
