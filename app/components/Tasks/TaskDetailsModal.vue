@@ -72,7 +72,7 @@
 		item.value.endDate = moment(modelData).toISOString(true);
 	}
 	const UpdatePriorityDate = (modelData: any) => {
-		item.value.priorityDate = moment(modelData).toISOString(false);
+		item.value.priorityDate = moment(modelData).toISOString(true);
 	}
 	
 	// Event Handlers
