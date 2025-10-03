@@ -61,10 +61,10 @@ export const GetAllItems = async () => {
 
 export const GetAllByStatus = async (filter: string) => {
 	const result: IndexRow[] = await db.select(`
-												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
+												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, i.priorityDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
 												LEFT JOIN items_tags it ON i.id = it.item_id
 												LEFT JOIN tags t ON it.tag_id = t.id
-												WHERE i.isArchived = 0 AND i.status = $1
+												WHERE i.isArchived = 0 AND i.status = $1 AND (JULIANDAY(i.priorityDate, 'start of day') != JULIANDAY('now', 'start of day') or Length(i.priorityDate) < 1)
 												GROUP BY i.id
 												ORDER BY i.name ASC
 												`, [filter]);
@@ -77,6 +77,7 @@ export const GetAllByStatus = async (filter: string) => {
 										status: x.status,
 										endDate: x.endDate,
 										startDate: x.startDate,
+										priorityDate: x.priorityDate,
 										tags: x.tags ? x.tags.split(';').map(t => {let [id, tag, rawColor] = t.split(':'); const color = rawColor.split(','); return {id, tag, color} as Tag}) : undefined})
 									   );
 
@@ -84,6 +85,35 @@ export const GetAllByStatus = async (filter: string) => {
 	res = res.sort(Sort());
 	return res;
 }
+
+export const GetPriority = async () => {
+	const result: IndexRow[] = await db.select(`
+												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, i.priorityDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
+												LEFT JOIN items_tags it ON i.id = it.item_id
+												LEFT JOIN tags t ON it.tag_id = t.id
+												WHERE i.isArchived = 0 AND JULIANDAY(i.priorityDate, 'start of day') == JULIANDAY('now', 'start of day')
+												GROUP BY i.id
+												ORDER BY i.name ASC
+												`);
+
+	let res: IndexItem[] = result.map(x => ({
+										id: x.id,
+										type: x.type,
+										name: x.name,
+										path: x.path,
+										status: x.status,
+										endDate: x.endDate,
+										startDate: x.startDate,
+										priorityDate: x.priorityDate,
+										tags: x.tags ? x.tags.split(';').map(t => {let [id, tag, rawColor] = t.split(':'); const color = rawColor.split(','); return {id, tag, color} as Tag}) : undefined})
+									   );
+
+	console.log(res)
+	res = res.sort(Sort());
+	return res;
+}
+
+
 
 export const GetAllByTag = async (filter: string) => {
 	const result: IndexRow[] = await db.select(`

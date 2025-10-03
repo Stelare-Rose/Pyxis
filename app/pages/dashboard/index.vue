@@ -1,19 +1,31 @@
 <script setup lang="ts">
 	import { VueDraggable } from 'vue-draggable-plus'
+	import moment from 'moment';
 	let ItemsTodo = ref<IndexItem[]>([]);
 	let ItemsDoing = ref<IndexItem[]>([]);
 	let ItemsScheduled = ref<IndexItem[]>([]);
 	let ItemsDone = ref<IndexItem[]>([]);
+	let ItemsPriority = ref<IndexItem[]>([]);
 	let Hovered = ref<string>();
 	const Reload = async () => {
 		ItemsTodo.value = await GetAllByStatus('Todo');
 		ItemsDoing.value = await GetAllByStatus('Doing');
 		ItemsScheduled.value = await GetAllByStatus('Scheduled');
 		ItemsDone.value = (await GetAllByStatus('Done')).reverse();
+		ItemsPriority.value = await GetPriority();
 	}
 	const onListChange = async (event: any) => {
 		Hovered.value = '';
 		if (event.from.id == event.to.id) return;
+		if (event.to.id == 'Priority'){
+			event.data.status = event.from.id;
+			const todayPriority = moment().endOf('day').seconds(0).milliseconds(0).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+
+			event.data.priorityDate = todayPriority;
+			ItemsPriority.value = ItemsPriority.value.map(i => i.id == event.data.id ? { ...i, priorityDate: todayPriority } : i);
+			await updateItem(event.data);
+			return;
+		}
 		if (event.data) {
 			event.data.status = event.to.id;
 			switch(event.to.id){
@@ -33,7 +45,11 @@
 					break;
 				}
 				case 'Done': {
-					ItemsDone.value = ItemsDone.value.map(i => i.id == event.data.id ? { ...i, status: 'Done' } : i);
+					if(event.from.id == 'Priority'){
+						event.data.priorityDate = '';
+						ItemsDone.value = ItemsDone.value.map(i => i.id == event.data.id ? { ...i, status: 'Done', priorityDate: '' } : i);
+					}
+					else ItemsDone.value = ItemsDone.value.map(i => i.id == event.data.id ? { ...i, status: 'Done' } : i);
 					ItemsDone.value = ItemsDone.value.sort(Sort()).reverse();
 					break;
 				}
@@ -42,8 +58,8 @@
 		}
 	}
 	const checkMove = (event: any) => {
-		console.log(event);
 		if (event.data.type == "Event" && !(event.to.id == "Scheduled" || event.to.id == "Done")) return false;
+		if (event.from.id == "Priority" && event.to.id != "Done") return false;
 	}
 	const color = useColors();
 	onMounted(async () => {
@@ -58,6 +74,24 @@
 	<ClientOnly>
 	<div class="container">
 		<section style="min-width: 320px">
+			<TagsContainer :color='[color.pastel.lilac]' :textColor='[color.text.lilac]' :text="`Today's Priority (${ItemsPriority.length.toString()})`" size="medium" style="margin: 8px 0px 8px 0px" />
+			<VueDraggable
+				v-model="ItemsPriority" 
+				group="tasks" 
+				@end="onListChange" 
+			    :animation="150"
+				ghostClass="ghost"
+				:sort="false"
+				@move="checkMove"
+				:style="{'background-color': (color.pastel.lilac + '20'), 'height': '100%', 'padding-top': '8px', 'border-radius': '12px'}"
+				id="Priority"> 
+				<div v-for="item in ItemsPriority" :key="item.id">
+					<TaskItem :item="item" :isHovered="Hovered == item.id" @mouseenter="Hovered = item.id"  @mouseleave="Hovered = ''"/>
+				</div>
+			</VueDraggable>
+		</section>
+
+		<section style="min-width: 320px; margin-left: 24px">
 			<TagsContainer :color='[color.pastel.strawberry]' :textColor='[color.text.strawberry]' :text="`Todo (${ItemsTodo.length.toString()})`" size="medium" style="margin: 8px 0px 8px 0px" />
 			<VueDraggable
 				v-model="ItemsTodo" 

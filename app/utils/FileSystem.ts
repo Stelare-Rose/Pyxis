@@ -125,8 +125,9 @@ export const updateItem = async (item: IndexItem) => {
 	contents += ItemToPlainTextRow("Type", item.type);
 	contents += ItemToPlainTextRow("Name", item.name);
 	contents += ItemToPlainTextRow("Status", item.status);
-	contents += ItemToPlainTextRow("Hard-Deadline", item.endDate);
-	contents += ItemToPlainTextRow("Soft-Deadline", item.startDate);
+	contents += ItemToPlainTextRow("End-Date", item.endDate);
+	contents += ItemToPlainTextRow("Start-Date", item.startDate);
+	contents += ItemToPlainTextRow("Priority-Date", item.priorityDate);
 	if(item.tags){
 		const tagNames = item.tags.map(x => x.tag + '::' + x.id);
 		contents += ItemToPlainTextRow("Tags", tagNames.join(','));
@@ -148,8 +149,9 @@ export const writeFile = async (item: IndexItem, newPath: string) => {
 	contents += ItemToPlainTextRow("Type", item.type);
 	contents += ItemToPlainTextRow("Name", item.name);
 	contents += ItemToPlainTextRow("Status", item.status);
-	contents += ItemToPlainTextRow("Hard-Deadline", item.endDate);
-	contents += ItemToPlainTextRow("Soft-Deadline", item.startDate);
+	contents += ItemToPlainTextRow("End-Date", item.endDate);
+	contents += ItemToPlainTextRow("Start-Date", item.startDate);
+	contents += ItemToPlainTextRow("Priority-Date", item.priorityDate);
 	if(item.tags){
 		const tagNames = item.tags.map(x => x.tag + '::' + x.id);
 		contents += ItemToPlainTextRow("Tags", tagNames.join(','));

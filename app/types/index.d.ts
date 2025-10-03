@@ -19,6 +19,7 @@ declare global {
 		status?: string;
 		endDate?: DateTime;
 		startDate?: DateTime;
+		priorityDate?: DateTime;
 		afterTask?: string[];
 		tags?: Tag[];
 	}
@@ -30,6 +31,7 @@ declare global {
 		status?: string;
 		endDate?: DateTime;
 		startDate?: DateTime;
+		priorityDate?: DateTime;
 		afterTask?: string[];
 		tags?: string;
 	}
