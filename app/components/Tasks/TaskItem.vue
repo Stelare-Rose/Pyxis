@@ -14,20 +14,22 @@
 	const colors = useColors();
 	let statusColor: string[];
 
-	if(item.status){
-		switch(item.status){
-			case 'Todo':
-				statusColor = [colors.text.strawberry, colors.pastel.strawberry];
-				break;
-			case 'Doing':
-				statusColor = [colors.text.orange, colors.pastel.orange];
-				break;
-			case 'Scheduled':
-				statusColor = [colors.text.blueberry, colors.pastel.blueberry];
-				break;
-			case 'Done':
-				statusColor = [colors.text.leaf, colors.pastel.leaf];
+	const getStatusColor = () => {
+		if(item.status){
+			switch(item.status){
+				case 'Todo':
+					return [colors.text.strawberry, colors.pastel.strawberry];
+				case 'Doing':
+					return [colors.text.orange, colors.pastel.orange];
+				case 'Scheduled':
+					return [colors.text.blueberry, colors.pastel.blueberry];
+				case 'Done':
+					return [colors.text.leaf, colors.pastel.leaf];
+				default:
+					return [colors.text_1, colors.subtext_2];
+			}
 		}
+		return [colors.text_1, colors.subtext_2];
 	}
 	const OpenItem = () => {
 		TaskModalBus.emit('item', item);
@@ -88,7 +90,7 @@
 			<div v-if="(item.status && !(remove?.includes('status'))) || item.endDate || item.tags" class="divider" />
 			<div v-if="item.status && !(remove?.includes('status'))" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Question /></Icon>
-				<TagsContainer :textColor='[statusColor[0]]' :color='[statusColor[1]]' :text='item.status'/>
+				<TagsContainer :textColor='[getStatusColor()[0]]' :color='[getStatusColor()[1]]' :text='item.status' :key='item.status'/>
 			</div>
 			<div v-if="item.startDate" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarCheck :strokeColor="colors.text.leaf" /></Icon>
