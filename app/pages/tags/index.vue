@@ -153,7 +153,7 @@ import { nanoid } from 'nanoid'
 		display: grid;
 		width: 100%;
 		gap: 12px;
-		grid-template-columns: 0.5fr 1fr 1fr 1fr;
+		grid-template-columns: 0.8fr 1fr 1fr 1fr;
 	}
 	.color-picker {
 		padding: 24px;

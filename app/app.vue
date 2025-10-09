@@ -12,21 +12,21 @@
 
 <style>
 	:root {
-		--ms-bg: #FFFCF2;
-		--ms-ring-color: #EDB7CA;
-		--ms-dropdown-bg: #FCF7E6;
+		--ms-bg: var(--foam);
+		--ms-ring-color: var(--pink);
+		--ms-dropdown-bg: var(--cream);
 		--ms-option-line-height: auto;
 		--ms-dropdown-border-color: #DBB4D3;
 		--ms-dropdown-border-width: 1px;
 		--ms-dropdown-radius: 16px;
 		--ms-ring-width: 1px;
-		--ms-option-bg-selected: #F7F1DC;
+		--ms-option-bg-selected: var(--base);
 		--ms-option-bg-disabled: #CF828240;
 		--ms-option-bg-pointed: #DBB4D340;
 		--ms-option-bg-selected-pointed: #DBB4D340;
-		--foam: #FFFCF2;
-		--cream: #FCF7E6;
-		--base: #F7F1DC;
+		--foam: #F7F2E4;
+		--cream: #F4EDD9;
+		--base: #E6D9C3;
 		--strawberry: #CF8282;
 		--orange: #D4A266;
 		--lemon: #E3CD7F;
