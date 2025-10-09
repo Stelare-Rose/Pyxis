@@ -5,6 +5,9 @@
 	import moment from 'moment';
 	import { v4 as uuidv4 } from 'uuid'
 	import { uiStore } from '~/stores/ui';
+
+	import StarterKit from '@tiptap/starter-kit'
+	import { Editor, EditorContent } from '@tiptap/vue-3'
 	
 	//Style Imports
 	import '@vuepic/vue-datepicker/dist/main.css'
@@ -58,7 +61,7 @@
 		item.value.status = option.label;
 	}
 	const UpdateTags = (option: any) => {
-		item.value.tags = option.map(x => {
+		item.value.tags = option.map((x: any) => {
 			return tags.value.find(t => t.id == x.value);
 		});
 		if(option.length == 0){
@@ -128,6 +131,20 @@
 		deleteFile(item.value);
 		HideTaskModal();
 	}
+	
+	// Tiptap
+	import { Placeholder } from '@tiptap/extensions'
+	const editor = ref();
+	onMounted(() => {
+		editor.value = new Editor({
+			extensions: [
+				StarterKit,
+				Placeholder.configure({
+					placeholder: 'Write a Description...',
+				})
+			],
+		});
+	});
 </script>
 <template>
 	<transition name="modal">
@@ -219,7 +236,7 @@
 					</div>
 				</section>
 				<section class="modal-description">
-
+					<editor-content :editor="editor" class="editor-container"/>
 				</section>
 			</section>
 		</section>
@@ -227,6 +244,20 @@
 		</section>
 	</transition>
 </template>
+<style>
+  p.is-editor-empty:first-child::before {
+    color: var(--subtext-2);
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+  p {
+	  margin: 0;      /* remove any margin */
+	  padding: 0;     /* remove padding */
+  }
+</style>
+
 <style scoped>
 	.dp__theme_light {
 		--dp-background-color: var(--foam);
@@ -295,11 +326,11 @@
 		height: 100%;
 		box-sizing: border-box;
 		border-right: 2px solid var(--base);
-		padding: 8px;
+		padding: 12px;
 	}
 	.modal-description{
 		width: 60%;
-		height: 100%;
+		flex: 1;
 		box-sizing: border-box;
 		padding: 8px;
 	}

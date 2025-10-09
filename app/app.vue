@@ -39,6 +39,10 @@
 		--lavender: #CCA3D6;
 		--lilac: #DBB4D3;
 		--pink: #EDB7CA;
+		--subtext-2: #616161;
+		--subtext-1: #4D4D4D;
+		--text: #3B3B3B;
+		--highlight: #2E2E2E;
 	}
 
 	body {

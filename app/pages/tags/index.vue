@@ -65,9 +65,6 @@ import { nanoid } from 'nanoid'
 			</template>
 			<div class="tag" @mouseenter="hovered='new'" @mouseleave="hovered=''" @click="selected = 'new'" :class="{hovered: (hovered == 'new')}" style="justify-content: center; display: flex;"> <Icon :height="18" :width="18"><Plus /></Icon>
 			</div>
-			{{hovered}}
-			{{selectedItem}}
-			{{selected}}
 		</section>
 		<section v-if="selectedItem" class="tag-content">
 			<section class="data">
