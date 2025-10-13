@@ -46,7 +46,7 @@
 		{value: ['Done', 'mint'], label: 'Done', color: 'mint'}
 	])
 
-	// Data Updating
+	// Data bottom
 	const UpdateType = (option: any) => {
 		statuses.value = statuses.value.map(x => { x.disabled = (x.label == 'Todo' || x.label == 'Doing') && option.label == 'Event'; return x});
 		if(option.label == 'Event' && status.value.label == 'Todo'){
@@ -86,7 +86,7 @@
 			return;
 		}
 		tags.value = await GetAllTags();
-		tagsOptions.value = tags.value.map(x => ({label: x.tag, value: x.id, color: x.color}));
+		tagsOptions.value = tags.value.map(x => ({label: x.tag, value: x.id, color: x.color, trackBy: x.tag}));
 		if(item.value.id == '0'){
 			item.value.id = uuidv4();
 			nextTick(() => {
@@ -136,9 +136,6 @@
 	<section class="modal-background" v-if="enabled" @click.self="disable">
 		<transition name="modal-content" appear>
 		<section class="modal" v-if="enabled">
-			<section class="modal-top">
-				<Icon :height='20' :width='20' @mouseenter="trashColor = '#CF8282'" @mouseleave="trashColor ='#000'" @click="Delete"><Trash :stroke-color="trashColor" /></Icon>
-			</section>
 			<section class="modal-data">
 				<section class="modal-metadata">
 					<input class="large-text-input" ref="titleInput" v-model="item.name" placeholder="Title" />
@@ -208,7 +205,7 @@
 								<div class="medium-text">Tags</div>
 							</div>
 							<div class="row-property">
-								<Multiselect :placeholder="'Click to select tags..'" :options="tagsOptions" mode="tags" v-model="tagList" :object="true" :close-on-select="false" @change="UpdateTags" :caret="false">
+								<Multiselect :placeholder="'Click to select tags..'" :options="tagsOptions" mode="tags" v-model="tagList" :object="true" :close-on-select="false" @change="UpdateTags" :caret="false" :searchable="true">
 								<template #tag="{option, handleTagRemove}">
 									<TagsContainer style="margin-right: 8px" :color="getTagColor(option)" :textColor="getTagTextColor(option)" :text="option.label ?? option.tag" @click="handleTagRemove(option, $event)" :key="Math.random()"/>
 								</template>
@@ -223,12 +220,20 @@
 				<section class="modal-description">
 				</section>
 			</section>
+			<section class="modal-bottom">
+				<Icon :height='20' :width='20' @mouseenter="trashColor = '#CF8282'" @mouseleave="trashColor ='#000'" @click="Delete"><Trash :stroke-color="trashColor" /></Icon>
+			</section>
 		</section>
 	</transition>
 		</section>
 	</transition>
 </template>
 
+<style>
+	.multiselect-tags-search {
+		background-color: var(--foam);
+	}
+</style>
 <style scoped>
 	.dp__theme_light {
 		--dp-background-color: var(--foam);
@@ -265,6 +270,7 @@
 		border: 1px #EDB7CA;
 		width: 100%;
 	}
+
 	.properties {
 		display: grid;
 		grid-template-columns: auto 1fr;		
@@ -323,6 +329,7 @@
 	.modal-data {
 		display: flex;
 		flex-direction: row;
+		height: 100%;
 	}
 	.modal-background {
 		width: 100vw;

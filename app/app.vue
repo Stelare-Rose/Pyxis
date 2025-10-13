@@ -20,6 +20,7 @@
 		--ms-dropdown-border-width: 1px;
 		--ms-dropdown-radius: 16px;
 		--ms-ring-width: 1px;
+		--ms-max-height: 16rem;
 		--ms-option-bg-selected: var(--base);
 		--ms-option-bg-disabled: #CF828240;
 		--ms-option-bg-pointed: #DBB4D340;
