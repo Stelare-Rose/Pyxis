@@ -6,9 +6,6 @@
 	import { v4 as uuidv4 } from 'uuid'
 	import { uiStore } from '~/stores/ui';
 
-	import StarterKit from '@tiptap/starter-kit'
-	import { Editor, EditorContent } from '@tiptap/vue-3'
-	
 	//Style Imports
 	import '@vuepic/vue-datepicker/dist/main.css'
 	import '@vueform/multiselect/themes/default.css'
@@ -32,6 +29,7 @@
 	const endDate = ref();
 	const priorityDate = ref();
 	const tagList = ref<[{value: string, label: string, color: string[]}] | undefined>();
+	const description = ref();
 
 	//Default Values
 	const tags = ref((await GetAllTags()));
@@ -132,19 +130,6 @@
 		HideTaskModal();
 	}
 	
-	// Tiptap
-	import { Placeholder } from '@tiptap/extensions'
-	const editor = ref();
-	onMounted(() => {
-		editor.value = new Editor({
-			extensions: [
-				StarterKit,
-				Placeholder.configure({
-					placeholder: 'Write a Description...',
-				})
-			],
-		});
-	});
 </script>
 <template>
 	<transition name="modal">
@@ -236,7 +221,6 @@
 					</div>
 				</section>
 				<section class="modal-description">
-					<editor-content :editor="editor" class="editor-container"/>
 				</section>
 			</section>
 		</section>
@@ -244,19 +228,6 @@
 		</section>
 	</transition>
 </template>
-<style>
-  p.is-editor-empty:first-child::before {
-    color: var(--subtext-2);
-    content: attr(data-placeholder);
-    float: left;
-    height: 0;
-    pointer-events: none;
-  }
-  p {
-	  margin: 0;      /* remove any margin */
-	  padding: 0;     /* remove padding */
-  }
-</style>
 
 <style scoped>
 	.dp__theme_light {
