@@ -11,6 +11,10 @@
   },
   "dependencies": {
     "@iarna/toml": "^2.2.5",
+    "@milkdown/crepe": "^7.17.1",
+    "@milkdown/kit": "^7.17.1",
+    "@milkdown/theme-nord": "^7.17.1",
+    "@milkdown/vue": "^7.17.1",
     "@studio-freight/lenis": "^1.0.42",
     "@tauri-apps/plugin-fs": "^2.4.0",
     "@tauri-apps/plugin-log": "^2.6.0",

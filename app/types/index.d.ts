@@ -22,6 +22,7 @@ declare global {
 		priorityDate?: DateTime;
 		afterTask?: string[];
 		tags?: Tag[];
+		description?: string;
 	}
 	interface IndexRow {
 		type: "Task" | "Event" | null;

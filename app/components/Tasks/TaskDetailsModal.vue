@@ -9,6 +9,7 @@
 	//Style Imports
 	import '@vuepic/vue-datepicker/dist/main.css'
 	import '@vueform/multiselect/themes/default.css'
+import type { Crepe } from '@milkdown/crepe';
 
 	//Styling
 	const trashColor = ref('#000');
@@ -29,7 +30,7 @@
 	const endDate = ref();
 	const priorityDate = ref();
 	const tagList = ref<[{value: string, label: string, color: string[]}] | undefined>();
-	const description = ref();
+	const description = ref<string>();
 
 	//Default Values
 	const tags = ref((await GetAllTags()));
@@ -88,6 +89,7 @@
 		tags.value = await GetAllTags();
 		tagsOptions.value = tags.value.map(x => ({label: x.tag, value: x.id, color: x.color, trackBy: x.tag}));
 		if(item.value.id == '0'){
+			description.value = '';
 			item.value.id = uuidv4();
 			nextTick(() => {
 			    titleInput.value.focus()
@@ -104,7 +106,8 @@
 		if(item.value.name && item.value.type && item.value.status) SaveData();
 		HideTaskModal();
 	}
-	const loadItem = (i: IndexItem) => {
+	const loadItem = async (i: IndexItem) => {
+		description.value = await getItemDescription(i);
 		item.value = i;
 	}
 
@@ -122,7 +125,7 @@
 	//Filesystem Bindings
 	const SaveData = () => {
 		const path = "Active/" + item.value.name;
-		console.log("Saving!");
+		item.value.description = description.value;
 		writeFile(item.value, path);
 	}
 	const Delete =() => {
@@ -218,6 +221,7 @@
 					</div>
 				</section>
 				<section class="modal-description">
+					<MilkdownEditorWrapper v-model='description' :key='item.id' :id='item.id'/>
 				</section>
 			</section>
 			<section class="modal-bottom">
@@ -309,7 +313,6 @@
 		width: 60%;
 		flex: 1;
 		box-sizing: border-box;
-		padding: 8px;
 	}
 	.large-text-input {
 		font-size: 20pt;

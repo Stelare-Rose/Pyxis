@@ -156,12 +156,16 @@ export const writeFile = async (item: IndexItem, newPath: string) => {
 		const tagNames = item.tags.map(x => x.tag + '::' + x.id);
 		contents += ItemToPlainTextRow("Tags", tagNames.join(','));
 	}
+	if(item.description){
+		contents += '-----\n';
+		contents += item.description;
+	}
 
 	if(newDir == processedDir) await writeTextFile(processedDir, contents, {baseDir: BaseDirectory.Data});
 	else {
 		item.path = newPath;
 		await writeTextFile(newDir, contents, {baseDir: BaseDirectory.Data});
-		await remove(processedDir, {baseDir: BaseDirectory.Data});
+		if(await(exists(processedDir, {baseDir: BaseDirectory.Data}))) await remove(processedDir, {baseDir: BaseDirectory.Data});
 	}
 }
 
@@ -170,4 +174,16 @@ export const deleteFile = async (item: IndexItem) => {
 	if(await exists(processedDir, {baseDir: BaseDirectory.Data})){
 		await remove(processedDir, {baseDir: BaseDirectory.Data});
 	} else return;
+}
+
+export const getItemDescription = async (item: IndexItem) => {
+	let processedDir = "Pyxis/Items/" + item.path;
+	const content = await readTextFile(processedDir, {baseDir: BaseDirectory.Data});
+	const processed = content.split("-----\n");
+	if(processed.length > 1){
+		console.log(content);
+		return processed[1];
+	}
+	console.log("returning whatever");
+	return '';
 }
