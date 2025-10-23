@@ -310,9 +310,11 @@ import type { Crepe } from '@milkdown/crepe';
 		padding: 12px;
 	}
 	.modal-description{
-		width: 60%;
 		flex: 1;
 		box-sizing: border-box;
+		height: 100%;
+		overflow-y: scroll;
+		overflow-x: hidden;
 	}
 	.large-text-input {
 		font-size: 20pt;

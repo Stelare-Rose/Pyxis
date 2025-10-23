@@ -77,11 +77,13 @@
 
   --crepe-font-title: "Open Sans", sans-serif;
   --crepe-font-default: "Open Sans", sans-serif;
-  --crepe-font-code: 'Monapace Argon', monospace;
+  --crepe-font-code: 'Monapace Neon', monospace;
   font-weight: 400 !important;
+  width: 100%;
 }
 .milkdown .ProseMirror {
-  padding: 8px 8px;
+  padding: 8px;
+  box-sizing: border-box;
 }
 .cm-activeLineGutter {
   background-color: var(--pink) !important;
@@ -91,6 +93,7 @@
 }
 .cm-line {
   font-family: 'Monaspace Neon', monospace;
+  font-size: 11pt;
   color: var(--text);
 }
 </style>
