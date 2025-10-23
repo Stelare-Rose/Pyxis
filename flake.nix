@@ -10,23 +10,11 @@
 		pkgs = import inputs.nixpkgs{
 			inherit system;
 			config.allowUnfree = true;
-			config.android_sdk.accept_license = true;
 		};
-		androidComposition = pkgs.androidenv.composeAndroidPackages {
-			buildToolsVersions = [ "33.0.0" "34.0.0" "35.0.0" ];
-			platformVersions = [ "35" "34" "33" ];
-			abiVersions = [ "x86_64" ];
-			includeEmulator = false;
-			includeNDK = true;
-			cmakeVersions = [ "3.22.1" ];
-		};
-		androidSdk = androidComposition.androidsdk;
 	in 
 	{
 		devShells.${system}.default = pkgs.mkShell rec {
 			name="Pyxis";
-			ANDROID_HOME = "${androidSdk}/libexec/android-sdk";
-			NDK_HOME = "${ANDROID_HOME}/ndk-bundle";
 			GDK_BACKEND = "x11";
 			GIO_MODULE_DIR = "${pkgs.glib-networking}/lib/gio/modules/";
 			packages = with pkgs; [
