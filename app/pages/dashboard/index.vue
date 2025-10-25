@@ -72,7 +72,7 @@
 		}
 	}
 	const checkMove = (event: any) => {
-		if (event.data.type == "Event" && !(event.to.id == "Scheduled" || event.to.id == "Done")) return false;
+		if (event.data.type == "Event" && !(event.to.id == "Scheduled" || event.to.id == "Done" || event.to.id == "Priority")) return false;
 		if (event.from.id == "Priority" && event.to.id != "Done") return false;
 	}
 	const color = useColors();
