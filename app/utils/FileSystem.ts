@@ -131,7 +131,12 @@ export const updateItem = async (item: IndexItem) => {
 	if(item.tags){
 		const tagNames = item.tags.map(x => x.tag + '::' + x.id);
 		contents += ItemToPlainTextRow("Tags", tagNames.join(','));
-	}
+	}	
+	item.description = await getItemDescription(item);
+	if(item.description){
+		contents += '-----\n';
+		contents += item.description;
+	} 
 
 	await writeTextFile(processedDir, contents, {baseDir: BaseDirectory.Data});
 }
