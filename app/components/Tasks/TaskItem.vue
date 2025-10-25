@@ -79,8 +79,8 @@
 		<div class="content">
 			<div class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" >
-				<template v-if="item.type == 'Task'"><Clipboard /></template>
-				<template v-if="item.type == 'Event'"><Calendar /></template>
+				<template v-if="item.type == 'Task'"><Clipboard :strokeColor="colors.text.orange"/></template>
+				<template v-if="item.type == 'Event'"><Calendar :strokeColor="colors.text.blueberry"/></template>
 				</Icon>
 				<span class="small-text">{{item.type}}</span>
 			</div>
