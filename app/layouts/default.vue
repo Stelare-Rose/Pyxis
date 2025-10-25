@@ -31,11 +31,16 @@ import { uiStore } from '~/stores/ui';
 	}
 	.topbar {
 		width: 100vw;
-		background-color: var(--base);
+		background-color: var(--cream);
 		position: sticky;
 		top: 0;
 		z-index: 100;
-		height: 32px;
+		height: 36px;
+		border-radius: 0 0 16px 16px;
+		box-shadow: 0 4px 6px #00000010;
+		flex-direction: row;
+		align-items: center;
+		display: flex;
 	}
 	.sidebar-container {
 		flex: 1;
@@ -44,7 +49,7 @@ import { uiStore } from '~/stores/ui';
 		min-height: calc(100vh - max(60px, 6vh));
 	}
 	.sidebar {
-		margin-top: 8px;
+		margin-top: 12px;
 		background-color: var(--cream);
 		box-shadow: 0 4px 6px #00000010;
 		height: 216px;
@@ -56,13 +61,13 @@ import { uiStore } from '~/stores/ui';
 		z-index: 1;
 		flex: 1;
 		padding: 16px;
-		margin-top: 8px;
+		margin-top: 12px;
 		margin-left: 8px;
 		margin-right: 8px;
 		border-radius: 24px;
 		box-shadow: 0 4px 5px #00000010;
 		background-color: var(--cream);
-		height: calc(100vh - 32px - 48px); /* full viewport minus topbar */
+		height: calc(100vh - 36px - 48px); /* full viewport minus topbar */
 		overflow-y: hidden;
 	}
 	.bottom-right{
