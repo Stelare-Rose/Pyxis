@@ -24,6 +24,15 @@
 					(route.path == '/tags' ? color.pastel.orange : '#000')"
 				/>
 		</Icon>
+		</NuxtLink>	
+		<NuxtLink to="/ideas">
+		<Icon id="ideas" :width='24' :height='24' @mouseenter="hovered = $event.target.id" @mouseleave="hovered = ''">
+			<SquareExclamation 
+				:stroke-color="
+					hovered == 'ideas' ? color.text.leaf : 
+					(route.path == '/ideas' ? color.pastel.leaf : '#000')"
+				/>
+		</Icon>
 		</NuxtLink>
 	</section>
 </template>
