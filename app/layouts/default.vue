@@ -1,7 +1,10 @@
 <script setup lang=ts>
 import { uiStore } from '~/stores/ui';
+import hotkeys from 'hotkeys-js';
 
-	
+hotkeys('ctrl + n', () => {
+	ShowTaskModal();
+})
 </script>
 <template>
 	<div class="container">
@@ -11,7 +14,7 @@ import { uiStore } from '~/stores/ui';
 			<div class="sidebar">
 				<Sidebar />
 			</div>
-			<main class="content" :class="{'can-scroll': uiStore.canscroll}">
+			<main class="content" :class="{'can-scroll': uiStore.canscroll}" ref="content">
 				<slot />
 			</main>
 		</div>
@@ -67,8 +70,9 @@ import { uiStore } from '~/stores/ui';
 		border-radius: 24px;
 		box-shadow: 0 4px 5px #00000010;
 		background-color: var(--cream);
-		height: calc(100vh - 36px - 48px); /* full viewport minus topbar */
+		max-height: calc(100vh - 36px - 48px); /* full viewport minus topbar */
 		overflow-y: hidden;
+		scroll-behavior: smooth;
 	}
 	.bottom-right{
 		position: fixed;
@@ -77,6 +81,6 @@ import { uiStore } from '~/stores/ui';
 		z-index: 2;
 	}
 	.can-scroll {
-		overflow-y: scroll;
+		overflow-y: auto;
 	}
 </style>

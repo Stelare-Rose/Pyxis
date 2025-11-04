@@ -5,6 +5,7 @@
 		item: IndexItem,
 		remove?: string[];
 		isHovered?: boolean;
+		isPriority?: boolean;
 	}>()
 	const item = props.item
 	let afterTasks: (undefined | IndexItem)[];
@@ -31,7 +32,8 @@
 		}
 		return [colors.text_1, colors.subtext_2];
 	}
-	const OpenItem = () => {
+	const OpenItem = (e) => {
+		if(e.ctrlKey) return;
 		TaskModalBus.emit('item', item);
 		TaskModalBus.emit('active', true);
 	}
@@ -71,10 +73,22 @@
 		}
 	}
 
+	const updateStatus = async () => {
+		if(!props.isPriority) item.priorityDate = moment().endOf('day').set({ second: 0, millisecond: 0 }).toISOString(true);
+		else if(item.status == 'Done') item.status = 'Todo';
+		else item.status = 'Done';
+		await updateItem(item);
+	}
+
+	const updateStatusAlt = async () => {
+		item.priorityDate = moment().add(1, 'day').endOf('day').set({ second: 0, millisecond: 0 }).toISOString(true);
+		await updateItem(item);
+	}
+
 </script>
 
 <template>
-	<div v-if="item.type != null" class="container" :class="{'hovered-animation': props.isHovered}" @click="OpenItem">
+	<div @click.ctrl="updateStatus()" @click.right.ctrl="updateStatusAlt()" @contextmenu.prevent v-if="item.type != null" class="container" :class="{'hovered-animation': props.isHovered}" @click="OpenItem">
 		<Icon v-if="isOverdue() != 'none'" :height='18' :width='18' class='top-right'><Star :strokeColor="starColor(isOverdue())" :fillColor="starColor(isOverdue())"/></Icon>
 		<div class="content">
 			<div class="row">

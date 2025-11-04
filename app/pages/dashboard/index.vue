@@ -100,7 +100,7 @@
 				:style="{'background-color': (color.pastel.lilac + '20'), 'height': '100%', 'padding-top': '8px', 'border-radius': '12px'}"
 				id="Priority"> 
 				<div v-for="item in ItemsPriority" :key="item.id">
-					<TaskItem :item="item" :remove="['priorityDate']" :isHovered="Hovered == item.id" @mouseenter="Hovered = item.id"  @mouseleave="Hovered = ''"/>
+					<TaskItem isPriority :item="item" :remove="['priorityDate']" :isHovered="Hovered == item.id" @mouseenter="Hovered = item.id"  @mouseleave="Hovered = ''"/>
 				</div>
 			</VueDraggable>
 		</section>

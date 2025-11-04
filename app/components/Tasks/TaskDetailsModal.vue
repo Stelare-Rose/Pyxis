@@ -5,12 +5,18 @@
 	import moment from 'moment';
 	import { v4 as uuidv4 } from 'uuid'
 	import { uiStore } from '~/stores/ui';
+	import hotkeys from 'hotkeys-js';
 
 	//Style Imports
 	import '@vuepic/vue-datepicker/dist/main.css'
 	import '@vueform/multiselect/themes/default.css'
-import type { Crepe } from '@milkdown/crepe';
 
+	//Shortcuts
+	hotkeys.filter = () => true
+	hotkeys('esc', (e) => {
+		console.log(e.key);
+		disable();
+	});
 	//Styling
 	const trashColor = ref('#000');
 	const colors = useColors();
@@ -47,7 +53,7 @@ import type { Crepe } from '@milkdown/crepe';
 		{value: ['Done', 'mint'], label: 'Done', color: 'mint'}
 	])
 
-	// Data bottom
+	// Data Bindings
 	const UpdateType = (option: any) => {
 		statuses.value = statuses.value.map(x => { x.disabled = (x.label == 'Todo' || x.label == 'Doing') && option.label == 'Event'; return x});
 		if(option.label == 'Event' && status.value.label == 'Todo'){
@@ -181,7 +187,7 @@ import type { Crepe } from '@milkdown/crepe';
 								<div class="medium-text">Start Date</div>
 							</div>
 							<div class="row-property">
-								<vue-date-picker v-model="startDate" :start-time="startTime" @update:model-value="UpdateStartDate"></vue-date-picker>
+								<vue-date-picker :text-input="{ format: 'dd/mm/yyyy hh:mm' }" v-model="startDate" :start-time="startTime" @update:model-value="UpdateStartDate"></vue-date-picker>
 							</div>
 						</div>
 						<div class="property">
@@ -190,7 +196,7 @@ import type { Crepe } from '@milkdown/crepe';
 								<div class="medium-text">End Date</div>
 							</div>
 							<div class="row-property">
-								<vue-date-picker v-model="endDate" :start-time="startTime" @update:model-value="UpdateEndDate"></vue-date-picker>
+								<vue-date-picker :text-input="{ format: 'dd/mm/yyyy hh:mm' }" v-model="endDate" :start-time="startTime" @update:model-value="UpdateEndDate"></vue-date-picker>
 							</div>
 						</div>
 						<div class="property">
@@ -357,7 +363,7 @@ import type { Crepe } from '@milkdown/crepe';
 		opacity: 1;
 	}
 	.modal-content-enter-active, .modal-content-leave-active {
-		transition: all 0.25s ease;
+		transition: all 0.2s ease;
 	}
 	.modal-enter-from, .modal-leave-to {
 		background: rgba(0,0,0,0);
@@ -368,7 +374,7 @@ import type { Crepe } from '@milkdown/crepe';
 		opacity: 1;
 	}
 	.modal-enter-active, .modal-leave-active {
-		transition: all 0.25s ease;
+		transition: all 0.2s ease;
 	}
 	.fade-enter-from, .fade-leave-to {
 		background: rgba(0,0,0,0);
@@ -379,6 +385,6 @@ import type { Crepe } from '@milkdown/crepe';
 		opacity: 1;
 	}
 	.fade-enter-active, .fade-leave-active {
-		transition: all 0.25s ease;
+		transition: all 0.2s ease;
 	}
 </style>
