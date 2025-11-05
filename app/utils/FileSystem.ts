@@ -168,7 +168,7 @@ export const writeFile = async (item: IndexItem, newPath: string) => {
 
 	if(newDir == processedDir) await writeTextFile(processedDir, contents, {baseDir: BaseDirectory.Data});
 	else {
-		item.path = newPath;
+		item.path = newPath + " id-" + item.id + ".task";
 		await writeTextFile(newDir, contents, {baseDir: BaseDirectory.Data});
 		if(await(exists(processedDir, {baseDir: BaseDirectory.Data}))) await remove(processedDir, {baseDir: BaseDirectory.Data});
 	}
