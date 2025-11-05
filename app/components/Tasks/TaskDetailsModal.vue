@@ -187,7 +187,7 @@
 								<div class="medium-text">Start Date</div>
 							</div>
 							<div class="row-property">
-								<vue-date-picker :text-input="{ format: 'dd/mm/yyyy hh:mm' }" v-model="startDate" :start-time="startTime" @update:model-value="UpdateStartDate"></vue-date-picker>
+								<vue-date-picker :text-input="{ format: 'dd/MM/yyyy HH:mm' }" v-model="startDate" :start-time="startTime" @update:model-value="UpdateStartDate"></vue-date-picker>
 							</div>
 						</div>
 						<div class="property">
@@ -196,7 +196,7 @@
 								<div class="medium-text">End Date</div>
 							</div>
 							<div class="row-property">
-								<vue-date-picker :text-input="{ format: 'dd/mm/yyyy hh:mm' }" v-model="endDate" :start-time="startTime" @update:model-value="UpdateEndDate"></vue-date-picker>
+								<vue-date-picker :text-input="{ format: 'dd/MM/yyyy HH:mm' }" v-model="endDate" :start-time="startTime" @update:model-value="UpdateEndDate"></vue-date-picker>
 							</div>
 						</div>
 						<div class="property">
