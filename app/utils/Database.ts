@@ -123,16 +123,16 @@ export const GetLimitedByStatus = async (filter: string, limit: number) => {
 	res = res.sort(Sort());
 	return res;
 }
-export const GetPriority = async () => {
+export const GetPriority = async (offset: number = 0) => {
 	if(!db) await ReadDatabase();
 	const result: IndexRow[] = await db.select(`
 												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, i.priorityDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags FROM items i
 												LEFT JOIN items_tags it ON i.id = it.item_id
 												LEFT JOIN tags t ON it.tag_id = t.id
-												WHERE i.isArchived = 0 AND substr(i.priorityDate, 1, 10) == DATE('now', 'localtime')
+												WHERE i.isArchived = 0 AND substr(i.priorityDate, 1, 10) == DATE('now', 'localtime', printf('+%d day', $1))
 												GROUP BY i.id
 												ORDER BY i.name ASC
-												`);
+												`, [offset]);
 
 	let res: IndexItem[] = result.map(x => ({
 										id: x.id,
