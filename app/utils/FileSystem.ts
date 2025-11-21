@@ -3,6 +3,10 @@ import { info } from '@tauri-apps/plugin-log';
 import toml from '@iarna/toml'
 import { cloneDeep } from 'lodash';
 
+function isTags(obj: any): obj is WriteTags {
+  return obj && typeof obj === 'object' && 'tags' in obj;
+}
+
 export const CheckDataDirectory = async (dir: string, create?: boolean) => {
 	const directoryExists = await exists(dir, { baseDir: BaseDirectory.Data });
 	if(!directoryExists && create){
@@ -19,78 +23,19 @@ export const CheckCacheDirectory = async (dir: string, create?: boolean) => {
 	return directoryExists;
 };
 
-export const ReadFile = async (dir?: string) => {
-	let processedDir = "Pyxis/" + dir;
-	const fileExists = await exists(processedDir, {baseDir: BaseDirectory.Data});
-	let returnObject: Item = {type: null};
-	if(!fileExists) return returnObject;
-	
-	const lines = await readTextFileLines(processedDir, {baseDir: BaseDirectory.Data});
-	for await (const line of lines){
-		let index = line.indexOf(":");
-		let [type, value] = [line.slice(0, index), line.slice(index + 1)];
-		value = value.replace("\u0000", "");
-		switch(type){
-			case "[Type]":
-				switch(value){
-					case "Task":
-						returnObject.type = "Task"
-						break;
-					case "Event":
-						returnObject.type = "Event"
-						break;
-					default:
-						break;
-				}
-				break;
-			case "[ID]":
-				returnObject.id = value;
-				break;
-			case "[Name]":
-				returnObject.name = value;
-				break;
-			case "[Status]":
-				switch(value){
-					case "Todo":
-						returnObject.status = "Todo";
-						break;
-					case "Doing":
-						returnObject.status = "Doing";
-						break;
-					case "Done":
-						returnObject.status = "Done";
-						break;
-					case "Scheduled":
-						returnObject.status = "Scheduled";
-						break;
-					default:
-						break;
-				}
-			case "[Hard-Deadline]":
-				returnObject.endDate = Date.parse(value);
-				break;
-			case "[Soft-Deadline]":
-				returnObject.startDate = Date.parse(value);
-				break;
-			case "[After-Task]":
-				returnObject.afterTask = value.split(',').map(s => s.trim());
-				break;
-			case "[Tags]":
-				returnObject.tags = value.split(',').map(s => s.trim());
-				break;
-			default:
-				break;
-		}
-	}
-	return returnObject;
-}
-
 export const readTags = async () => {
 	let processedDir = "Pyxis/tags.toml";
 	const fileExists = await exists(processedDir, {baseDir: BaseDirectory.Data});
 	if(!fileExists) return null;
 	const tags = await readTextFile(processedDir, {baseDir: BaseDirectory.Data});
-	const returnObject = toml.parse(tags);
+	const raw = toml.parse(tags);
+	let returnObject: WriteTags;
+	if(isTags(raw)){
+		returnObject = raw;
+	} else {
+		returnObject = {tags: {}}
+	}
+	console.log(returnObject);
 	return returnObject;
 }
 
@@ -98,24 +43,23 @@ export const updateTags = async (tag: Tag) => {
 	let found = false;
 
 	let rawTags = cloneDeep(await readTags());
-	let tags = cloneDeep(rawTags) ?? {tags: {}};
+	let tags: WriteTags = cloneDeep(rawTags) ?? {tags: {}};
 	Object.entries(tags.tags).forEach(([key, value]) => {
 		if(key == tag.id){
 			found = true;
-			value.name = tag.tag;
-			value.colors = tag.color;
+			value.tag = tag.tag;
+			value.color = tag.color;
 		}
 	})
 	
 	if(!found) {
-		tags.tags[tag.id] = {name: tag.tag, colors: tag.color}
+		tags.tags[tag.id] = {tag: tag.tag, color: tag.color}
 	}
 	if(JSON.stringify(tags) == JSON.stringify(rawTags)) return;
-	await writeTextFile("Pyxis/tags.toml", toml.stringify(tags), {baseDir: BaseDirectory.Data});
-
+	await writeTextFile("Pyxis/tags.toml", toml.stringify(tags as unknown as Record<string, string | string[]>), {baseDir: BaseDirectory.Data});
 }
 
-export const updateItem = async (item: IndexItem) => {
+export const updateItem = async (item: Item) => {
 	console.log("Saving!");
 	let processedDir = "Pyxis/Items/" + item.path;
 	console.log(processedDir);
@@ -141,7 +85,7 @@ export const updateItem = async (item: IndexItem) => {
 	await writeTextFile(processedDir, contents, {baseDir: BaseDirectory.Data});
 }
 
-export const writeFile = async (item: IndexItem, newPath: string) => {
+export const writeFile = async (item: Item, newPath: string) => {
 	console.log("Saving!");
 	let processedDir = "Pyxis/Items/" + item.path;
 	console.log(processedDir);
@@ -174,14 +118,14 @@ export const writeFile = async (item: IndexItem, newPath: string) => {
 	}
 }
 
-export const deleteFile = async (item: IndexItem) => {
+export const deleteFile = async (item: Item) => {
 	let processedDir = "Pyxis/Items/" + item.path;
 	if(await exists(processedDir, {baseDir: BaseDirectory.Data})){
 		await remove(processedDir, {baseDir: BaseDirectory.Data});
 	} else return;
 }
 
-export const getItemDescription = async (item: IndexItem) => {
+export const getItemDescription = async (item: Item) => {
 	let processedDir = "Pyxis/Items/" + item.path;
 	const content = await readTextFile(processedDir, {baseDir: BaseDirectory.Data});
 	const processed = content.split("-----\n");

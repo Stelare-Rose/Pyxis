@@ -30,7 +30,7 @@ async function init(){
 /*
 export const GetDebug = async () => {
 	const result: ItemRow[] = await db.select(`
-												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags,
+												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.id || ':' || t.tag || ':' || t.color, ';') AS tags,
 												DATE('now') - DATE(i.endDate)
 												FROM items i
 												LEFT JOIN items_tags it ON i.id = it.item_id
@@ -83,7 +83,7 @@ export const GetAllItems: () => Promise<Item[]> = async () => {
 											  i.startDate, 
 											  i.priorityDate, 
 											  i.fingerprint,
-											  GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags
+											  GROUP_CONCAT(t.id || ':' || t.tag || ':' || t.color, ';') AS tags
 											  FROM items i
 											  LEFT JOIN items_tags it ON i.id = it.item_id
 											  LEFT JOIN tags t ON it.tag_id = t.id
@@ -109,7 +109,7 @@ export const GetAllByStatus: (filter: string) => Promise<Item[]> = async (filter
 											  i.startDate, 
 											  i.priorityDate, 
 											  i.fingerprint,
-											  GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags
+											  GROUP_CONCAT(t.id || ':' || t.tag || ':' || t.color, ';') AS tags
 											  FROM items i
 											  LEFT JOIN items_tags it ON i.id = it.item_id
 											  LEFT JOIN tags t ON it.tag_id = t.id
@@ -136,7 +136,7 @@ export const GetLimitedByStatus: (filter: string, limit: number) => Promise<Item
 											  i.startDate, 
 											  i.priorityDate, 
 											  i.fingerprint,
-											  GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags
+											  GROUP_CONCAT(t.id || ':' || t.tag || ':' || t.color, ';') AS tags
 											  FROM items i
 											  LEFT JOIN items_tags it ON i.id = it.item_id
 											  LEFT JOIN tags t ON it.tag_id = t.id
@@ -162,7 +162,7 @@ export const GetPriority: (offset?: number) => Promise<Item[]> = async (offset: 
 											  i.startDate, 
 											  i.priorityDate, 
 											  i.fingerprint,
-											  GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags
+											  GROUP_CONCAT(t.id || ':' || t.tag || ':' || t.color, ';') AS tags
 											  FROM items i
 											  LEFT JOIN items_tags it ON i.id = it.item_id
 											  LEFT JOIN tags t ON it.tag_id = t.id
@@ -196,7 +196,7 @@ export const GetAllByTag = async (filter: string) => {
 											  i.startDate, 
 											  i.priorityDate, 
 											  i.fingerprint,
-											  GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags
+											  GROUP_CONCAT(t.id || ':' || t.tag || ':' || t.color, ';') AS tags
 											  FROM items i
 											  LEFT JOIN items_tags it ON i.id = it.item_id
 											  LEFT JOIN tags t ON it.tag_id = t.id
@@ -230,7 +230,7 @@ export const GetById = async (id: string) => {
 											  i.startDate, 
 											  i.priorityDate, 
 											  i.fingerprint,
-											  GROUP_CONCAT(t.id || ':' || t.name || ':' || t.color, ';') AS tags
+											  GROUP_CONCAT(t.id || ':' || t.tag || ':' || t.color, ';') AS tags
 											  FROM items i
 											  LEFT JOIN items_tags it ON i.id = it.item_id
 											  LEFT JOIN tags t ON it.tag_id = t.id
@@ -249,20 +249,23 @@ export const GetAllTags = async () => {
 	const resultRaw: TagRow[] = await db.select(`
 										  SELECT * FROM tags
 										  WHERE verified = 1
-									      ORDER BY name ASC
+									      ORDER BY tag ASC
 										  `);
-	let result: Tag[] = resultRaw.map(x => ({id: x.id, tag: x.name, color: x.color.split(',')}));
+	let result: Tag[] = resultRaw.map(x => ({id: x.id, tag: x.tag, color: x.color.split(',')}));
 
 	return result;
 }
 
 export const GetTagById = async (id: string) => {
 	if(!db) await ReadDatabase();
-	const resultRaw: TagRow[] = await db.select(`
+	const rows: TagRow[] = await db.select(`
 												SELECT * FROM tags
 												WHERE verified = 1 AND id = $1
-									            ORDER BY name ASC
+									            ORDER BY tag ASC
+												LIMIT 1
 												`, [id])
-	const result: Tag = {id: resultRaw[0].id, tag: resultRaw[0].name, color: resultRaw[0].color.split(',')};
+	const resultRaw: TagRow | undefined = rows.at(0);
+	if(resultRaw == undefined) return;
+	const result: Tag = {id: resultRaw.id, tag: resultRaw.tag, color: resultRaw.color.split(',')};
 	return result;
 }

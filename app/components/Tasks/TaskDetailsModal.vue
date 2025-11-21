@@ -28,7 +28,7 @@
 	}
 
 	//Input Bindings
-	const item = ref<IndexItem>({id: '0', name:'', type:'Task', status:'Todo'});
+	const item = ref<Item>({id: '0', name:'', type:'Task', status:'Todo'});
 	const titleInput = ref();
 	const type = ref<{value: string[], label:string, color: string}>({value: ['Task', 'orange,lemon'], label: 'Task', color: 'orange,lemon'});
 	const status = ref<{value: string[], label: string, color: string}>({value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry'});
@@ -112,7 +112,7 @@
 		if(item.value.name && item.value.type && item.value.status) SaveData();
 		HideTaskModal();
 	}
-	const loadItem = async (i: IndexItem) => {
+	const loadItem = async (i: Item) => {
 		description.value = await getItemDescription(i);
 		item.value = i;
 	}

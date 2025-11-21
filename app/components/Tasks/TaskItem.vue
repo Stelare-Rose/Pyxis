@@ -2,16 +2,12 @@
 	import { isNaN } from 'lodash';
 	import moment from 'moment';
 	const props = defineProps<{
-		item: IndexItem,
+		item: Item,
 		remove?: string[];
 		isHovered?: boolean;
 		isPriority?: boolean;
 	}>()
 	const item = props.item
-	let afterTasks: (undefined | IndexItem)[];
-	if(item.afterTask){
-		afterTasks = await Promise.all(item.afterTask.map(x => SearchCache(x)));
-	}
 	const colors = useColors();
 	let statusColor: string[];
 

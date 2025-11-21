@@ -1,11 +1,11 @@
 <script setup lang="ts">
 	import { VueDraggable } from 'vue-draggable-plus'
 	import moment from 'moment';
-	let ItemsTodo = ref<IndexItem[]>([]);
-	let ItemsDoing = ref<IndexItem[]>([]);
-	let ItemsScheduled = ref<IndexItem[]>([]);
-	let ItemsDone = ref<IndexItem[]>([]);
-	let ItemsPriority = ref<IndexItem[]>([]);
+	let ItemsTodo = ref<Item[]>([]);
+	let ItemsDoing = ref<Item[]>([]);
+	let ItemsScheduled = ref<Item[]>([]);
+	let ItemsDone = ref<Item[]>([]);
+	let ItemsPriority = ref<Item[]>([]);
 	let Hovered = ref<string>();
 	const Reload = async () => {
 		const allItems = await GetAllItems();
@@ -26,6 +26,7 @@
 		  if (list) list.push(item);
 		});
 		console.log(allItems);
+		ItemsDone.value.reverse();
 		ItemsPriority.value = await GetPriority();
 	}
 	const onListChange = async (event: any) => {
@@ -168,7 +169,7 @@
 				@move="checkMove"
 				:style="{'background-color': (color.pastel.leaf + '20'), 'height': '100%', 'padding-top': '8px', 'border-radius': '12px'}"
 				id="Done"> 
-				<div v-for="item in ItemsDone" :key="item.id">
+				<div v-for="item in ItemsDone.slice(0, 20)" :key="item.id">
 					<TaskItem :item="item" :remove="['status', 'dateColor']" :isHovered="Hovered == item.id" @mouseenter="Hovered = item.id"  @mouseleave="Hovered = ''"/>
 				</div>
 			</VueDraggable>

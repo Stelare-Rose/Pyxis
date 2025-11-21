@@ -29,6 +29,13 @@ declare global {
 		tags?: string;
 		fingerprint: string;
 	}
+	interface WriteTags {
+		tags: Record<string, writeTag>;
+	}
+	interface WriteTag{
+		tag: string;
+		color: string[];
+	}
 	interface Tag {
 		id: string;
 		tag: string;
@@ -36,7 +43,7 @@ declare global {
 	}
 	interface TagRow {
 		id: string;
-		name: string;
+		tag: string;
 		color: string;
 	}
 }

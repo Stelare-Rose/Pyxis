@@ -70,7 +70,7 @@ hotkeys('ctrl + n', () => {
 		border-radius: 24px;
 		box-shadow: 0 4px 5px #00000010;
 		background-color: var(--cream);
-		max-height: calc(100vh - 36px - 48px); /* full viewport minus topbar */
+		height: calc(100vh - 36px - 48px); /* full viewport minus topbar */
 		overflow-y: hidden;
 		scroll-behavior: smooth;
 	}
