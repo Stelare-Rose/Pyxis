@@ -2,39 +2,32 @@ export { };
 
 declare global {
 	interface Item {
-		type?: "Task" | "Event";
-		id: string;
-		name?: string;
-		status?: "Todo" | "Doing" | "Done" | "Scheduled";
-		endDate?: DateTime;
-		startDate?: DateTime;
-		afterTask?: string[];
-		tags?: string[];
-	}
-	interface IndexItem {
-		type?: "Task" | "Event" | null;
+		type: "Task" | "Event" | null;
 		id: string,
-		name?: string;
+		name: string;
 		path?: string;
-		status?: string;
+		status?: "Todo" | "Doing" | "Done" | "Scheduled";
 		endDate?: DateTime;
 		startDate?: DateTime;
 		priorityDate?: DateTime;
 		afterTask?: string[];
 		tags?: Tag[];
+		fingerprint: string;
 		description?: string;
 	}
-	interface IndexRow {
+	interface ItemRow {
 		type: "Task" | "Event" | null;
-		id?: string,
-		name?: string;
-		path?: string;
-		status?: string;
+		id: string,
+		name: string;
+		path: string;
+		status?: "Todo" | "Doing" | "Done" | "Scheduled";
 		endDate?: DateTime;
 		startDate?: DateTime;
 		priorityDate?: DateTime;
 		afterTask?: string[];
+		// Tags is a string here because we parse it later.
 		tags?: string;
+		fingerprint: string;
 	}
 	interface Tag {
 		id: string;
