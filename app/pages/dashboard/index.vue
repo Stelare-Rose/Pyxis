@@ -118,7 +118,7 @@
 				:move="checkMove"
 				:style="{'background-color': (color.pastel.strawberry + '20'), 'height': '100%', 'padding-top': '8px', 'border-radius': '12px'}"
 				id="Todo"> 
-				<div v-for="item in ItemsTodo" :key="item.id">
+				<div v-for="item in ItemsTodo" :key="item.id + item.fingerprint">
 					<TaskItem :item="item" :remove="['status']" :isHovered="Hovered == item.id" @mouseenter="Hovered = item.id"  @mouseleave="Hovered = ''"/>
 				</div>
 			</VueDraggable>
@@ -135,7 +135,7 @@
 				:move="checkMove"
 				:style="{'background-color': (color.pastel.orange + '20'), 'height': '100%', 'padding-top': '8px', 'border-radius': '12px'}"
 				id="Doing"> 
-				<div v-for="item in ItemsDoing" :key="item.id">
+				<div v-for="item in ItemsDoing" :key="item.id + item.fingerprint">
 					<TaskItem :item="item" :remove="['status']" :isHovered="Hovered == item.id" @mouseenter="Hovered = item.id"  @mouseleave="Hovered = ''"/>
 				</div>
 			</VueDraggable>
@@ -152,7 +152,7 @@
 				@move="checkMove"
 				:style="{'background-color': (color.pastel.blueberry + '20'), 'height': '100%', 'padding-top': '8px', 'border-radius': '12px'}"
 				id="Scheduled"> 
-				<div v-for="item in ItemsScheduled" :key="item.id">
+				<div v-for="item in ItemsScheduled" :key="item.id + item.fingerprint">
 					<TaskItem :item="item" :remove="['status']" :isHovered="Hovered == item.id" @mouseenter="Hovered = item.id"  @mouseleave="Hovered = ''"/>
 				</div>
 			</VueDraggable>
@@ -169,7 +169,7 @@
 				@move="checkMove"
 				:style="{'background-color': (color.pastel.leaf + '20'), 'height': '100%', 'padding-top': '8px', 'border-radius': '12px'}"
 				id="Done"> 
-				<div v-for="item in ItemsDone.slice(0, 20)" :key="item.id">
+				<div v-for="item in ItemsDone.slice(0, 20)" :key="item.id + item.fingerprint">
 					<TaskItem :item="item" :remove="['status', 'dateColor']" :isHovered="Hovered == item.id" @mouseenter="Hovered = item.id"  @mouseleave="Hovered = ''"/>
 				</div>
 			</VueDraggable>
