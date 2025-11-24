@@ -19,7 +19,9 @@ export const useColors = () => {
 			plum: '#AA99D1',
 			lavender: '#CCA3D6',
 			lilac: '#DBB4D3',
-			pink: '#EDB7CA'
+			pink: '#EDB7CA',
+			fog: '#c7c7c7',
+			milk: '#FFFFFF',
 		},
 		text: {
 			strawberry: '#B55354',
@@ -34,6 +36,8 @@ export const useColors = () => {
 			lavender: '#B36FC2',
 			lilac: '#C776B8',
 			pink: '#EB8EAD',
+			fog: '#c7c7c7',
+			milk: '#FFFFFF',
 		},
-	}
+	} as const
 }

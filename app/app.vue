@@ -40,6 +40,8 @@
 		--lavender: #CCA3D6;
 		--lilac: #DBB4D3;
 		--pink: #EDB7CA;
+		--milk: #FFFFFF;
+		--fog: #c7c7c7;
 		--subtext-2: #616161;
 		--subtext-1: #4D4D4D;
 		--text: #3B3B3B;
