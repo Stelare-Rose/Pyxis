@@ -74,21 +74,28 @@ import { nanoid } from 'nanoid'
 				</section>
 				<section class="tag-data">
 					<div class="property">
-						<div>
-							<Icon style="margin-right: 2px" :height='18' :width='18'><Tags /></Icon>Name
+						<div style="display: flex; align-items: center;">
+							<Icon style="margin-right: 4px" :height='18' :width='18'><Tags /></Icon>Name
 						</div>
 						<div>
 							<input class="text-input" ref="titleInput" v-model="selectedItem.tag" placeholder="Untitled" />
 						</div>
 					</div>
 					<div class="property">
-						<div>
-							<Icon style="margin-right: 2px" :height='18' :width='18'><Palette /></Icon>Colors 
+						<div style="display: flex; align-items: center;">
+							<Icon style="margin-right: 4px" :height='18' :width='18'><Palette /></Icon>Colors 
 						</div>
 						<div style="flex-wrap: wrap">
 							<template v-for="(c, index) in selectedItem.color">
-								<span style="transition: 0.2s all ease; padding: 0px 4px; border-radius: 8px; display: inline-block;" @mouseenter="hovered=selectedItem.id + c + index" @mouseleave="hovered=''" :style="{backgroundColor: (color.pastel[c] + ((hovered == selectedItem.id + c + index) ? '60' : '00'))}" @click="removeItem(index)">
-									<Icon style="margin-right: 2px":height='12' :width='12'><Circle :fillColor="color.pastel[c]" :strokeColor="color.pastel[c]"/></Icon>{{c.charAt(0).toUpperCase() + c.substring(1)}} 
+								<span 
+									style="transition: 0.2s all ease; padding: 0px 4px; border-radius: 8px; display: inline-block; cursor: default;" 
+									@mouseenter="hovered=selectedItem.id + c + index" 
+									@mouseleave="hovered=''" 
+									:style="{backgroundColor: (color.pastel[c] + ((hovered == selectedItem.id + c + index) ? '60' : '00'))}" 
+									@click="removeItem(index)"
+								>
+									<Icon style="margin-right: 2px":height='12' :width='12'><Circle :fillColor="color.pastel[c]" :strokeColor="color.pastel[c]"/></Icon>
+									{{c.charAt(0).toUpperCase() + c.substring(1)}} 
 								</span>
 							</template>
 						</div>
@@ -96,8 +103,14 @@ import { nanoid } from 'nanoid'
 				</section>
 				<section class="color-picker">
 					<template v-for="(c, name) in color.pastel">
-						<span @click="selectedItem.color.push(name)">
-							<Icon style="margin-right: 4px":height='18' :width='18'><Circle :fillColor="c" :strokeColor="c"/></Icon>
+						<span 
+							@click="selectedItem.color.push(name)" 
+							style="transition: 0.2s all ease; padding: 2px; border-radius: 24px; align-items: center; justify-content: center; display: flex;"
+							:style="{backgroundColor: (c + ((hovered == name + c + 'button') ? '60' : '00'))}"
+							@mouseenter="hovered=name + c + 'button' "
+							@mouseleave="hovered=''"
+							>
+							<Icon :height='18' :width='18'><Circle :fillColor="c" :strokeColor="c"/></Icon>
 						</span>
 					</template>
 				</section>
@@ -209,11 +222,18 @@ import { nanoid } from 'nanoid'
 		gap: 8px;
 	}
 	.text-input {
-		font-size: 13pt;
-		background: none;
-		border: none;
+		font-size: 12pt;
+		padding: 2px;
+		background-color: var(--foam);
+		border-radius: 8px;
+		border: 1px solid #00000000;
 		width: 100%;
 		outline: none;
+		box-sizing: border-box;
+		transition: all 0.2s;
+	}
+	.text-input:focus {
+		border: 1px solid var(--lavender);
 	}
 
 </style>
