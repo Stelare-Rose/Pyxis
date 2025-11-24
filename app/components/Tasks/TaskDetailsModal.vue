@@ -20,15 +20,9 @@
 	//Styling
 	const trashColor = ref('#000');
 	const colors = useColors();
-	const getOtherColor: (t: string) => string[] = (t: string) => {
-		return t.split(',').map(x => colors.pastel[x as string] as string);
-	}
-	const getOtherTextColor: (t: string) => string[] = (t: string) => {
-		return t.split(',').map(x => colors.text[x as string] as string);
-	}
 
 	//Input Bindings
-	const item = ref<Item>({id: '0', name:'', type:'Task', status:'Todo'});
+	const item = ref<Item>({id: '0', name:'', type:'Task', status:'Todo', fingerprint: '0'});
 	const titleInput = ref();
 	const type = ref<{value: string[], label:string, color: string}>({value: ['Task', 'orange,lemon'], label: 'Task', color: 'orange,lemon'});
 	const status = ref<{value: string[], label: string, color: string}>({value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry'});
@@ -157,10 +151,10 @@
 							<div class="row-property">
 								<Multiselect :options="types" mode="single" v-model="type" :can-deselect="false" :can-clear="false" :object="true" @change="UpdateType" class="hovered" :caret="false">
 								<template #singlelabel="{value}">
-									<TagsContainer style="margin-right: auto; margin-left: 8px" :color="getOtherColor(value.color)" :textColor="getOtherTextColor(value.color)" :text="value.label" :key="value.value"/>
+									<TagsContainer style="margin-right: auto; margin-left: 8px" :color="getRawColor(value.color)" :textColor="getRawTextColor(value.color)" :text="value.label" :key="value.value"/>
 								</template>
 								<template #option="{option}">
-									<TagsContainer :color="getOtherColor(option.color)" :textColor="getOtherTextColor(option.color)" :text="option.label" :key="option.value"/>
+									<TagsContainer :color="getRawColor(option.color)" :textColor="getRawTextColor(option.color)" :text="option.label" :key="option.value"/>
 								</template>
 								</Multiselect>
 							</div>
@@ -173,10 +167,10 @@
 							<div class="row-property">
 								<Multiselect :options="statuses" mode="single" v-model="status" :can-deselect="false" :can-clear="false" :object="true" @change="UpdateStatus" :caret="false">
 								<template #singlelabel="{value}">
-									<TagsContainer style="margin-right: auto; margin-left: 8px" :color="getOtherColor(value.color)" :textColor="getOtherTextColor(value.color)" :text="value.label" :key="value.value"/>
+									<TagsContainer style="margin-right: auto; margin-left: 8px" :color="getRawColor(value.color)" :textColor="getRawTextColor(value.color)" :text="value.label" :key="value.value"/>
 								</template>
 								<template #option="{option}">
-									<TagsContainer :color="getOtherColor(option.color)" :textColor="getOtherTextColor(option.color)" :text="option.label" :key="option.value"/>
+									<TagsContainer :color="getRawColor(option.color)" :textColor="getRawTextColor(option.color)" :text="option.label" :key="option.value"/>
 								</template>
 								</Multiselect>
 							</div>
