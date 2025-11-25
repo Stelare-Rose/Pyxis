@@ -78,10 +78,10 @@
 	}
 	const color = useColors();
 	onMounted(async () => {
-		DatabaseBus.on('reload', () => Reload());
+		useDatabaseBus('reload', () => Reload());
 	})
-	onUnmounted(() => {
-		DatabaseBus.off('reload');
+	onBeforeUnmount(() => {
+		RemoveDatabaseBus('reload')
 	})
 	Reload();
 </script>

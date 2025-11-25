@@ -115,11 +115,11 @@
 	onMounted(async () => {
 		TaskModalBus.on('item', i => loadItem(i));
 		TaskModalBus.on('active', e => event(e));
-		DatabaseBus.on('reload', async () => tags.value = await GetAllTags());
+		useDatabaseBus('reload', async () => tags.value = await GetAllTags());
 	})
 	onUnmounted(() => {
 		TaskModalBus.off('active');
-		DatabaseBus.off('reload');
+		RemoveDatabaseBus('reload');
 	})
 
 	//Filesystem Bindings

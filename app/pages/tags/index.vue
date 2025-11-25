@@ -48,12 +48,11 @@ import { nanoid } from 'nanoid'
 		updateTags(selectedItem.value);
 	}, 500);
 	onMounted(async () => {
-		DatabaseBus.on('reload', () => Reload(true))
+		useDatabaseBus('reload', () => Reload(true))
 	})
-	onUnmounted(() => {
-		DatabaseBus.off('reload');
+	onBeforeUnmount(() => {
+		RemoveDatabaseBus('reload')
 	})
-
 </script>
 <template>
 	<section class="container-tags">
