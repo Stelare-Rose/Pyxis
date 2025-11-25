@@ -41,6 +41,7 @@
 				pango
 				webkitgtk_4_1
 				openssl
+				sqlite
 			];
 			shellHook = "tmux -L Pyxis new-session -A -t Pyxis";
 		};
