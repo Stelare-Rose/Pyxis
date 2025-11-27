@@ -25,8 +25,8 @@
 		--ms-option-bg-disabled: #CF828240;
 		--ms-option-bg-pointed: #DBB4D340;
 		--ms-option-bg-selected-pointed: #DBB4D340;
-		--foam: #F7F2E4;
-		--cream: #F4EDD9;
+		--foam: #F7F1E6;
+		--cream: #F0E8DA;
 		--base: #E6D9C3;
 		--strawberry: #CF8282;
 		--orange: #D4A266;
