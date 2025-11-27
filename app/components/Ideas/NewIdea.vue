@@ -17,9 +17,9 @@
 </script>
 <template>
 	<Icon :height='24' :width='24' @click="clicked" @mouseenter="hovered = true" @mouseleave="hovered = false">
-		<ClipboardText 
-			:strokeColor="hovered ? color.text.orange : '#000'"
-		></ClipboardText>
+		<SquareExclamation 
+			:strokeColor="hovered ? color.text.blueberry : '#000'"
+		></SquareExclamation>
 	</Icon>
 </template>
 <style scoped>

@@ -8,8 +8,6 @@ hotkeys('ctrl + n', () => {
 </script>
 <template>
 	<div class="container">
-		<div class="topbar">
-		</div>
 		<div class="sidebar-container">
 			<div class="sidebar">
 				<Sidebar />
@@ -18,11 +16,16 @@ hotkeys('ctrl + n', () => {
 				<slot />
 			</main>
 		</div>
-		<div class="bottom-right">
-			<NewTask></NewTask>
+		<div class="topbar">
+			<div class="left">
+				<NewTask />
+				<NewIdea />
+			</div>
+			<div class="right">
+			</div>
 		</div>
 	</div>
-	<TaskDetailsModal></TaskDetailsModal>
+	<TaskDetailsModal />
 </template>
 
 <style scoped>
@@ -30,20 +33,33 @@ hotkeys('ctrl + n', () => {
 		width: 100vw;
 		min-height: 100vh;
 		background-color: var(--base);
-		z-index: -100;
+		z-index: 100;
 	}
 	.topbar {
-		width: 100vw;
+		width: calc(100vw - 16px);
 		background-color: var(--cream);
-		position: sticky;
-		top: 0;
-		z-index: 100;
+		bottom: 0;
+		position: absolute;
+		z-index: 1;
 		height: 36px;
-		border-radius: 0 0 16px 16px;
+		margin: 0 8px;
+		border-radius: 16px 16px 0 0;
 		box-shadow: 0 4px 6px #00000010;
 		flex-direction: row;
 		align-items: center;
+		justify-content: space-between;
 		display: flex;
+		padding: 8px 12px;
+		box-sizing: border-box;
+	}
+	.left {
+		gap: 12px;
+		display: flex;
+		align-items: center;
+	}
+	.right {
+		display: flex;
+		align-items: center;
 	}
 	.sidebar-container {
 		flex: 1;
@@ -52,7 +68,7 @@ hotkeys('ctrl + n', () => {
 		min-height: calc(100vh - max(60px, 6vh));
 	}
 	.sidebar {
-		margin-top: 12px;
+		margin-top: 8px;
 		background-color: var(--cream);
 		box-shadow: 0 4px 6px #00000010;
 		height: 216px;
@@ -61,10 +77,11 @@ hotkeys('ctrl + n', () => {
 		border-radius: 0 16px 16px 0;
 	}
 	.content {
-		z-index: 1;
+		z-index: 2;
 		flex: 1;
 		padding: 16px;
-		margin-top: 12px;
+		margin-top: 8px;
+		margin-bottom: 4px;
 		margin-left: 8px;
 		margin-right: 8px;
 		border-radius: 24px;
@@ -73,12 +90,6 @@ hotkeys('ctrl + n', () => {
 		height: calc(100vh - 36px - 48px); /* full viewport minus topbar */
 		overflow-y: hidden;
 		scroll-behavior: smooth;
-	}
-	.bottom-right{
-		position: fixed;
-		bottom: 24px;
-		right: 24px;
-		z-index: 2;
 	}
 	.can-scroll {
 		overflow-y: auto;
