@@ -113,12 +113,12 @@
 
 	// Event Listeners
 	onMounted(async () => {
-		TaskModalBus.on('item', i => loadItem(i));
-		TaskModalBus.on('active', e => event(e));
+		useTaskModalBus('item', i => loadItem(i));
+		useTaskModalBus('active', e => event(e));
 		useDatabaseBus('reload', async () => tags.value = await GetAllTags());
 	})
-	onUnmounted(() => {
-		TaskModalBus.off('active');
+	onBeforeUnmount(() => {
+		RemoveTaskModalBus('active');
 		RemoveDatabaseBus('reload');
 	})
 

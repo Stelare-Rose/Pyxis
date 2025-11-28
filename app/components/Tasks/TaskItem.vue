@@ -28,10 +28,9 @@
 		}
 		return [colors.text_1, colors.subtext_2];
 	}
-	const OpenItem = (e) => {
+	const OpenItem = (e: any) => {
 		if(e.ctrlKey) return;
-		TaskModalBus.emit('item', item);
-		TaskModalBus.emit('active', true);
+		ShowTaskModal(item);
 	}
 	const isOverdue = () => {
 		const start = moment(item.startDate).unix();
