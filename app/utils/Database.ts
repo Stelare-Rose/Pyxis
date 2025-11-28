@@ -1,6 +1,5 @@
 import Database from '@tauri-apps/plugin-sql';
 import { watch, BaseDirectory, readTextFile } from '@tauri-apps/plugin-fs';
-import { info } from '@tauri-apps/plugin-log';
 
 var db: Database;
 var fingerprint: string;
@@ -8,8 +7,6 @@ var fingerprint: string;
 // Awaits can't exist on their own
 init();
 
-const isType = (t: any): t is "Task" | "Event" => t === "Task" || t === "Event";
-const isStatus = (s: any): s is "Todo" | "Doing" | "Done" | "Scheduled" => s === "Todo" || s === "Doing" || s === "Done" || s === "Scheduled";
 
 async function ReadDatabase() {
 	const f = await readTextFile('fingerprint', {baseDir: BaseDirectory.AppConfig});
