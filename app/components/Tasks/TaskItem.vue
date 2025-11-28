@@ -9,29 +9,12 @@
 	}>()
 	const item = props.item
 	const colors = useColors();
-	let statusColor: string[];
 
-	const getStatusColor = () => {
-		if(item.status){
-			switch(item.status){
-				case 'Todo':
-					return [colors.text.strawberry, colors.pastel.strawberry];
-				case 'Doing':
-					return [colors.text.orange, colors.pastel.orange];
-				case 'Scheduled':
-					return [colors.text.blueberry, colors.pastel.blueberry];
-				case 'Done':
-					return [colors.text.leaf, colors.pastel.leaf];
-				default:
-					return [colors.text_1, colors.subtext_2];
-			}
-		}
-		return [colors.text_1, colors.subtext_2];
-	}
 	const OpenItem = (e: any) => {
 		if(e.ctrlKey) return;
 		ShowTaskModal(item);
 	}
+	//TODO: Add Comments you fool
 	const isOverdue = () => {
 		const start = moment(item.startDate).unix();
 		const end = moment(item.endDate).unix();
@@ -99,7 +82,7 @@
 			<div v-if="(item.status && !(remove?.includes('status'))) || item.endDate || item.tags" class="divider" />
 			<div v-if="item.status && !(remove?.includes('status'))" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Question /></Icon>
-				<TagsContainer :textColor='[getStatusColor()[0]]' :color='[getStatusColor()[1]]' :text='item.status' :key='item.status'/>
+				<TagsContainer :textColor='getStatusTextColor(item.status)' :color='getStatusColor(item.status)' :text='item.status' :key='item.status'/>
 			</div>
 			<div v-if="item.startDate" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarCheck :strokeColor="colors.text.leaf" /></Icon>

@@ -24,3 +24,32 @@ export const getRawTextColor: (s: string) => string[] = (s: string) => {
 	.filter((x): x is TextKey => x in colors.text)
 	.map((x: TextKey) => colors.text[x]);
 }
+// Returns Colour of Status
+export const getStatusColor: (status: string) => string[] = (status: string) => {
+	switch(status){
+		case 'Todo':
+			return [colors.pastel.strawberry, colors.pastel.strawberry];
+		case 'Doing':
+			return [colors.pastel.orange, colors.pastel.orange];
+		case 'Scheduled':
+			return [colors.pastel.blueberry, colors.pastel.blueberry];
+		case 'Done':
+			return [colors.pastel.leaf, colors.pastel.leaf];
+		default:
+			return [colors.text_1, colors.subtext_2];
+	}
+}
+export const getStatusTextColor: (status: string) => string[] = (status: string) => {
+	switch(status){
+		case 'Todo':
+			return [colors.text.strawberry, colors.text.strawberry];
+		case 'Doing':
+			return [colors.text.orange, colors.text.orange];
+		case 'Scheduled':
+			return [colors.text.blueberry, colors.text.blueberry];
+		case 'Done':
+			return [colors.text.leaf, colors.text.leaf];
+		default:
+			return [colors.text_1, colors.subtext_2];
+	}
+}
