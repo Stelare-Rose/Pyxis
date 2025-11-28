@@ -29,7 +29,7 @@
 	const startDate = ref();
 	const endDate = ref();
 	const priorityDate = ref();
-	const tagList = ref<[{value: string, label: string, color: string[]}] | undefined>();
+	const tagList = ref<({value: string, label: string, color: string[]} | undefined)[]>();
 	const description = ref<string>();
 
 	//Default Values
@@ -52,7 +52,7 @@
 		statuses.value = statuses.value.map(x => { x.disabled = (x.label == 'Todo' || x.label == 'Doing') && option.label == 'Event'; return x});
 		if(option.label == 'Event' && status.value.label == 'Todo'){
 			status.value = {value: ['Scheduled', 'blueberry'], label: 'Scheduled', color: 'blueberry'}
-			item.value.status = status.value.label;
+			item.value.status = isStatus(status.value.label) ? status.value.label : undefined;
 		}
 		item.value.type = option.label;
 	}
@@ -83,7 +83,7 @@
 		enabled.value = e;
 		if(e) uiStore.canscroll = false; else {
 			uiStore.canscroll = true;
-			item.value = {id: '0', name:'', type:'Task', status: 'Todo'};
+			item.value = {id: '0', name:'', type:'Task', status: 'Todo', fingerprint: '0'};
 			return;
 		}
 		tags.value = await GetAllTags();
