@@ -23,12 +23,5 @@
 	</Icon>
 </template>
 <style scoped>
-	.newtask-button-container {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1;
-		box-sizing: border-box;
-		border: 2px solid #00000000;
-	}
+
 </style>
