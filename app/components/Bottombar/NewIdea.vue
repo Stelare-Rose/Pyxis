@@ -9,10 +9,10 @@
 		}
 	}
 	onMounted(() => {
-		TaskModalBus.on('active', e => enabled.value = !e);
+
 	});
-	onUnmounted(() => {
-		TaskModalBus.off('active');
+	onBeforeUnmount(() => {
+
 	});
 </script>
 <template>
