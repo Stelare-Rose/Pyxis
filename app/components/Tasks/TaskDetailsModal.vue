@@ -167,10 +167,10 @@
 							<div class="row-property">
 								<Multiselect :options="statuses" mode="single" v-model="status" :can-deselect="false" :can-clear="false" :object="true" @change="UpdateStatus" :caret="false">
 								<template #singlelabel="{value}">
-									<TagsContainer style="margin-right: auto; margin-left: 8px" :color="getRawColor(value.color)" :textColor="getRawTextColor(value.color)" :text="value.label" :key="value.value"/>
+									<TagsContainer style="margin-right: auto; margin-left: 8px" :color="getStatusColor(value.label)" :textColor="getStatusTextColor(value.label)" :text="value.label" :key="value.value"/>
 								</template>
 								<template #option="{option}">
-									<TagsContainer :color="getRawColor(option.color)" :textColor="getRawTextColor(option.color)" :text="option.label" :key="option.value"/>
+									<TagsContainer :color="getStatusColor(option.label)" :textColor="getStatusTextColor(option.label)" :text="option.label" :key="option.value"/>
 								</template>
 								</Multiselect>
 							</div>
