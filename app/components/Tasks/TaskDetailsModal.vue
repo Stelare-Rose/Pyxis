@@ -118,6 +118,7 @@
 		useDatabaseBus('reload', async () => tags.value = await GetAllTags());
 	})
 	onBeforeUnmount(() => {
+		RemoveTaskModalBus('item');
 		RemoveTaskModalBus('active');
 		RemoveDatabaseBus('reload');
 	})

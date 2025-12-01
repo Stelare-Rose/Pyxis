@@ -3,10 +3,10 @@ export const ReloadDatabase = () =>{
 }
 
 export const ShowTaskModal = (item?: Item) => {
+	SendTaskModalBus('active', true);
 	if(item){
 		SendTaskModalBus('item', item);
 	}
-	SendTaskModalBus('active', true);
 }
 
 export const HideTaskModal = () => {
