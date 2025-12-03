@@ -80,8 +80,11 @@
 	// Event Handlers
 	const enabled = ref(false);
 	const event = async (e:boolean) => {
+		console.log("Loading Modal!");
+		console.log(item);
 		enabled.value = e;
-		if(e) uiStore.canscroll = false; else {
+		if(e) uiStore.canscroll = false;
+		else {
 			uiStore.canscroll = true;
 			item.value = {id: '0', name:'', type:'Task', status: 'Todo', fingerprint: '0'};
 			return;
@@ -109,6 +112,8 @@
 	const loadItem = async (i: Item) => {
 		description.value = await getItemDescription(i);
 		item.value = i;
+		console.log("Loading Item!");
+		console.log(item.value);
 	}
 
 	// Event Listeners

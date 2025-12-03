@@ -12,6 +12,8 @@
 
 	const OpenItem = (e: any) => {
 		if(e.ctrlKey) return;
+		console.log(item);
+		console.log("Showing Task Modal!");
 		ShowTaskModal(item);
 	}
 	//TODO: Add Comments you fool
