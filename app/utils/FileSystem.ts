@@ -127,6 +127,8 @@ export const deleteFile = async (item: Item) => {
 
 export const getItemDescription = async (item: Item) => {
 	let processedDir = "Pyxis/Items/" + item.path;
+	if(!item.path) return;
+	if(!(await exists(processedDir, {baseDir: BaseDirectory.Data}))) return;
 	const content = await readTextFile(processedDir, {baseDir: BaseDirectory.Data});
 	const processed = content.split("-----\n");
 	if(processed.length > 1){

@@ -87,6 +87,7 @@
 		else {
 			uiStore.canscroll = true;
 			item.value = {id: '0', name:'', type:'Task', status: 'Todo', fingerprint: '0'};
+			console.log(item);
 			return;
 		}
 		tags.value = await GetAllTags();
@@ -97,13 +98,9 @@
 			nextTick(() => {
 			    titleInput.value.focus()
 			})
+			await loadItem(item.value);
 		}
-		type.value = types.value.find(x => x.label == item.value.type) ?? {value: ['Task', 'orange,lemon'], label: 'Task', color: 'orange,lemon'};
-		status.value = statuses.value.find(x => x.label == item.value.status) ?? {value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry'};
-		startDate.value = item.value.startDate;
-		endDate.value = item.value.endDate;
-		priorityDate.value = item.value.priorityDate;
-		tagList.value = item.value.tags?.flatMap(x => (tagsOptions.value.find(t => t.label == x.tag))) ?? [];
+
 	}
 	const disable = () => {
 		if(item.value.name && item.value.type && item.value.status) SaveData();
@@ -112,6 +109,12 @@
 	const loadItem = async (i: Item) => {
 		description.value = await getItemDescription(i);
 		item.value = i;
+		type.value = types.value.find(x => x.label == item.value.type) ?? {value: ['Task', 'orange,lemon'], label: 'Task', color: 'orange,lemon'};
+		status.value = statuses.value.find(x => x.label == item.value.status) ?? {value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry'};
+		startDate.value = item.value.startDate;
+		endDate.value = item.value.endDate;
+		priorityDate.value = item.value.priorityDate;
+		tagList.value = item.value.tags?.flatMap(x => (tagsOptions.value.find(t => t.label == x.tag))) ?? [];
 		console.log("Loading Item!");
 		console.log(item.value);
 	}
