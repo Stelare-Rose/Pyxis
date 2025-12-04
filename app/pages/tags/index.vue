@@ -9,16 +9,20 @@ import { nanoid } from 'nanoid'
 	const color = useColors();
 	const backgroundGradient = ref();
 	const titleInput = ref();
+	
+	let ignoreNext = false;
 	watch(selected, async () => {
-		console.log(selected.value);
+		if(ignoreNext && (ignoreNext = false)) return;
 		if(selected.value == 'new'){
 			selectedItem.value = {id: nanoid(8), tag: 'New Tag', color: ['strawberry']}; 
 			//TODO: Random Color Generator for Fun !!
 			selectedTasks.value = null;
 			selected.value = selectedItem.value.id;
+			ignoreNext = true;
 			return;
+		} else {
+			await Reload();
 		}
-		await Reload();
 	});
 	const selectedItem = ref();
 	const selectedTasks = ref();
@@ -42,7 +46,7 @@ import { nanoid } from 'nanoid'
 	}, {deep: true});
 
 	const debounceUpdate = debounce(() => {
-		if(selectedItem.value.tag == 'New Tag' && tags.value.find(x => x.id == selectedItem.value.id) == undefined){
+		if(selectedItem.value.tag == 'New Tag' && tags.value.find(x => x.id == selectedItem.value.id) === undefined){
 			return;
 		}
 		updateTags(selectedItem.value);
