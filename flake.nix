@@ -1,6 +1,6 @@
 {
 	inputs = {
-		nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+		nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
 	};
 
 	outputs = { self, nixpkgs } @ inputs:
@@ -15,8 +15,9 @@
 	{
 		devShells.${system}.default = pkgs.mkShell rec {
 			name="Pyxis";
-			GDK_BACKEND = "x11";
 			GIO_MODULE_DIR = "${pkgs.glib-networking}/lib/gio/modules/";
+			XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS";
+			GDK_BACKEND="x11";
 			packages = with pkgs; [
 				wrapGAppsHook4
 				glib-networking
