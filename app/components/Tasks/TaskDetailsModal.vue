@@ -1,7 +1,7 @@
 <script setup lang=ts>
 	// Imports
 	import Multiselect from '@vueform/multiselect';
-	import VueDatePicker from '@vuepic/vue-datepicker';
+	import { VueDatePicker } from '@vuepic/vue-datepicker';
 	import moment from 'moment';
 	import { v4 as uuidv4 } from 'uuid'
 	import { uiStore } from '~/stores/ui';
@@ -190,7 +190,7 @@
 								<div class="medium-text">Start Date</div>
 							</div>
 							<div class="row-property">
-								<vue-date-picker :text-input="{ format: 'dd/MM/yyyy HH:mm' }" v-model="startDate" :start-time="startTime" @update:model-value="UpdateStartDate"></vue-date-picker>
+								<vue-date-picker :text-input="{ maskFormat: 'DD/MM/YYYY, hh:mm', format: 'dd/MM/yyyy, HH:mm' }" v-model="startDate" :start-time="startTime" @update:model-value="UpdateStartDate"></vue-date-picker>
 							</div>
 						</div>
 						<div class="property">
@@ -199,7 +199,7 @@
 								<div class="medium-text">End Date</div>
 							</div>
 							<div class="row-property">
-								<vue-date-picker :text-input="{ format: 'dd/MM/yyyy HH:mm' }" v-model="endDate" :start-time="startTime" @update:model-value="UpdateEndDate"></vue-date-picker>
+								<vue-date-picker :text-input="{ maskFormat: 'DD/MM/YYYY, hh:mm', format: 'dd/MM/yyyy, HH:mm' }" v-model="endDate" :start-time="startTime" @update:model-value="UpdateEndDate"></vue-date-picker>
 							</div>
 						</div>
 						<div class="property">
@@ -208,7 +208,7 @@
 								<div class="medium-text">Priority Date</div>
 							</div>
 							<div class="row-property">
-								<vue-date-picker v-model="priorityDate" :start-time="startTime" @update:model-value="UpdatePriorityDate" :enable-time-picker="false"></vue-date-picker>
+								<vue-date-picker v-model="priorityDate" :text-input="{ maskFormat: 'DD/MM/YYYY', format: 'dd/MM/yyyy' }" :start-time="startTime" @update:model-value="UpdatePriorityDate" :enable-time-picker="false"></vue-date-picker>
 							</div>
 						</div>
 						<div class="property">
