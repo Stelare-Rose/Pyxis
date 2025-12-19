@@ -69,26 +69,13 @@ const parseRows: (row: ItemRow[]) => Item[] = (row: ItemRow[]) => {
 
 export const GetAllItems: () => Promise<Item[]> = async () => {
 	if(!db) await ReadDatabase();
+	console.time("query");
 	const result: ItemRow[] = await db.select(`
-											  SELECT 
-											  i.id, 
-											  i.name, 
-											  i.type, 
-											  i.path, 
-											  i.status, 
-											  i.endDate, 
-											  i.startDate, 
-											  i.priorityDate, 
-											  i.fingerprint,
-											  GROUP_CONCAT(t.id || ':' || t.tag || ':' || t.color, ';') AS tags
-											  FROM items i
-											  LEFT JOIN items_tags it ON i.id = it.item_id
-											  LEFT JOIN tags t ON it.tag_id = t.id
-											  WHERE i.isArchived = 0 
-											  AND (substr(i.priorityDate, 1, 10) != DATE('now', 'localtime') OR i.priorityDate = '')
-											  GROUP BY i.id
-											  ORDER BY sortDate IS NULL, sortDate ASC, i.name
+											  SELECT * FROM ActiveItems i
+											  WHERE (substr(i.priorityDate, 1, 10) != DATE('now', 'localtime') OR i.priorityDate = '')
 											  `);
+	
+	console.timeEnd("query");
 	return parseRows(result);
 }
 
@@ -96,25 +83,9 @@ export const GetAllByStatus: (filter: string) => Promise<Item[]> = async (filter
 	if(!db) await ReadDatabase();
 	console.time("query" + filter);
 	const result: ItemRow[] = await db.select(`
-											  SELECT 
-											  i.id, 
-											  i.name, 
-											  i.type, 
-											  i.path, 
-											  i.status, 
-											  i.endDate, 
-											  i.startDate, 
-											  i.priorityDate, 
-											  i.fingerprint,
-											  GROUP_CONCAT(t.id || ':' || t.tag || ':' || t.color, ';') AS tags
-											  FROM items i
-											  LEFT JOIN items_tags it ON i.id = it.item_id
-											  LEFT JOIN tags t ON it.tag_id = t.id
-											  WHERE i.isArchived = 0 
-											  AND i.status = $1
+											  SELECT * FROM ActiveItems i
+											  WHERE i.status = $1
 											  AND (substr(i.priorityDate, 1, 10) != DATE('now', 'localtime') OR i.priorityDate = '')
-											  GROUP BY i.id
-											  ORDER BY sortDate IS NULL, sortDate ASC, i.name
 											  `, [filter]);
 
 	return parseRows(result);
@@ -123,25 +94,9 @@ export const GetAllByStatus: (filter: string) => Promise<Item[]> = async (filter
 export const GetLimitedByStatus: (filter: string, limit: number) => Promise<Item[]> = async (filter: string, limit: number) => {
 	if(!db) await ReadDatabase();
 	const result: ItemRow[] = await db.select(`
-											  SELECT 
-											  i.id, 
-											  i.name, 
-											  i.type, 
-											  i.path, 
-											  i.status, 
-											  i.endDate, 
-											  i.startDate, 
-											  i.priorityDate, 
-											  i.fingerprint,
-											  GROUP_CONCAT(t.id || ':' || t.tag || ':' || t.color, ';') AS tags
-											  FROM items i
-											  LEFT JOIN items_tags it ON i.id = it.item_id
-											  LEFT JOIN tags t ON it.tag_id = t.id
-											  WHERE i.isArchived = 0 
-											  AND i.status = $1
+											  SELECT * FROM ActiveItems i
+											  WHERE i.status = $1
 											  AND (substr(i.priorityDate, 1, 10) != DATE('now', 'localtime') OR i.priorityDate = '')
-											  GROUP BY i.id
-											  ORDER BY sortDate IS NULL, sortDate ASC, i.name
 											  LIMIT $2
 											  `, [filter, limit]);
 	return parseRows(result);
@@ -149,24 +104,8 @@ export const GetLimitedByStatus: (filter: string, limit: number) => Promise<Item
 export const GetPriority: (offset?: number) => Promise<Item[]> = async (offset: number = 0) => {
 	if(!db) await ReadDatabase();
 	const result: ItemRow[] = await db.select(`
-											  SELECT 
-											  i.id, 
-											  i.name, 
-											  i.type, 
-											  i.path, 
-											  i.status, 
-											  i.endDate, 
-											  i.startDate, 
-											  i.priorityDate, 
-											  i.fingerprint,
-											  GROUP_CONCAT(t.id || ':' || t.tag || ':' || t.color, ';') AS tags
-											  FROM items i
-											  LEFT JOIN items_tags it ON i.id = it.item_id
-											  LEFT JOIN tags t ON it.tag_id = t.id
-											  WHERE 
-											  i.isArchived = 0 
-											  AND substr(i.priorityDate, 1, 10) == DATE('now', 'localtime', printf('+%d day', $1))
-											  GROUP BY i.id
+											  SELECT * FROM ActiveItems i
+											  WHERE substr(i.priorityDate, 1, 10) == DATE('now', 'localtime', printf('+%d day', $1))
 											  ORDER BY i.name ASC
 											  `,
 											  [offset]
@@ -183,28 +122,12 @@ export const GetPriority: (offset?: number) => Promise<Item[]> = async (offset: 
 export const GetAllByTag = async (filter: string) => {
 	if(!db) await ReadDatabase();
 	const result: ItemRow[] = await db.select(`
-											  SELECT 
-											  i.id, 
-											  i.name, 
-											  i.type, 
-											  i.path, 
-											  i.status, 
-											  i.endDate, 
-											  i.startDate, 
-											  i.priorityDate, 
-											  i.fingerprint,
-											  GROUP_CONCAT(t.id || ':' || t.tag || ':' || t.color, ';') AS tags
-											  FROM items i
-											  LEFT JOIN items_tags it ON i.id = it.item_id
-											  LEFT JOIN tags t ON it.tag_id = t.id
-											  WHERE 
-											  i.isArchived = 0 
+											  SELECT * FROM ActiveItems i
 											  AND i.id IN (
 												  SELECT item_id
 												  FROM items_tags
 												  WHERE tag_id = $1
 											  )
-											  GROUP BY i.id
 											  ORDER BY i.name ASC
 											  `,
 											  [filter]
@@ -217,22 +140,8 @@ export const GetAllByTag = async (filter: string) => {
 export const GetById = async (id: string) => {
 	if(!db) await ReadDatabase();
 	const result: ItemRow = await db.select(`
-											  SELECT 
-											  i.id, 
-											  i.name, 
-											  i.type, 
-											  i.path, 
-											  i.status, 
-											  i.endDate, 
-											  i.startDate, 
-											  i.priorityDate, 
-											  i.fingerprint,
-											  GROUP_CONCAT(t.id || ':' || t.tag || ':' || t.color, ';') AS tags
-											  FROM items i
-											  LEFT JOIN items_tags it ON i.id = it.item_id
-											  LEFT JOIN tags t ON it.tag_id = t.id
+											  SELECT * FROM ActiveItems i
 											  WHERE i.id = $1
-											  GROUP BY i.id
 											  `,
 											  [id]
 											 );
