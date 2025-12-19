@@ -4,10 +4,6 @@ import { watch, BaseDirectory, readTextFile } from '@tauri-apps/plugin-fs';
 var db: Database;
 var fingerprint: string;
 
-// Awaits can't exist on their own
-init();
-
-
 async function ReadDatabase() {
 	const f = await readTextFile('fingerprint', {baseDir: BaseDirectory.AppConfig});
 	if(f == fingerprint) return;
@@ -15,7 +11,7 @@ async function ReadDatabase() {
 	fingerprint = f;
 }
 
-async function init(){
+export async function DatabaseInit(){
 	await watch('fingerprint', async (e) => {
 		if(e.type['access']) return;
 		await ReadDatabase();

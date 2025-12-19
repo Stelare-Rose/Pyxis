@@ -2,6 +2,7 @@
 const router = useRouter();
 onMounted(() => {
   router.replace('/dashboard');
+  DatabaseInit();
 });
 </script>
 <template>
