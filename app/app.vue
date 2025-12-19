@@ -1,7 +1,16 @@
 <script setup lang=ts>
+import { environment } from './stores/environment'
+
 	CheckDataDirectory("Pyxis", true)
 	CheckDataDirectory("Pyxis/Items", true)
+	CheckDataDirectory("Pyxis/Items/Active", true)
 	CheckDataDirectory("Pyxis/Repeatables", true)
+	if(environment.env == 'dev'){
+		CheckDataDirectory("Pyxis-dev", true)
+		CheckDataDirectory("Pyxis-dev/Items", true)
+		CheckDataDirectory("Pyxis-dev/Items/Active", true)
+		CheckDataDirectory("Pyxis-dev/Repeatables", true)
+	}
 	CheckCacheDirectory("", true)
 </script>
 <template>

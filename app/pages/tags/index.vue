@@ -12,7 +12,7 @@ import { nanoid } from 'nanoid'
 	
 	let ignoreNext = false;
 	watch(selected, async () => {
-		if(ignoreNext && (ignoreNext = false)) return;
+		if(ignoreNext) { ignoreNext = false; return; }
 		if(selected.value == 'new'){
 			selectedItem.value = {id: nanoid(8), tag: 'New Tag', color: ['strawberry']}; 
 			//TODO: Random Color Generator for Fun !!
