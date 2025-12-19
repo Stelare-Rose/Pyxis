@@ -3,16 +3,15 @@
 	const hovered = ref(false);
 	const color = useColors();
 	const clicked = () => {
-		console.log("Hello");
 		if(enabled.value){
-			ShowTaskModal();
+
 		}
 	}
 	onMounted(() => {
-
+		useTaskModalBus('active', e => enabled.value = !e);
 	});
 	onBeforeUnmount(() => {
-
+		RemoveTaskModalBus('active');
 	});
 </script>
 <template>
