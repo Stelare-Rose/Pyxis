@@ -1,5 +1,4 @@
-import { BaseDirectory, exists, mkdir, readTextFileLines, writeTextFile, remove, readTextFile } from '@tauri-apps/plugin-fs';
-import { info } from '@tauri-apps/plugin-log';
+import { BaseDirectory, exists, mkdir, writeTextFile, remove, readTextFile } from '@tauri-apps/plugin-fs';
 import toml from '@iarna/toml'
 import { cloneDeep } from 'lodash';
 import { environment } from '~/stores/environment';
