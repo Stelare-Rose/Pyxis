@@ -2,6 +2,9 @@ import { BaseDirectory, exists, mkdir, readTextFileLines, writeTextFile, remove,
 import { info } from '@tauri-apps/plugin-log';
 import toml from '@iarna/toml'
 import { cloneDeep } from 'lodash';
+import { environment } from '~/stores/environment';
+
+const base = environment.env == 'dev' ? "Pyxis-dev" : "Pyxis";
 
 function isTags(obj: any): obj is WriteTags {
   return obj && typeof obj === 'object' && 'tags' in obj;
@@ -24,7 +27,7 @@ export const CheckCacheDirectory = async (dir: string, create?: boolean) => {
 };
 
 export const readTags = async () => {
-	let processedDir = "Pyxis/tags.toml";
+	let processedDir = base + "/tags.toml";
 	const fileExists = await exists(processedDir, {baseDir: BaseDirectory.Data});
 	if(!fileExists) return null;
 	const tags = await readTextFile(processedDir, {baseDir: BaseDirectory.Data});
@@ -56,12 +59,12 @@ export const updateTags = async (tag: Tag) => {
 		tags.tags[tag.id] = {tag: tag.tag, color: tag.color}
 	}
 	if(JSON.stringify(tags) == JSON.stringify(rawTags)) return;
-	await writeTextFile("Pyxis/tags.toml", toml.stringify(tags as unknown as Record<string, string | string[]>), {baseDir: BaseDirectory.Data});
+	await writeTextFile(base + "/tags.toml", toml.stringify(tags as unknown as Record<string, string | string[]>), {baseDir: BaseDirectory.Data});
 }
 
 export const updateItem = async (item: Item) => {
 	console.log("Saving!");
-	let processedDir = "Pyxis/Items/" + item.path;
+	let processedDir = base + "/Items/" + item.path;
 	console.log(processedDir);
 	
 	let contents = "";
@@ -72,6 +75,7 @@ export const updateItem = async (item: Item) => {
 	contents += ItemToPlainTextRow("End-Date", item.endDate);
 	contents += ItemToPlainTextRow("Start-Date", item.startDate);
 	contents += ItemToPlainTextRow("Priority-Date", item.priorityDate);
+	contents += ItemToPlainTextRow("Completed-Date", item.completedDate);
 	if(item.tags){
 		const tagNames = item.tags.map(x => x.tag + '::' + x.id);
 		contents += ItemToPlainTextRow("Tags", tagNames.join(','));
@@ -87,9 +91,9 @@ export const updateItem = async (item: Item) => {
 
 export const writeFile = async (item: Item, newPath: string) => {
 	console.log("Saving!");
-	let processedDir = "Pyxis/Items/" + item.path;
+	let processedDir = base + "/Items/" + item.path;
 	console.log(processedDir);
-	let newDir = "Pyxis/Items/" + newPath + " id-" + item.id + ".task";
+	let newDir = base + "/Items/" + newPath + " id-" + item.id + ".task";
 	console.log(newDir);
 	console.log(item);
 	
@@ -101,6 +105,7 @@ export const writeFile = async (item: Item, newPath: string) => {
 	contents += ItemToPlainTextRow("End-Date", item.endDate);
 	contents += ItemToPlainTextRow("Start-Date", item.startDate);
 	contents += ItemToPlainTextRow("Priority-Date", item.priorityDate);
+	contents += ItemToPlainTextRow("Completed-Date", item.completedDate);
 	if(item.tags){
 		const tagNames = item.tags.map(x => x.tag + '::' + x.id);
 		contents += ItemToPlainTextRow("Tags", tagNames.join(','));
@@ -119,14 +124,14 @@ export const writeFile = async (item: Item, newPath: string) => {
 }
 
 export const deleteFile = async (item: Item) => {
-	let processedDir = "Pyxis/Items/" + item.path;
+	let processedDir = base + "/Items/" + item.path;
 	if(await exists(processedDir, {baseDir: BaseDirectory.Data})){
 		await remove(processedDir, {baseDir: BaseDirectory.Data});
 	} else return;
 }
 
 export const getItemDescription = async (item: Item) => {
-	let processedDir = "Pyxis/Items/" + item.path;
+	let processedDir = base + "/Items/" + item.path;
 	if(!item.path) return;
 	if(!(await exists(processedDir, {baseDir: BaseDirectory.Data}))) return;
 	const content = await readTextFile(processedDir, {baseDir: BaseDirectory.Data});

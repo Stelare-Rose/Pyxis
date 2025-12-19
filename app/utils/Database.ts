@@ -1,18 +1,20 @@
 import Database from '@tauri-apps/plugin-sql';
 import { watch, BaseDirectory, readTextFile } from '@tauri-apps/plugin-fs';
+import { environment } from '~/stores/environment';
 
 var db: Database;
 var fingerprint: string;
+const fileName = environment.env == 'dev' ? 'fingerprint-dev' : 'fingerprint';
 
 async function ReadDatabase() {
-	const f = await readTextFile('fingerprint', {baseDir: BaseDirectory.AppConfig});
+	const f = await readTextFile(fileName, {baseDir: BaseDirectory.AppConfig});
 	if(f == fingerprint) return;
-	db = await Database.load('sqlite:main.db');
+	db = await Database.load(environment.env == 'dev' ? 'sqlite:dev.db' : 'sqlite:main.db');
 	fingerprint = f;
 }
 
 export async function DatabaseInit(){
-	await watch('fingerprint', async (e) => {
+	await watch(fileName, async (e) => {
 		if(e.type['access']) return;
 		await ReadDatabase();
 		ReloadDatabase();

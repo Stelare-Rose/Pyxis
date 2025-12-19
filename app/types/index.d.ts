@@ -10,6 +10,7 @@ declare global {
 		endDate?: DateTime;
 		startDate?: DateTime;
 		priorityDate?: DateTime;
+		completedDate?: DateTime;
 		afterTask?: string[];
 		tags?: Tag[];
 		fingerprint: string;
@@ -24,6 +25,7 @@ declare global {
 		endDate?: DateTime;
 		startDate?: DateTime;
 		priorityDate?: DateTime;
+		completedDate?: DateTime;
 		afterTask?: string[];
 		// Tags is a string here because we parse it later.
 		tags?: string;

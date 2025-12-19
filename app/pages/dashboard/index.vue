@@ -65,6 +65,8 @@
 						ItemsDone.value = ItemsDone.value.map(i => i.id == event.data.id ? { ...i, status: 'Done', priorityDate: '' } : i);
 					}
 					else ItemsDone.value = ItemsDone.value.map(i => i.id == event.data.id ? { ...i, status: 'Done' } : i);
+					const today = moment().endOf('day').seconds(0).milliseconds(0).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+					event.data.completedDate = today;
 					ItemsDone.value = ItemsDone.value.sort(Sort()).reverse();
 					break;
 				}
