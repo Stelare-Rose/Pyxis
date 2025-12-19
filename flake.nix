@@ -17,12 +17,12 @@
 			name="Pyxis";
 			GIO_MODULE_DIR = "${pkgs.glib-networking}/lib/gio/modules/";
 			XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS";
-			GDK_BACKEND="x11";
 			packages = with pkgs; [
 				wrapGAppsHook4
 				glib-networking
 				pkg-config
 				gobject-introspection
+				gsettings-desktop-schemas
 				rustup
 				glib
 				gtk3
@@ -41,6 +41,7 @@
 				libsoup_3
 				pango
 				webkitgtk_4_1
+				webkitgtk_6_0
 				openssl
 				sqlite
 			];
