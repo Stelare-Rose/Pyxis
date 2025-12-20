@@ -71,7 +71,6 @@ export const GetAllItems: () => Promise<Item[]> = async () => {
 	console.time("query");
 	const result: ItemRow[] = await db.select(`
 											  SELECT * FROM ActiveItems i
-											  WHERE (substr(i.priorityDate, 1, 10) != DATE('now', 'localtime') OR i.priorityDate = '')
 											  `);
 	
 	console.timeEnd("query");
@@ -123,7 +122,7 @@ export const GetAllByTag = async (filter: string) => {
 	if(!db) await ReadDatabase();
 	const result: ItemRow[] = await db.select(`
 											  SELECT * FROM ActiveItems i
-											  AND i.id IN (
+											  WHERE i.id IN (
 												  SELECT item_id
 												  FROM items_tags
 												  WHERE tag_id = $1

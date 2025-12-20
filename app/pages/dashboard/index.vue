@@ -8,7 +8,7 @@
 	let ItemsScheduled = computed(() =>  buckets.value.Scheduled);
 	let ItemsDone = computed(() =>  buckets.value.Done);
 	let ItemsPriority = computed(() =>  buckets.value.Priority);
-	const allItems = useItemStore().items;
+	const { items } = storeToRefs(useItemStore());
 
 	type Status = 'Todo' | 'Doing' | 'Scheduled' | 'Done' | 'Priority'
 	const buckets = computed(() => {
@@ -20,8 +20,8 @@
 			Priority: [],
 		};
 
-		for(const item of allItems){
-			if(item.priorityDate == today){
+		for(const item of items.value){
+			if(moment(item.priorityDate).day() == moment(today).day()){
 				result["Priority"].push(item);
 				continue;
 			}
@@ -62,6 +62,10 @@
 	
 	const color = useColors();
 	let Hovered = ref<string>();
+
+	onBeforeMount(async () => {
+		await useItemStore().loadBy({ type: 'all' });
+	})
 </script>
 <template>
 	<ClientOnly>

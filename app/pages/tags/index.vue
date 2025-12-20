@@ -21,22 +21,25 @@ import { nanoid } from 'nanoid'
 			ignoreNext = true;
 			return;
 		} else {
-			await Reload();
+			await useItemStore().loadBy({ type: 'tags', value: selected.value });
+			selectedItem.value = await GetTagById(selected.value);
+			selectedTasks.value = useItemStore().items;
+			selected.value = selectedItem.value.id;
+			backgroundGradient.value = `linear-gradient(90deg, ${getTagColor(selectedItem.value).map(x => x + '25').join(',')})`;
+			nextTick(() => {
+				titleInput.value.focus()
+			})
 		}
 	});
 	const selectedItem = ref();
 	const selectedTasks = ref();
-	const tags = ref(await GetAllTags());
-	const Reload = async (partial?: boolean) => {
-		tags.value = await GetAllTags();
-		if(!partial) selectedItem.value = await GetTagById(selected.value) ?? null;
-		selectedTasks.value = await GetAllByTag(selectedItem.value.id);
-		selected.value = selectedItem.value.id;
-		backgroundGradient.value = `linear-gradient(90deg, ${getTagColor(selectedItem.value).map(x => x + '25').join(',')})`;
-		nextTick(() => {
-			titleInput.value.focus()
-		})
-	}
+	const store = useTagsStore();
+	const { tags } = storeToRefs(store);
+	console.log(tags);
+	watch(tags, () => {
+		console.log(tags);
+	})
+
 	const removeItem = (index: number) => {
 		if(selectedItem.value.color.length > 1)
 		selectedItem.value.color = selectedItem.value.color.slice(0, index).concat(selectedItem.value.color.slice(index + 1))
@@ -46,24 +49,18 @@ import { nanoid } from 'nanoid'
 	}, {deep: true});
 
 	const debounceUpdate = debounce(() => {
-		if(selectedItem.value.tag == 'New Tag' && tags.value.find(x => x.id == selectedItem.value.id) === undefined){
+		if(selectedItem.value.tag == 'New Tag' && tags.find(x => x.id == selectedItem.value.id) === undefined){
 			return;
 		}
 		updateTags(selectedItem.value);
 	}, 500);
-	onMounted(async () => {
-		useDatabaseBus('reload', () => Reload(true))
-	})
-	onBeforeUnmount(() => {
-		RemoveDatabaseBus('reload')
-	})
 </script>
 <template>
 	<section class="container-tags">
 		<section class="browser">
 			<template v-for="tag in tags" :key="tag.id">
 				<div class="tag" @mouseenter="hovered=tag.id" @mouseleave="hovered=''" @click="selected = tag.id" :class="{hovered: (hovered == tag.id || selected == tag.id)}">
-					<TagsContainer :color="getTagColor(tag)" :textColor="getTagTextColor(tag)" :text="tag.tag" size="small" opaque :key="Math.random()"/>
+					<TagsContainer :color="getTagColor(tag)" :textColor="getTagTextColor(tag)" :text="tag.tag" size="small" opaque :key="tag.id + tag.tag + tag.color.join()"/>
 				</div>
 			</template>
 			<div class="tag" @mouseenter="hovered='new'" @mouseleave="hovered=''" @click="selected = 'new'" :class="{hovered: (hovered == 'new')}" style="justify-content: center; display: flex;"> <Icon :height="18" :width="18"><Plus /></Icon>
