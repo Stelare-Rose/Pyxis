@@ -1,11 +1,14 @@
 <script setup lang="ts">
+	import { useItemStore } from '~/stores/items';
 
+	await useItemStore().reload();
+	const allItems = useItemStore().items;
+	console.log(allItems);
 </script>
 <template>
-	<ClientOnly>
 	<div class="container">
+		
 	</div>
-	</ClientOnly>
 </template>
 <style scoped>
 	.container {

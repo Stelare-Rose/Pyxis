@@ -1,91 +1,67 @@
 <script setup lang="ts">
 	import { VueDraggable } from 'vue-draggable-plus'
 	import moment from 'moment';
-	let ItemsTodo = ref<Item[]>([]);
-	let ItemsDoing = ref<Item[]>([]);
-	let ItemsScheduled = ref<Item[]>([]);
-	let ItemsDone = ref<Item[]>([]);
-	let ItemsPriority = ref<Item[]>([]);
-	let Hovered = ref<string>();
-	const Reload = async () => {
-		const allItems = await GetAllItems();
+	import { useItemStore } from '~/stores/items';
+	const today = moment().endOf('day').seconds(0).milliseconds(0).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+	let ItemsTodo = computed(() =>  buckets.value.Todo);
+	let ItemsDoing = computed(() =>  buckets.value.Doing);
+	let ItemsScheduled = computed(() =>  buckets.value.Scheduled);
+	let ItemsDone = computed(() =>  buckets.value.Done);
+	let ItemsPriority = computed(() =>  buckets.value.Priority);
+	const allItems = useItemStore().items;
 
-		ItemsTodo.value = [];
-		ItemsDoing.value = [];
-		ItemsScheduled.value = [];
-		ItemsDone.value = [];
-		const statusMap = {
-		  Todo: ItemsTodo.value,
-		  Doing: ItemsDoing.value,
-		  Scheduled: ItemsScheduled.value,
-		  Done: ItemsDone.value,
+	type Status = 'Todo' | 'Doing' | 'Scheduled' | 'Done' | 'Priority'
+	const buckets = computed(() => {
+		const result: Record<Status, Item[]> = {
+			Todo: [],
+			Doing: [],
+			Scheduled: [],
+			Done: [],
+			Priority: [],
 		};
 
-		allItems.forEach(item => {
-		  const list = statusMap[item.status];
-		  if (list) list.push(item);
-		});
-		console.log(allItems);
-		ItemsDone.value.reverse();
-		ItemsPriority.value = await GetPriority();
-	}
+		for(const item of allItems){
+			if(item.priorityDate == today){
+				result["Priority"].push(item);
+				continue;
+			}
+			result[item.status].push(item);
+		}
+		return result;
+	})
+
 	const onListChange = async (event: any) => {
 		Hovered.value = '';
 		if (event.from.id == event.to.id) return;
+
+		if (event.from.id == 'Priority') event.data.priorityDate = '';
 		if (event.to.id == 'Priority'){
 			event.data.status = event.from.id;
-			const todayPriority = moment().endOf('day').seconds(0).milliseconds(0).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
-
-			event.data.priorityDate = todayPriority;
-			ItemsPriority.value = ItemsPriority.value.map(i => i.id == event.data.id ? { ...i, priorityDate: todayPriority } : i);
+			event.data.priorityDate = today;
 			await updateItem(event.data);
 			return;
 		}
 		if (event.data) {
 			event.data.status = event.to.id;
 			switch(event.to.id){
-				case 'Todo': {
-					ItemsTodo.value = ItemsTodo.value.map(i => i.id == event.data.id ? { ...i, status: 'Todo' } : i);
-					ItemsTodo.value = ItemsTodo.value.sort(Sort());
-					break;
-				}
-				case 'Doing': {
-					ItemsDoing.value = ItemsDoing.value.map(i => i.id == event.data.id ? { ...i, status: 'Doing' } : i);
-					ItemsDoing.value = ItemsDoing.value.sort(Sort());
-					break;
-				}
-				case 'Scheduled': {
-					ItemsScheduled.value = ItemsScheduled.value.map(i => i.id == event.data.id ? { ...i, status: 'Scheduled' } : i);
-					ItemsScheduled.value = ItemsScheduled.value.sort(Sort());
-					break;
-				}
 				case 'Done': {
 					if(event.from.id == 'Priority'){
 						event.data.priorityDate = '';
-						ItemsDone.value = ItemsDone.value.map(i => i.id == event.data.id ? { ...i, status: 'Done', priorityDate: '' } : i);
 					}
-					else ItemsDone.value = ItemsDone.value.map(i => i.id == event.data.id ? { ...i, status: 'Done' } : i);
-					const today = moment().endOf('day').seconds(0).milliseconds(0).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
 					event.data.completedDate = today;
-					ItemsDone.value = ItemsDone.value.sort(Sort()).reverse();
 					break;
 				}
 			}
 			await updateItem(event.data);
 		}
 	}
+
 	const checkMove = (event: any) => {
 		if (event.data.type == "Event" && !(event.to.id == "Scheduled" || event.to.id == "Done" || event.to.id == "Priority")) return false;
-		if (event.from.id == "Priority" && event.to.id != "Done") return false;
 	}
+	
 	const color = useColors();
-	onMounted(async () => {
-		useDatabaseBus('reload', () => Reload());
-	})
-	onBeforeUnmount(() => {
-		RemoveDatabaseBus('reload')
-	})
-	Reload();
+	let Hovered = ref<string>();
 </script>
 <template>
 	<ClientOnly>

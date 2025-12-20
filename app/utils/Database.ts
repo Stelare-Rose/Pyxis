@@ -15,6 +15,7 @@ async function ReadDatabase() {
 
 export async function DatabaseInit(){
 	await watch(fileName, async (e) => {
+		console.log("Detected Reload!");
 		if(e.type['access']) return;
 		await ReadDatabase();
 		ReloadDatabase();
@@ -74,6 +75,7 @@ export const GetAllItems: () => Promise<Item[]> = async () => {
 											  `);
 	
 	console.timeEnd("query");
+	console.log(result);
 	return parseRows(result);
 }
 

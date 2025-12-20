@@ -1,6 +1,5 @@
 <script setup lang=ts>
 import { environment } from './stores/environment'
-
 	CheckDataDirectory("Pyxis", true)
 	CheckDataDirectory("Pyxis/Items", true)
 	CheckDataDirectory("Pyxis/Items/Active", true)
@@ -12,6 +11,8 @@ import { environment } from './stores/environment'
 		CheckDataDirectory("Pyxis-dev/Repeatables", true)
 	}
 	CheckCacheDirectory("", true)
+
+	useItemStore().init();
 </script>
 <template>
 	<NuxtLayout>

@@ -6,7 +6,7 @@ declare global {
 		id: string,
 		name: string;
 		path?: string;
-		status?: "Todo" | "Doing" | "Done" | "Scheduled";
+		status: "Todo" | "Doing" | "Done" | "Scheduled";
 		endDate?: DateTime;
 		startDate?: DateTime;
 		priorityDate?: DateTime;

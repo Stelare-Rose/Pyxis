@@ -1,3 +1,3 @@
 export const environment = reactive({
-  env: 'dev'
+  env: 'prod'
 })
