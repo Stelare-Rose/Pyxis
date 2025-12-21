@@ -1,6 +1,6 @@
 const colors = useColors();
-type PastelKey = keyof typeof colors.pastel;
-type TextKey = keyof typeof colors.text;
+export type PastelKey = keyof typeof colors.pastel;
+export type TextKey = keyof typeof colors.text;
 
 // Takes a Tag, Returns an Array of Tag Colours, Translated.
 export const getTagColor: (t: Tag) => string[] = (t: Tag) => {

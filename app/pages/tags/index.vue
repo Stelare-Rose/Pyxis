@@ -9,6 +9,9 @@ import { nanoid } from 'nanoid'
 	const color = useColors();
 	const backgroundGradient = ref();
 	const titleInput = ref();
+	const { items } = storeToRefs(useItemStore());
+	const { tags } = storeToRefs(useTagsStore());
+	const selectedItem = ref();
 	
 	let ignoreNext = false;
 	watch(selected, async () => {
@@ -16,14 +19,12 @@ import { nanoid } from 'nanoid'
 		if(selected.value == 'new'){
 			selectedItem.value = {id: nanoid(8), tag: 'New Tag', color: ['strawberry']}; 
 			//TODO: Random Color Generator for Fun !!
-			selectedTasks.value = null;
 			selected.value = selectedItem.value.id;
 			ignoreNext = true;
 			return;
 		} else {
 			await useItemStore().loadBy({ type: 'tags', value: selected.value });
 			selectedItem.value = await GetTagById(selected.value);
-			selectedTasks.value = useItemStore().items;
 			selected.value = selectedItem.value.id;
 			backgroundGradient.value = `linear-gradient(90deg, ${getTagColor(selectedItem.value).map(x => x + '25').join(',')})`;
 			nextTick(() => {
@@ -31,14 +32,6 @@ import { nanoid } from 'nanoid'
 			})
 		}
 	});
-	const selectedItem = ref();
-	const selectedTasks = ref();
-	const store = useTagsStore();
-	const { tags } = storeToRefs(store);
-	console.log(tags);
-	watch(tags, () => {
-		console.log(tags);
-	})
 
 	const removeItem = (index: number) => {
 		if(selectedItem.value.color.length > 1)
@@ -49,7 +42,7 @@ import { nanoid } from 'nanoid'
 	}, {deep: true});
 
 	const debounceUpdate = debounce(() => {
-		if(selectedItem.value.tag == 'New Tag' && tags.find(x => x.id == selectedItem.value.id) === undefined){
+		if(selectedItem.value.tag == 'New Tag' && tags.value.find(x => x.id == selectedItem.value.id) === undefined){
 			return;
 		}
 		updateTags(selectedItem.value);
@@ -86,15 +79,15 @@ import { nanoid } from 'nanoid'
 							<Icon style="margin-right: 4px" :height='18' :width='18'><Palette /></Icon>Colors 
 						</div>
 						<div style="flex-wrap: wrap">
-							<template v-for="(c, index) in selectedItem.color">
+							<template v-for="(c , index) in selectedItem.color">
 								<span 
 									style="transition: 0.2s all ease; padding: 0px 4px; border-radius: 8px; display: inline-block; cursor: default;" 
 									@mouseenter="hovered=selectedItem.id + c + index" 
 									@mouseleave="hovered=''" 
-									:style="{backgroundColor: (color.pastel[c] + ((hovered == selectedItem.id + c + index) ? '60' : '00'))}" 
+									:style="{backgroundColor: (color.pastel[c as PastelKey] + ((hovered == selectedItem.id + c + index) ? '60' : '00'))}" 
 									@click="removeItem(index)"
 								>
-									<Icon style="margin-right: 2px":height='12' :width='12'><Circle :fillColor="color.pastel[c]" :strokeColor="color.pastel[c]"/></Icon>
+									<Icon style="margin-right: 2px":height='12' :width='12'><Circle :fillColor="color.pastel[c as PastelKey]" :strokeColor="color.pastel[c as PastelKey]"/></Icon>
 									{{c.charAt(0).toUpperCase() + c.substring(1)}} 
 								</span>
 							</template>
@@ -115,11 +108,11 @@ import { nanoid } from 'nanoid'
 					</template>
 				</section>
 			</section>
-			<section class="tags-tasks" v-if="selectedTasks && selectedTasks.length > 0">
+			<section class="tags-tasks" v-if="items && items.length > 0">
 				<section style="width: 320px; height: 100%;">
 					<div :style="{backgroundImage: backgroundGradient, 'width': 'auto', 'padding': '8px 0px', 'border-radius': '12px', 'box-sizing': 'border-box', 'margin': '8px 0px'}">
-						<div v-for="item in selectedTasks" :key="item.id">
-							<TaskItem :item="item" :isHovered="Hovered == item.id" @mouseenter="Hovered = item.id"  @mouseleave="Hovered = ''"/>
+						<div v-for="item in items" :key="item.id">
+							<TaskItem :item="item" :isHovered="Hovered == item.id" @mouseenter="Hovered = item.id"  @mouseleave="Hovered = ''" :key="item.id + item.fingerprint"/>
 						</div>
 					</div>
 				</section>
