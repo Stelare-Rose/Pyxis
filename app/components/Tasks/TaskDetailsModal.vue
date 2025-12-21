@@ -14,9 +14,9 @@
 	//Shortcuts
 	hotkeys.filter = () => true
 	hotkeys('esc', (e) => {
-		console.log(e.key);
 		disable();
 	});
+
 	//Styling
 	const trashColor = ref('#000');
 	const colors = useColors();
@@ -29,6 +29,7 @@
 	const startDate = ref();
 	const endDate = ref();
 	const priorityDate = ref();
+	const completedDate = ref();
 	const tagList = ref<({value: string, label: string, color: string[]} | undefined)[]>();
 	const description = ref<string>();
 
@@ -76,18 +77,18 @@
 	const UpdatePriorityDate = (modelData: any) => {
 		item.value.priorityDate = moment(modelData).toISOString(true);
 	}
+	const UpdateCompletedDate = (modelData: any) => {
+		item.value.completedDate = moment(modelData).toISOString(true);
+	}
 	
 	// Event Handlers
 	const enabled = ref(false);
 	const event = async (e:boolean) => {
-		console.log("Loading Modal!");
-		console.log(item);
 		enabled.value = e;
 		if(e) uiStore.canscroll = false;
 		else {
 			uiStore.canscroll = true;
 			item.value = {id: '0', name:'', type:'Task', status: 'Todo', fingerprint: '0'};
-			console.log(item);
 			return;
 		}
 		tagsOptions.value = tags.value.map(x => ({label: x.tag, value: x.id, color: x.color, trackBy: x.tag}));
@@ -101,21 +102,20 @@
 		}
 
 	}
-	const disable = () => {
-		if(item.value.name && item.value.type && item.value.status) SaveData();
+	const disable = async () => {
+		if(item.value.name && item.value.type && item.value.status) await SaveData();
 		HideTaskModal();
 	}
 	const loadItem = async (i: Item) => {
 		description.value = await getItemDescription(i);
-		item.value = i;
+		item.value = { ...i };
 		type.value = types.value.find(x => x.label == item.value.type) ?? {value: ['Task', 'orange,lemon'], label: 'Task', color: 'orange,lemon'};
 		status.value = statuses.value.find(x => x.label == item.value.status) ?? {value: ['Todo', 'strawberry'], label: 'Todo', color: 'strawberry'};
 		startDate.value = item.value.startDate;
 		endDate.value = item.value.endDate;
 		priorityDate.value = item.value.priorityDate;
+		completedDate.value = item.value.completedDate;
 		tagList.value = item.value.tags?.flatMap(x => (tagsOptions.value.find(t => t.label == x.tag))) ?? [];
-		console.log("Loading Item!");
-		console.log(item.value);
 	}
 
 	// Event Listeners
@@ -132,7 +132,6 @@
 
 	//Filesystem Bindings
 	const SaveData = async () => {
-		console.log("Attempting Save");
 		item.value.description = description.value;
 		await useItemStore().upsertItem(item.value);
 	}
@@ -182,7 +181,16 @@
 								</template>
 								</Multiselect>
 							</div>
-						</div>
+						</div>	
+						<div class="property" v-if="item.status == 'Done'">
+							<div class="row">
+								<Icon :height='24' :width='24' style="margin-right: 8px"><Check :strokeColor="colors.text.mint"/></Icon>
+								<div class="medium-text">Completed Date</div>
+							</div>
+							<div class="row-property">
+								<vue-date-picker v-model="completedDate" :text-input="{ maskFormat: 'DD/MM/YYYY'}" :formats="{input: 'dd/MM/yyyy'}" @update:model-value="UpdateCompletedDate" :time-config="{ enableTimePicker: false }"></vue-date-picker>
+							</div>
+						</div>	
 						<div class="property">
 							<div class="row">
 								<Icon :height='24' :width='24' style="margin-right: 8px"><CalendarCheck :strokeColor="colors.text.leaf" /></Icon>
@@ -210,15 +218,7 @@
 								<vue-date-picker v-model="priorityDate" :text-input="{ maskFormat: 'DD/MM/YYYY'}" :formats="{input: 'dd/MM/yyyy'}" @update:model-value="UpdatePriorityDate" :time-config="{ enableTimePicker: false }"></vue-date-picker>
 							</div>
 						</div>	
-						<div class="property" v-if="item.status == 'Done'">
-							<div class="row">
-								<Icon :height='24' :width='24' style="margin-right: 8px"><Star :strokeColor="colors.text.lilac"/></Icon>
-								<div class="medium-text">Completed Date</div>
-							</div>
-							<div class="row-property">
-								<vue-date-picker v-model="priorityDate" :text-input="{ maskFormat: 'DD/MM/YYYY'}" :formats="{input: 'dd/MM/yyyy'}" @update:model-value="UpdatePriorityDate" :time-config="{ enableTimePicker: false }"></vue-date-picker>
-							</div>
-						c</div>	
+
 						<div class="property">
 							<div class="row">
 								<Icon :height='24' :width='24' style="margin-right: 8px"><Tags /></Icon>

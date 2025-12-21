@@ -32,27 +32,27 @@
 
 	const onListChange = async (event: any) => {
 		Hovered.value = '';
+		const item = { ...event.data };
 		if (event.from.id == event.to.id) return;
 
 		if (event.from.id == 'Priority') event.data.priorityDate = '';
 		if (event.to.id == 'Priority'){
-			event.data.status = event.from.id;
-			event.data.priorityDate = today;
-			await useItemStore().upsertItemWithoutDescription(event.data);
+			item.status = event.from.id;
+			item.priorityDate = today;
+			await useItemStore().upsertItemWithoutDescription(item);
 			return;
 		}
-		if (event.data) {
-			event.data.status = event.to.id;
+		if (item) {
+			item.status = event.to.id;
 			switch(event.to.id){
 				case 'Done': {
 					if(event.from.id == 'Priority'){
-						event.data.priorityDate = '';
+						item.priorityDate = '';
 					}
-					event.data.completedDate = today;
 					break;
 				}
 			}
-			await useItemStore().upsertItemWithoutDescription(event.data);
+			await useItemStore().upsertItemWithoutDescription(item);
 		}
 	}
 

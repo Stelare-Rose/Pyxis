@@ -33,16 +33,21 @@ export const useItemStore = defineStore('item', () => {
 	}
 
 	async function upsertItem(item: Item){
+		const log = { ... item }
 		// Normalize Dates in Case They're Empty
 		item.startDate = item.startDate ?? null;
 		item.endDate = item.endDate ?? null;
 		item.priorityDate = item.priorityDate ?? null;
-		console.log("Writing Item " + item.name);
+
 		const idx = items.value.findIndex(x => x.id == item.id);
 		if(idx != -1){
+			// Item Checks
+			// Note we use the database version to avoid accidental reference issues
+			CompletedCheck(item, await GetById(item.id));
 			items.value[idx] = item;
 		}
 		else {
+			CompletedCheck(item);
 			items.value.push(item);
 		}
 		

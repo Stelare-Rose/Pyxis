@@ -5,6 +5,7 @@ import { environment } from '~/stores/environment';
 var db: Database;
 var fingerprint: string;
 const fileName = environment.env == 'dev' ? 'fingerprint-dev' : 'fingerprint';
+let init = false;
 
 async function ReadDatabase() {
 	const f = await readTextFile(fileName, {baseDir: BaseDirectory.AppConfig});
@@ -14,6 +15,8 @@ async function ReadDatabase() {
 }
 
 export async function DatabaseInit(){
+	if(init) return;
+	init = true;
 	await watch(fileName, async (e) => {
 		console.log("Detected Reload!");
 		if(e.type['access']) return;
@@ -46,10 +49,11 @@ const parseRow: (x: ItemRow) => Item = (x: ItemRow) => {
 		type: isType(x.type) ? x.type : null,
 		name: x.name,
 		path: x.path,
-		status: isStatus(x.status) ? x.status : undefined,
+		status: isStatus(x.status) ? x.status : 'Todo',
 		endDate: x.endDate,
 		startDate: x.startDate,
 		priorityDate: x.priorityDate,
+		completedDate: x.completedDate,
 		tags: x.tags ? 
 			x.tags.split(';')
 		.map(
@@ -138,13 +142,13 @@ export const GetAllByTag = async (filter: string) => {
 
 export const GetById = async (id: string) => {
 	if(!db) await ReadDatabase();
-	const result: ItemRow = await db.select(`
+	const result: ItemRow[] = await db.select(`
 											  SELECT * FROM ActiveItems i
 											  WHERE i.id = $1
 											  `,
 											  [id]
 											 );
-	const res: Item = parseRow(result);
+	const res: Item = parseRow(result[0]);
 	return res;
 }
 
