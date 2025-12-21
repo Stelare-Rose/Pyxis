@@ -33,7 +33,7 @@
 	const description = ref<string>();
 
 	//Default Values
-	const tags = ref((await GetAllTags()));
+	const { tags } = storeToRefs(useTagsStore());
 	const tagsOptions = ref(tags.value.map(x => ({label: x.tag, value: x.id, color: x.color})));
 	const startTime = ref({ hours: 23, minutes: 59 });
 	const types = ref([
@@ -52,7 +52,7 @@
 		statuses.value = statuses.value.map(x => { x.disabled = (x.label == 'Todo' || x.label == 'Doing') && option.label == 'Event'; return x});
 		if(option.label == 'Event' && status.value.label == 'Todo'){
 			status.value = {value: ['Scheduled', 'blueberry'], label: 'Scheduled', color: 'blueberry'}
-			item.value.status = isStatus(status.value.label) ? status.value.label : undefined;
+			item.value.status = isStatus(status.value.label) ? status.value.label : 'Todo';
 		}
 		item.value.type = option.label;
 	}
@@ -90,7 +90,6 @@
 			console.log(item);
 			return;
 		}
-		tags.value = await GetAllTags();
 		tagsOptions.value = tags.value.map(x => ({label: x.tag, value: x.id, color: x.color, trackBy: x.tag}));
 		if(item.value.id == '0'){
 			description.value = '';
@@ -132,13 +131,13 @@
 	})
 
 	//Filesystem Bindings
-	const SaveData = () => {
-		const path = "Active/" + item.value.name;
+	const SaveData = async () => {
+		console.log("Attempting Save");
 		item.value.description = description.value;
-		writeFile(item.value, path);
+		await useItemStore().upsertItem(item.value);
 	}
-	const Delete =() => {
-		deleteFile(item.value);
+	const Delete = async () => {
+		await useItemStore().deleteItem(item.value);
 		HideTaskModal();
 	}
 	
@@ -210,7 +209,16 @@
 							<div class="row-property">
 								<vue-date-picker v-model="priorityDate" :text-input="{ maskFormat: 'DD/MM/YYYY'}" :formats="{input: 'dd/MM/yyyy'}" @update:model-value="UpdatePriorityDate" :time-config="{ enableTimePicker: false }"></vue-date-picker>
 							</div>
-						</div>
+						</div>	
+						<div class="property" v-if="item.status == 'Done'">
+							<div class="row">
+								<Icon :height='24' :width='24' style="margin-right: 8px"><Star :strokeColor="colors.text.lilac"/></Icon>
+								<div class="medium-text">Completed Date</div>
+							</div>
+							<div class="row-property">
+								<vue-date-picker v-model="priorityDate" :text-input="{ maskFormat: 'DD/MM/YYYY'}" :formats="{input: 'dd/MM/yyyy'}" @update:model-value="UpdatePriorityDate" :time-config="{ enableTimePicker: false }"></vue-date-picker>
+							</div>
+						c</div>	
 						<div class="property">
 							<div class="row">
 								<Icon :height='24' :width='24' style="margin-right: 8px"><Tags /></Icon>

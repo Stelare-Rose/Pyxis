@@ -9,6 +9,7 @@ export const useItemStore = defineStore('item', () => {
 		query.value = q;
 		await reload();
 	}
+
 	async function reload(){
 		switch(query.value.type){
 			case 'all':
@@ -26,5 +27,36 @@ export const useItemStore = defineStore('item', () => {
 		useDatabaseBus('reload', () => reload());
 	}
 
-	return {items, reload, loadBy, init};
+	async function upsertItemWithoutDescription(item: Item){
+		item.description = await getItemDescription(item);	
+		upsertItem(item);
+	}
+
+	async function upsertItem(item: Item){
+		// Normalize Dates in Case They're Empty
+		item.startDate = item.startDate ?? null;
+		item.endDate = item.endDate ?? null;
+		item.priorityDate = item.priorityDate ?? null;
+		console.log("Writing Item " + item.name);
+		const idx = items.value.findIndex(x => x.id == item.id);
+		if(idx != -1){
+			items.value[idx] = item;
+		}
+		else {
+			items.value.push(item);
+		}
+		
+		writeFile(item, "Active/" + item.name);
+
+	}
+
+	async function deleteItem(item: Item){
+		const idx = items.value.findIndex(x => x.id == item.id);
+		if(idx != -1){
+			items.value.splice(idx, 1);
+			await deleteFile(item);
+		}
+	}
+
+	return {items, reload, loadBy, deleteItem, upsertItem, upsertItemWithoutDescription, init};
 });

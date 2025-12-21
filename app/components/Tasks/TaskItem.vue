@@ -57,12 +57,12 @@
 		if(!props.isPriority) item.priorityDate = moment().endOf('day').set({ second: 0, millisecond: 0 }).toISOString(true);
 		else if(item.status == 'Done') item.status = 'Todo';
 		else item.status = 'Done';
-		await updateItem(item);
+		await useItemStore().upsertItem(item);
 	}
 
 	const updateStatusAlt = async () => {
 		item.priorityDate = moment().add(1, 'day').endOf('day').set({ second: 0, millisecond: 0 }).toISOString(true);
-		await updateItem(item);
+		await useItemStore().upsertItem(item);
 	}
 
 </script>
@@ -99,7 +99,7 @@
 			<div v-if="item.priorityDate && !(remove?.includes('priorityDate')) && moment(item.priorityDate).unix() > moment().unix()" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Star :strokeColor="colors.text.lilac" /></Icon>
 				<span v-if="!item.priorityDate.includes('T') || (moment(item.priorityDate).isSame(moment(item.priorityDate).endOf('day').seconds(0).milliseconds(0)))" class="medium-text" >{{moment(item.priorityDate).format("LL")}}</span>
-				<span v-else class="medium-text">{{moment(item.priorityDate).format("LLL")}}</span>
+				<span v-else class="medium-text">{{moment(item.priorityDate).format("LL")}}</span>
 			</div>
 			<div v-if="item.tags" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Tags /></Icon>

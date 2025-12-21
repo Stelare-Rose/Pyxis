@@ -6,7 +6,7 @@
 	let ItemsTodo = computed(() =>  buckets.value.Todo);
 	let ItemsDoing = computed(() =>  buckets.value.Doing);
 	let ItemsScheduled = computed(() =>  buckets.value.Scheduled);
-	let ItemsDone = computed(() =>  buckets.value.Done);
+	let ItemsDone = computed(() =>  buckets.value.Done.reverse());
 	let ItemsPriority = computed(() =>  buckets.value.Priority);
 	const { items } = storeToRefs(useItemStore());
 
@@ -38,7 +38,7 @@
 		if (event.to.id == 'Priority'){
 			event.data.status = event.from.id;
 			event.data.priorityDate = today;
-			await updateItem(event.data);
+			await useItemStore().upsertItemWithoutDescription(event.data);
 			return;
 		}
 		if (event.data) {
@@ -52,7 +52,7 @@
 					break;
 				}
 			}
-			await updateItem(event.data);
+			await useItemStore().upsertItemWithoutDescription(event.data);
 		}
 	}
 
