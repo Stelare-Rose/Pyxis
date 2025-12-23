@@ -9,7 +9,7 @@ import { nanoid } from 'nanoid'
 	const color = useColors();
 	const backgroundGradient = ref();
 	const titleInput = ref();
-	const { items } = storeToRefs(useItemStore());
+	const { queriedItems: items } = storeToRefs(useItemStore());
 	const { tags } = storeToRefs(useTagsStore());
 	const selectedItem = ref();
 	

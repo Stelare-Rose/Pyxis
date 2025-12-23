@@ -1,9 +1,20 @@
 import { defineStore } from 'pinia';
 
-export type Query = { type: 'all' } | { type: 'tags', value: '' } 
+export type Query = { type: 'all' } | { type: 'tags', value: string } 
 export const useItemStore = defineStore('item', () => {
 	const items: Ref<Item[]> = ref<Item[]>([]);
 	const query: Ref<Query> = ref<Query>({ type: 'all' });
+	const queriedItems = computed(() => {
+		const q = query.value;
+
+		switch(q.type){
+			case 'tags':
+				return items.value.filter(item => item.tags?.some(t => t.id === q.value));
+		}
+
+		return items.value;
+	});
+
 
 	async function loadBy(q: Query){
 		query.value = q;
@@ -11,14 +22,7 @@ export const useItemStore = defineStore('item', () => {
 	}
 
 	async function reload(){
-		switch(query.value.type){
-			case 'all':
-				items.value = await GetAllItems();
-				break;
-			case 'tags':
-				items.value = await GetAllByTag(query.value.value);
-				break;
-		}
+		items.value = await GetAllItems();
 	}
 
 	async function init(){
@@ -33,7 +37,7 @@ export const useItemStore = defineStore('item', () => {
 	}
 
 	async function upsertItem(item: Item){
-		const log = { ... item }
+		if(item.description === undefined) item.description = await getItemDescription(item);	
 		// Normalize Dates in Case They're Empty
 		item.startDate = item.startDate ?? null;
 		item.endDate = item.endDate ?? null;
@@ -42,6 +46,7 @@ export const useItemStore = defineStore('item', () => {
 		const idx = items.value.findIndex(x => x.id == item.id);
 		if(idx != -1){
 			// Item Checks
+
 			// Note we use the database version to avoid accidental reference issues
 			CompletedCheck(item, await GetById(item.id));
 			items.value[idx] = item;
@@ -63,5 +68,5 @@ export const useItemStore = defineStore('item', () => {
 		}
 	}
 
-	return {items, reload, loadBy, deleteItem, upsertItem, upsertItemWithoutDescription, init};
+	return {items, queriedItems, reload, loadBy, deleteItem, upsertItem, upsertItemWithoutDescription, init};
 });
