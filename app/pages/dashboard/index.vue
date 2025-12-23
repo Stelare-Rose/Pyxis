@@ -21,7 +21,7 @@
 		};
 
 		for(const item of items.value){
-			if(moment(item.priorityDate).date() == moment().date()){
+			if(moment(item.priorityDate).startOf('day').unix() == moment().startOf('day').unix()){
 				result["Priority"].push(item);
 				continue;
 			}
