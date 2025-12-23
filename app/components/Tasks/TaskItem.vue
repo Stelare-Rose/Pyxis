@@ -57,12 +57,12 @@
 		if(!props.isPriority) item.priorityDate = moment().endOf('day').set({ second: 0, millisecond: 0 }).toISOString(true);
 		else if(item.status == 'Done') item.status = 'Todo';
 		else item.status = 'Done';
-		await useItemStore().upsertItem(item);
+		await useItemStore().upsertItemWithoutDescription(item);
 	}
 
 	const updateStatusAlt = async () => {
 		item.priorityDate = moment().add(1, 'day').endOf('day').set({ second: 0, millisecond: 0 }).toISOString(true);
-		await useItemStore().upsertItem(item);
+		await useItemStore().upsertItemWithoutDescription(item);
 	}
 
 </script>
