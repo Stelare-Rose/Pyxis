@@ -26,24 +26,8 @@ export async function DatabaseInit(){
 	await ReadDatabase();
 }
 
-/*
-export const GetDebug = async () => {
-	const result: ItemRow[] = await db.select(`
-												SELECT i.id, i.name, i.type, i.path, i.status, i.endDate, i.startDate, GROUP_CONCAT(t.id || ':' || t.tag || ':' || t.color, ';') AS tags,
-												DATE('now') - DATE(i.endDate)
-												FROM items i
-												LEFT JOIN items_tags it ON i.id = it.item_id
-												LEFT JOIN tags t ON it.tag_id = t.id
-												WHERE i.isArchived = 0
-												GROUP BY i.id
-												ORDER BY i.name ASC
-												`);
 
-	return result;
-}
-*/
-
-const parseRow: (x: ItemRow) => Item = (x: ItemRow) => {
+const parseItemRow: (x: ItemRow) => Item = (x: ItemRow) => {
 	let res: Item = {
 		id: x.id ?? 0,
 		type: isType(x.type) ? x.type : null,
@@ -65,21 +49,55 @@ const parseRow: (x: ItemRow) => Item = (x: ItemRow) => {
 	}
 	return res;
 }
-const parseRows: (row: ItemRow[]) => Item[] = (row: ItemRow[]) => {
-	let res: Item[] = row.map(x => parseRow(x))	
+const parseItemRows: (row: ItemRow[]) => Item[] = (row: ItemRow[]) => {
+	let res: Item[] = row.map(x => parseItemRow(x))	
+	return res;
+}
+
+const parseIdeaRow: (x: IdeaRow) => Idea = (x: IdeaRow) => {
+let res: Idea = {
+	id: x.id ?? 0,
+	name: x.name,
+	status: x.status ?? 'Pending',
+	path: x.path,
+	createdDate: x.createdDate,
+	priorityDate: x.priorityDate,
+	completedDate: x.completedDate,
+	tags: x.tags ? 
+		x.tags.split(';')
+	.map(
+		t => {let [id, tag, rawColor] = t.split(':'); 
+			const color = rawColor.split(','); 
+			return {id, tag, color} as Tag}
+	) : undefined,
+	fingerprint: x.fingerprint,
+}
+return res;
+}
+
+const parseIdeaRows: (row: IdeaRow[]) => Idea[] = (row: IdeaRow[]) => {
+	let res: Idea[] = row.map(x => parseIdeaRow(x))	
 	return res;
 }
 
 export const GetAllItems: () => Promise<Item[]> = async () => {
 	if(!db) await ReadDatabase();
 	console.time("query");
-	const result: ItemRow[] = await db.select(`
-											  SELECT * FROM ActiveItems i
-											  `);
+	const result: ItemRow[] = await db.select(`SELECT * FROM ActiveItems`);
 	
 	console.timeEnd("query");
 	console.log(result);
-	return parseRows(result);
+	return parseItemRows(result);
+}
+
+export const GetAllIdeas: () => Promise<Idea[]> = async () => {
+	if(!db) await ReadDatabase();
+	console.time("idea query");
+	const result: IdeaRow[] = await db.select(`SELECT * FROM ActiveIdeas`);
+
+	console.timeEnd("idea query");
+	console.log(result);
+	return parseIdeaRows(result);
 }
 
 export const GetAllByStatus: (filter: string) => Promise<Item[]> = async (filter: string) => {
@@ -91,7 +109,7 @@ export const GetAllByStatus: (filter: string) => Promise<Item[]> = async (filter
 											  AND (substr(i.priorityDate, 1, 10) != DATE('now', 'localtime') OR i.priorityDate = '')
 											  `, [filter]);
 
-	return parseRows(result);
+	return parseItemRows(result);
 }
 
 export const GetLimitedByStatus: (filter: string, limit: number) => Promise<Item[]> = async (filter: string, limit: number) => {
@@ -102,7 +120,7 @@ export const GetLimitedByStatus: (filter: string, limit: number) => Promise<Item
 											  AND (substr(i.priorityDate, 1, 10) != DATE('now', 'localtime') OR i.priorityDate = '')
 											  LIMIT $2
 											  `, [filter, limit]);
-	return parseRows(result);
+	return parseItemRows(result);
 }
 export const GetPriority: (offset?: number) => Promise<Item[]> = async (offset: number = 0) => {
 	if(!db) await ReadDatabase();
@@ -115,7 +133,7 @@ export const GetPriority: (offset?: number) => Promise<Item[]> = async (offset: 
 											 );
 
 
-	let res: Item[] = parseRows(result);
+	let res: Item[] = parseItemRows(result);
 	res = res.sort(Sort());
 	return res;
 }
@@ -135,7 +153,7 @@ export const GetAllByTag = async (filter: string) => {
 											  `,
 											  [filter]
 											 );
-	let res: Item[] = parseRows(result);
+	let res: Item[] = parseItemRows(result);
 	res = res.sort(Sort('doneLast'));
 	return res;
 }
@@ -148,7 +166,7 @@ export const GetById = async (id: string) => {
 											  `,
 											  [id]
 											 );
-	const res: Item = parseRow(result[0]);
+	const res: Item = parseItemRow(result[0]);
 	return res;
 }
 

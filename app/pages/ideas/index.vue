@@ -1,13 +1,9 @@
 <script setup lang="ts">
-	import { useItemStore } from '~/stores/items';
-
-	await useItemStore().reload();
-	const allItems = useItemStore().items;
-	console.log(allItems);
+	const { ideas } = storeToRefs(useIdeaStore());
 </script>
 <template>
 	<div class="container">
-		
+		{{ideas}}
 	</div>
 </template>
 <style scoped>
