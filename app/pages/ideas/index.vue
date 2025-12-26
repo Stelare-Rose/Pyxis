@@ -1,9 +1,12 @@
 <script setup lang="ts">
 	const { ideas } = storeToRefs(useIdeaStore());
+	const Hovered = ref();
 </script>
 <template>
 	<div class="container">
-		{{ideas}}
+		<template v-for="idea in ideas" :key="idea.id + idea.fingerprint">
+			<div><IdeaItem :item="idea" :isHovered="Hovered == idea.id" @mouseenter="Hovered = idea.id"  @mouseleave="Hovered = ''"/></div>
+		</template>
 	</div>
 </template>
 <style scoped>
