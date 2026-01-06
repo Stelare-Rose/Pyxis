@@ -19,7 +19,7 @@ export async function DatabaseInit(){
 	init = true;
 	await watch(fileName, async (e) => {
 		console.log("Detected Reload!");
-		if(e.type['access']) return;
+		if(typeof e.type === 'object' && 'access' in e.type) return;
 		await ReadDatabase();
 		ReloadDatabase();
 	},{ baseDir: BaseDirectory.AppConfig, delayMs: 20 });
