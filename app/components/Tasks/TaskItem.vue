@@ -159,22 +159,21 @@
 	.container {
 		border-radius: 12px;
 		width: 280px;
-		background-color: var(--foam);
 		margin: 20px;
 		position: relative;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		z-index: 0;
 	}
-
 	.container::before {
 		content: '';
-		height: 100%;
-		width: 100%;
 		position: absolute;
-		box-shadow: 0 4px 5px #61616150;
+		inset: 0;
+		background-color: var(--foam); /* container’s background */
 		border-radius: 12px;
-		z-index: -2;
+		box-shadow: 0 4px 5px #61616150; /* shadow now visible */
+		z-index: 0;
 	}
 
 	.container::after {

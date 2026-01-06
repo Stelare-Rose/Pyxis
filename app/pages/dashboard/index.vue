@@ -68,7 +68,6 @@
 	})
 </script>
 <template>
-	<ClientOnly>
 	<div class="container">
 		<section style="min-width: 320px">
 			<TagsContainer :color='[color.pastel.lilac]' :textColor='[color.text.lilac]' :text="`Today's Priority (${ItemsPriority.length.toString()})`" size="medium" style="margin: 8px 0px 8px 0px" />
@@ -139,25 +138,7 @@
 				</div>
 			</VueDraggable>
 		</section>
-		<section style="min-width: 320px; margin-left: 8px">
-			<TagsContainer :color='[color.pastel.leaf]' :textColor='[color.text.leaf]' :text="`Done (${ItemsDone.length.toString()})`" size="medium" style="margin: 8px 0px 8px 0px" />
-			<VueDraggable 
-				v-model="ItemsDone" 
-				group="tasks" 
-				@end="onListChange" 
-				:animation="150"
-				ghostClass="ghost"
-				:sort="false"
-				@move="checkMove"
-				:style="{'background-color': (color.pastel.leaf + '20'), 'height': '100%', 'padding-top': '8px', 'border-radius': '12px'}"
-				id="Done"> 
-				<div v-for="item in ItemsDone.slice(0, 20)" :key="item.id + item.fingerprint">
-					<TaskItem :item="item" :remove="['status', 'dateColor']" :isHovered="Hovered == item.id" @mouseenter="Hovered = item.id"  @mouseleave="Hovered = ''"/>
-				</div>
-			</VueDraggable>
-		</section>
 	</div>
-	</ClientOnly>
 </template>
 <style scoped>
 	.container {

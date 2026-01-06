@@ -3,6 +3,9 @@ import { defineStore } from 'pinia';
 export type Query = { type: 'all' } | { type: 'tags', value: string } 
 export const useItemStore = defineStore('item', () => {
 	const items: Ref<Item[]> = ref<Item[]>([]);
+	const itemsDone = computed(() => {
+		return items.value.filter(item => item.status == 'Done').reverse();
+	});
 	const query: Ref<Query> = ref<Query>({ type: 'all' });
 	const queriedItems = computed(() => {
 		const q = query.value;
@@ -68,5 +71,5 @@ export const useItemStore = defineStore('item', () => {
 		}
 	}
 
-	return {items, queriedItems, reload, loadBy, deleteItem, upsertItem, upsertItemWithoutDescription, init};
+	return {items, queriedItems, itemsDone, reload, loadBy, deleteItem, upsertItem, upsertItemWithoutDescription, init};
 });

@@ -22,6 +22,7 @@ hotkeys('ctrl + n', () => {
 				<NewIdea />
 			</div>
 			<div class="right">
+				<Done />
 			</div>
 		</div>
 	</div>
@@ -89,7 +90,6 @@ hotkeys('ctrl + n', () => {
 		background-color: var(--cream);
 		height: calc(100vh - 36px - 48px); /* full viewport minus topbar */
 		overflow-y: hidden;
-		scroll-behavior: smooth;
 	}
 	.can-scroll {
 		overflow-y: auto;
