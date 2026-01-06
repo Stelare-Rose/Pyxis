@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "dev-Pyxis",
+        "title": "Pyxis",
         "width": 800,
         "height": 600,
         "resizable": true,
