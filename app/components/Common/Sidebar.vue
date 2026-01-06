@@ -11,8 +11,8 @@
 		<Icon id="kanban" :width='24' :height='24'class="icon" @mouseenter="hovered = $event.target.id" @mouseleave="hovered = ''">
 		<Kanban 
 			  :stroke-color="
-							 hovered == 'kanban' ? color.text.strawberry :
-							 (route.path == '/dashboard' ? color.pastel.strawberry : '#000')"
+							 hovered == 'kanban' ? color.text.lilac :
+							 (route.path == '/dashboard' ? color.pastel.lilac : '#000')"
 			  />
 		</Icon>
 		</NuxtLink>
@@ -20,8 +20,8 @@
 		<Icon id="tags" :width='24' :height='24' @mouseenter="hovered = $event.target.id" @mouseleave="hovered = ''">
 			<Tags 
 				:stroke-color="
-					hovered == 'tags' ? color.text.orange : 
-					(route.path == '/tags' ? color.pastel.orange : '#000')"
+					hovered == 'tags' ? color.text.lilac : 
+					(route.path == '/tags' ? color.pastel.lilac : '#000')"
 				/>
 		</Icon>
 		</NuxtLink>	
@@ -29,8 +29,8 @@
 		<Icon id="ideas" :width='24' :height='24' @mouseenter="hovered = $event.target.id" @mouseleave="hovered = ''">
 			<SquareExclamation 
 				:stroke-color="
-					hovered == 'ideas' ? color.text.leaf : 
-					(route.path == '/ideas' ? color.pastel.leaf : '#000')"
+					hovered == 'ideas' ? color.text.lilac : 
+					(route.path == '/ideas' ? color.pastel.lilac : '#000')"
 				/>
 		</Icon>
 		</NuxtLink>
