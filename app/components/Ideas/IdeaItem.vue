@@ -47,20 +47,15 @@ import SquareExclamation from '../Icons/Square-Exclamation.vue';
 			<div class="large-text">
 				{{item.name}}
 			</div>
-			<div v-if="(item.status && !(remove?.includes('status'))) || item.endDate || item.tags" class="divider" />
+			<div v-if="(item.status && !(remove?.includes('status'))) || item.createdDate || item.tags" class="divider" />
 			<div v-if="item.status && !(remove?.includes('status'))" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Question /></Icon>
 				<TagsContainer :textColor='getStatusTextColor(item.status)' :color='getStatusColor(item.status)' :text='item.status' :key='item.status'/>
 			</div>
-			<div v-if="item.startDate" class="row">
-				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarCheck :strokeColor="colors.text.leaf" /></Icon>
-				<span v-if="!item.startDate.includes('T') || (moment(item.startDate).isSame(moment(item.startDate).endOf('day').seconds(0).milliseconds(0)))" class="medium-text" >{{moment(item.startDate).format("LL")}}</span>
-				<span v-else class="medium-text">{{moment(item.startDate).format("LLL")}}</span>
-			</div>
-			<div v-if="item.endDate" class="row">
+			<div v-if="item.createdDate" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarExclamation :strokeColor="colors.text.strawberry" /></Icon>
-				<span v-if="!item.endDate.includes('T') || (moment(item.endDate).isSame(moment(item.endDate).endOf('day').seconds(0).milliseconds(0)))" class="medium-text" >{{moment(item.endDate).format("LL")}}</span>
-				<span v-else class="medium-text">{{moment(item.endDate).format("LLL")}}</span>
+				<span v-if="!item.createdDate.includes('T') || (moment(item.createdDate).isSame(moment(item.createdDate).endOf('day').seconds(0).milliseconds(0)))" class="medium-text" >{{moment(item.createdDate).format("LL")}}</span>
+				<span v-else class="medium-text">{{moment(item.createdDate).format("LLL")}}</span>
 			</div>
 			<div v-if="item.priorityDate && !(remove?.includes('priorityDate')) && moment(item.priorityDate).unix() > moment().unix()" class="row">
 				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Star :strokeColor="colors.text.lilac" /></Icon>

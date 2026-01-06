@@ -35,6 +35,8 @@ export const getStatusColor: (status: string) => string[] = (status: string) => 
 			return [colors.pastel.blueberry, colors.pastel.blueberry];
 		case 'Done':
 			return [colors.pastel.leaf, colors.pastel.leaf];
+		case 'Pending':
+			return [colors.pastel.lilac, colors.pastel.lilac];
 		default:
 			return [colors.text_1, colors.subtext_2];
 	}
@@ -49,6 +51,8 @@ export const getStatusTextColor: (status: string) => string[] = (status: string)
 			return [colors.text.blueberry, colors.text.blueberry];
 		case 'Done':
 			return [colors.text.leaf, colors.text.leaf];
+		case 'Pending':
+			return [colors.text.lilac, colors.text.lilac];
 		default:
 			return [colors.text_1, colors.subtext_2];
 	}
