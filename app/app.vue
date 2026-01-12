@@ -1,31 +1,32 @@
 <script setup lang=ts>
-	CheckDataDirectory("Pyxis", true)
-	CheckDataDirectory("Pyxis/Items", true)
-	CheckDataDirectory("Pyxis/Items/Active", true)
-	CheckDataDirectory("Pyxis/Ideas", true)
-	CheckDataDirectory("Pyxis/Ideas/Active", true)
-	CheckDataDirectory("Pyxis/Repeatables", true)
-	if(environment.env == 'dev'){
-		CheckDataDirectory("Pyxis-dev", true)
-		CheckDataDirectory("Pyxis-dev/Items", true)
-		CheckDataDirectory("Pyxis-dev/Items/Active", true)
-		CheckDataDirectory("Pyxis-dev/Ideas", true)
-		CheckDataDirectory("Pyxis-dev/Ideas/Active", true)
-		CheckDataDirectory("Pyxis-dev/Repeatables", true)
-	}
-	CheckCacheDirectory("", true)
+CheckDataDirectory('Pyxis', true)
+CheckDataDirectory('Pyxis/Items', true)
+CheckDataDirectory('Pyxis/Items/Active', true)
+CheckDataDirectory('Pyxis/Ideas', true)
+CheckDataDirectory('Pyxis/Ideas/Active', true)
+CheckDataDirectory('Pyxis/Repeatables', true)
+if (environment.env == 'dev') {
+  CheckDataDirectory('Pyxis-dev', true)
+  CheckDataDirectory('Pyxis-dev/Items', true)
+  CheckDataDirectory('Pyxis-dev/Items/Active', true)
+  CheckDataDirectory('Pyxis-dev/Ideas', true)
+  CheckDataDirectory('Pyxis-dev/Ideas/Active', true)
+  CheckDataDirectory('Pyxis-dev/Repeatables', true)
+}
+CheckCacheDirectory('', true)
 
-	onBeforeMount(() => {
-		DatabaseInit();
-		useItemStore().init();
-		useIdeaStore().init();
-		useTagsStore().init();
-	});
+onBeforeMount(() => {
+  DatabaseInit()
+  useItemStore().init()
+  useIdeaStore().init()
+  useTagsStore().init()
+})
 </script>
+
 <template>
-	<NuxtLayout>
-		<NuxtPage />
-	</NuxtLayout>
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
 
 <style>

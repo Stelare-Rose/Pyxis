@@ -1,44 +1,43 @@
-import { defineStore } from 'pinia';
+import { defineStore } from 'pinia'
 
 export const useIdeaStore = defineStore('idea', () => {
-	const ideas: Ref<Idea[]> = ref<Idea[]>([]);
-	const query: Ref<Query> = ref<Query>({ type: 'all' });
-	const queriedItems = computed(() => {
-		const q = query.value;
+  const ideas: Ref<Idea[]> = ref<Idea[]>([])
+  const query: Ref<Query> = ref<Query>({ type: 'all' })
+  const queriedItems = computed(() => {
+    const q = query.value
 
-		switch(q.type){
-			case 'tags':
-				return ideas.value.filter(item => item.tags?.some(t => t.id === q.value));
-		}
+    switch (q.type) {
+      case 'tags':
+        return ideas.value.filter(item => item.tags?.some(t => t.id === q.value))
+    }
 
-		return ideas.value;
-	});
+    return ideas.value
+  })
 
+  async function loadBy(q: Query) {
+    query.value = q
+    await reload()
+  }
 
-	async function loadBy(q: Query){
-		query.value = q;
-		await reload();
-	}
+  async function reload() {
+    ideas.value = await GetAllIdeas()
+  }
 
-	async function reload(){
-		ideas.value = await GetAllIdeas();
-	}
+  async function init() {
+    console.log('Initializing Ideas')
+    ideas.value = await GetAllIdeas()
+    query.value = { type: 'all' }
+    useDatabaseBus('reload', () => reload())
+  }
 
-	async function init(){
-		console.log("Initializing Ideas");
-		ideas.value = await GetAllIdeas();
-		query.value = { type: 'all' };
-		useDatabaseBus('reload', () => reload());
-	}
-
-	/*
+  /*
 	async function upsertItemWithoutDescription(item: Item){
-		item.description = await getItemDescription(item);	
+		item.description = await getItemDescription(item);
 		upsertItem(item);
 	}
 
 	async function upsertItem(item: Item){
-		if(item.description === undefined) item.description = await getItemDescription(item);	
+		if(item.description === undefined) item.description = await getItemDescription(item);
 		// Normalize Dates in Case They're Empty
 		item.startDate = item.startDate ?? null;
 		item.endDate = item.endDate ?? null;
@@ -56,7 +55,7 @@ export const useIdeaStore = defineStore('idea', () => {
 			CompletedCheck(item);
 			items.value.push(item);
 		}
-		
+
 		writeFile(item, "Active/" + item.name);
 
 	}
@@ -70,5 +69,5 @@ export const useIdeaStore = defineStore('idea', () => {
 	}
 	*/
 
-	return {ideas, queriedItems, reload, loadBy, init};
-});
+  return { ideas, queriedItems, reload, loadBy, init }
+})

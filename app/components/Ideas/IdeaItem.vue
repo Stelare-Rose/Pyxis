@@ -1,77 +1,159 @@
 <script setup lang=ts>
-	import { isNaN } from 'lodash';
-	import moment from 'moment';
-import SquareExclamation from '../Icons/Square-Exclamation.vue';
-	const props = defineProps<{
-		item: Idea,
-		remove?: string[];
-		isHovered?: boolean;
-		isPriority?: boolean;
-	}>()
-	const item = props.item
-	const colors = useColors();
+import { isNaN } from 'lodash'
+import moment from 'moment'
+import SquareExclamation from '../Icons/Square-Exclamation.vue'
 
-	const OpenItem = (e: any) => {
-		if(e.ctrlKey) return;
-	}
-	//TODO: Add Comments you fool
-	const isOverdue = () => {
-		return 'none'
-	}
+const props = defineProps<{
+  item: Idea
+  remove?: string[]
+  isHovered?: boolean
+  isPriority?: boolean
+}>()
+const item = props.item
+const colors = useColors()
 
-	const starColor = (s: string) => {
-		switch(s){
-			case 'In Progress':
-				return colors.pastel.lemon;
-			case 'Not Started':
-				return colors.pastel.leaf;
-			case 'Overdue':
-				return colors.pastel.strawberry;
-			case 'Today':
-				return colors.pastel.plum;
-		}
-	}
+const OpenItem = (e: any) => {
+  if (e.ctrlKey) return
+}
+// TODO: Add Comments you fool
+const isOverdue = () => {
+  return 'none'
+}
 
+const starColor = (s: string) => {
+  switch (s) {
+    case 'In Progress':
+      return colors.pastel.lemon
+    case 'Not Started':
+      return colors.pastel.leaf
+    case 'Overdue':
+      return colors.pastel.strawberry
+    case 'Today':
+      return colors.pastel.plum
+  }
+}
 </script>
 
 <template>
-	<div @contextmenu.prevent class="container" :class="{'hovered-animation': props.isHovered}" @click="OpenItem">
-		<Icon v-if="isOverdue() != 'none'" :height='18' :width='18' class='top-right'><Star :strokeColor="starColor(isOverdue())" :fillColor="starColor(isOverdue())"/></Icon>
-		<div class="content">
-			<div class="row">
-				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" >
-				<SquareExclamation :strokeColor="colors.text.blueberry"/>
-				</Icon>
-				<span class="small-text">Idea</span>
-			</div>
-			<div class="large-text">
-				{{item.name}}
-			</div>
-			<div v-if="(item.status && !(remove?.includes('status'))) || item.createdDate || item.tags" class="divider" />
-			<div v-if="item.status && !(remove?.includes('status'))" class="row">
-				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Question /></Icon>
-				<TagsContainer :textColor='getStatusTextColor(item.status)' :color='getStatusColor(item.status)' :text='item.status' :key='item.status'/>
-			</div>
-			<div v-if="item.createdDate" class="row">
-				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarExclamation :strokeColor="colors.text.strawberry" /></Icon>
-				<span v-if="!item.createdDate.includes('T') || (moment(item.createdDate).isSame(moment(item.createdDate).endOf('day').seconds(0).milliseconds(0)))" class="medium-text" >{{moment(item.createdDate).format("LL")}}</span>
-				<span v-else class="medium-text">{{moment(item.createdDate).format("LLL")}}</span>
-			</div>
-			<div v-if="item.priorityDate && !(remove?.includes('priorityDate')) && moment(item.priorityDate).unix() > moment().unix()" class="row">
-				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Star :strokeColor="colors.text.lilac" /></Icon>
-				<span v-if="!item.priorityDate.includes('T') || (moment(item.priorityDate).isSame(moment(item.priorityDate).endOf('day').seconds(0).milliseconds(0)))" class="medium-text" >{{moment(item.priorityDate).format("LL")}}</span>
-				<span v-else class="medium-text">{{moment(item.priorityDate).format("LL")}}</span>
-			</div>
-			<div v-if="item.tags" class="row">
-				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Tags /></Icon>
-				<div class="tags">
-					<template v-for="tag in item.tags" key="tag">
-						<TagsContainer :textColor='getTagTextColor(tag)' :color='getTagColor(tag)' :text='tag.tag' />
-					</template>
-				</div>
-			</div>
-		</div>
-	</div>
+  <div
+    class="container"
+    :class="{ 'hovered-animation': props.isHovered }"
+    @contextmenu.prevent
+    @click="OpenItem"
+  >
+    <Icon
+      v-if="isOverdue() != 'none'"
+      :height="18"
+      :width="18"
+      class="top-right"
+    >
+      <Star
+        :stroke-color="starColor(isOverdue())"
+        :fill-color="starColor(isOverdue())"
+      />
+    </Icon>
+    <div class="content">
+      <div class="row">
+        <Icon
+          :height="18"
+          :width="18"
+          style="margin: 0 4px 0 0"
+        >
+          <SquareExclamation :stroke-color="colors.text.blueberry" />
+        </Icon>
+        <span class="small-text">Idea</span>
+      </div>
+      <div class="large-text">
+        {{ item.name }}
+      </div>
+      <div
+        v-if="(item.status && !(remove?.includes('status'))) || item.createdDate || item.tags"
+        class="divider"
+      />
+      <div
+        v-if="item.status && !(remove?.includes('status'))"
+        class="row"
+      >
+        <Icon
+          :height="18"
+          :width="18"
+          style="margin: 0 4px 0 0"
+        >
+          <Question />
+        </Icon>
+        <TagsContainer
+          :key="item.status"
+          :text-color="getStatusTextColor(item.status)"
+          :color="getStatusColor(item.status)"
+          :text="item.status"
+        />
+      </div>
+      <div
+        v-if="item.createdDate"
+        class="row"
+      >
+        <Icon
+          :height="18"
+          :width="18"
+          style="margin: 0 4px 0 0"
+        >
+          <CalendarExclamation :stroke-color="colors.text.strawberry" />
+        </Icon>
+        <span
+          v-if="!item.createdDate.includes('T') || (moment(item.createdDate).isSame(moment(item.createdDate).endOf('day').seconds(0).milliseconds(0)))"
+          class="medium-text"
+        >{{ moment(item.createdDate).format("LL") }}</span>
+        <span
+          v-else
+          class="medium-text"
+        >{{ moment(item.createdDate).format("LLL") }}</span>
+      </div>
+      <div
+        v-if="item.priorityDate && !(remove?.includes('priorityDate')) && moment(item.priorityDate).unix() > moment().unix()"
+        class="row"
+      >
+        <Icon
+          :height="18"
+          :width="18"
+          style="margin: 0 4px 0 0"
+        >
+          <Star :stroke-color="colors.text.lilac" />
+        </Icon>
+        <span
+          v-if="!item.priorityDate.includes('T') || (moment(item.priorityDate).isSame(moment(item.priorityDate).endOf('day').seconds(0).milliseconds(0)))"
+          class="medium-text"
+        >{{ moment(item.priorityDate).format("LL") }}</span>
+        <span
+          v-else
+          class="medium-text"
+        >{{ moment(item.priorityDate).format("LL") }}</span>
+      </div>
+      <div
+        v-if="item.tags"
+        class="row"
+      >
+        <Icon
+          :height="18"
+          :width="18"
+          style="margin: 0 4px 0 0"
+        >
+          <Tags />
+        </Icon>
+        <div class="tags">
+          <template
+            v-for="tag in item.tags"
+            key="tag"
+          >
+            <TagsContainer
+              :text-color="getTagTextColor(tag)"
+              :color="getTagColor(tag)"
+              :text="tag.tag"
+            />
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -169,5 +251,4 @@ import SquareExclamation from '../Icons/Square-Exclamation.vue';
 		initial-value: 0deg;
 		inherits: false;
 	}
-	
 </style>

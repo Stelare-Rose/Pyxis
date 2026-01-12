@@ -7,7 +7,9 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@iarna/toml": "^2.2.5",
@@ -45,9 +47,12 @@
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
+    "@nuxt/eslint": "^1.12.1",
     "@tauri-apps/cli": "^2.6.2",
     "@types/lodash": "^4.17.20",
     "@types/uuid": "^10.0.0",
-    "@types/vue-select": "^3.16.8"
+    "@types/vue-select": "^3.16.8",
+    "eslint": "^9.39.2",
+    "typescript": "^5.9.3"
   }
 }

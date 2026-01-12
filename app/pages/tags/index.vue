@@ -1,124 +1,206 @@
 <script setup lang=ts>
-import { debounce } from 'lodash';
+import { debounce } from 'lodash'
 import { nanoid } from 'nanoid'
 
-	// UI Bindings
-	const hovered = ref();
-	const Hovered = ref();
-	const selected = ref();
-	const color = useColors();
-	const backgroundGradient = ref();
-	const titleInput = ref();
-	const { queriedItems: items } = storeToRefs(useItemStore());
-	const { tags } = storeToRefs(useTagsStore());
-	const selectedItem = ref();
-	
-	let ignoreNext = false;
-	watch(selected, async () => {
-		if(ignoreNext) { ignoreNext = false; return; }
-		if(selected.value == 'new'){
-			selectedItem.value = {id: nanoid(8), tag: 'New Tag', color: ['strawberry']}; 
-			//TODO: Random Color Generator for Fun !!
-			selected.value = selectedItem.value.id;
-			ignoreNext = true;
-			return;
-		} else {
-			await useItemStore().loadBy({ type: 'tags', value: selected.value });
-			selectedItem.value = await GetTagById(selected.value);
-			selected.value = selectedItem.value.id;
-			backgroundGradient.value = `linear-gradient(90deg, ${getTagColor(selectedItem.value).map(x => x + '25').join(',')})`;
-			nextTick(() => {
-				titleInput.value.focus()
-			})
-		}
-	});
+// UI Bindings
+const hovered = ref()
+const Hovered = ref()
+const selected = ref()
+const color = useColors()
+const backgroundGradient = ref()
+const titleInput = ref()
+const { queriedItems: items } = storeToRefs(useItemStore())
+const { tags } = storeToRefs(useTagsStore())
+const selectedItem = ref()
 
-	const removeItem = (index: number) => {
-		if(selectedItem.value.color.length > 1)
-		selectedItem.value.color = selectedItem.value.color.slice(0, index).concat(selectedItem.value.color.slice(index + 1))
-	}
-	watch(selectedItem, async () => {
-		debounceUpdate();
-	}, {deep: true});
+let ignoreNext = false
+watch(selected, async () => {
+  if (ignoreNext) { ignoreNext = false; return }
+  if (selected.value == 'new') {
+    selectedItem.value = { id: nanoid(8), tag: 'New Tag', color: ['strawberry'] }
+    // TODO: Random Color Generator for Fun !!
+    selected.value = selectedItem.value.id
+    ignoreNext = true
+    return
+  }
+  else {
+    await useItemStore().loadBy({ type: 'tags', value: selected.value })
+    selectedItem.value = await GetTagById(selected.value)
+    selected.value = selectedItem.value.id
+    backgroundGradient.value = `linear-gradient(90deg, ${getTagColor(selectedItem.value).map(x => x + '25').join(',')})`
+    nextTick(() => {
+      titleInput.value.focus()
+    })
+  }
+})
 
-	const debounceUpdate = debounce(() => {
-		if(selectedItem.value.tag == 'New Tag' && tags.value.find(x => x.id == selectedItem.value.id) === undefined){
-			return;
-		}
-		updateTags(selectedItem.value);
-	}, 500);
+const removeItem = (index: number) => {
+  if (selectedItem.value.color.length > 1)
+    selectedItem.value.color = selectedItem.value.color.slice(0, index).concat(selectedItem.value.color.slice(index + 1))
+}
+watch(selectedItem, async () => {
+  debounceUpdate()
+}, { deep: true })
+
+const debounceUpdate = debounce(() => {
+  if (selectedItem.value.tag == 'New Tag' && tags.value.find(x => x.id == selectedItem.value.id) === undefined) {
+    return
+  }
+  updateTags(selectedItem.value)
+}, 500)
 </script>
+
 <template>
-	<section class="container-tags">
-		<section class="browser">
-			<template v-for="tag in tags" :key="tag.id">
-				<div class="tag" @mouseenter="hovered=tag.id" @mouseleave="hovered=''" @click="selected = tag.id" :class="{hovered: (hovered == tag.id || selected == tag.id)}">
-					<TagsContainer :color="getTagColor(tag)" :textColor="getTagTextColor(tag)" :text="tag.tag" size="small" opaque :key="tag.id + tag.tag + tag.color.join()"/>
-				</div>
-			</template>
-			<div class="tag" @mouseenter="hovered='new'" @mouseleave="hovered=''" @click="selected = 'new'" :class="{hovered: (hovered == 'new')}" style="justify-content: center; display: flex;"> <Icon :height="18" :width="18"><Plus /></Icon>
-			</div>
-		</section>
-		<section v-if="selectedItem" class="tag-content">
-			<section class="data">
-				<section class="preview">
-					<TagsContainer :color="getTagColor(selectedItem)" :textColor="getTagTextColor(selectedItem)" :text="selectedItem.tag" size="medium" :key="Math.random()"/>
-					<div>Preview</div>
-				</section>
-				<section class="tag-data">
-					<div class="property">
-						<div style="display: flex; align-items: center;">
-							<Icon style="margin-right: 4px" :height='18' :width='18'><Tags /></Icon>Name
-						</div>
-						<div>
-							<input class="text-input" ref="titleInput" v-model="selectedItem.tag" placeholder="Untitled" />
-						</div>
-					</div>
-					<div class="property">
-						<div style="display: flex; align-items: center;">
-							<Icon style="margin-right: 4px" :height='18' :width='18'><Palette /></Icon>Colors 
-						</div>
-						<div style="flex-wrap: wrap">
-							<template v-for="(c , index) in selectedItem.color">
-								<span 
-									style="transition: 0.2s all ease; padding: 0px 4px; border-radius: 8px; display: inline-block; cursor: default;" 
-									@mouseenter="hovered=selectedItem.id + c + index" 
-									@mouseleave="hovered=''" 
-									:style="{backgroundColor: (color.pastel[c as PastelKey] + ((hovered == selectedItem.id + c + index) ? '60' : '00'))}" 
-									@click="removeItem(index)"
-								>
-									<Icon style="margin-right: 2px":height='12' :width='12'><Circle :fillColor="color.pastel[c as PastelKey]" :strokeColor="color.pastel[c as PastelKey]"/></Icon>
-									{{c.charAt(0).toUpperCase() + c.substring(1)}} 
-								</span>
-							</template>
-						</div>
-					</div>
-				</section>
-				<section class="color-picker">
-					<template v-for="(c, name) in color.pastel">
-						<span 
-							@click="selectedItem.color.push(name)" 
-							style="transition: 0.2s all ease; padding: 2px; border-radius: 24px; align-items: center; justify-content: center; display: flex;"
-							:style="{backgroundColor: (c + ((hovered == name + c + 'button') ? '60' : '00'))}"
-							@mouseenter="hovered=name + c + 'button' "
-							@mouseleave="hovered=''"
-							>
-							<Icon :height='18' :width='18'><Circle :fillColor="c" :strokeColor="c"/></Icon>
-						</span>
-					</template>
-				</section>
-			</section>
-			<section class="tags-tasks" v-if="items && items.length > 0">
-				<section style="width: 320px; height: 100%;">
-					<div :style="{backgroundImage: backgroundGradient, 'width': 'auto', 'padding': '8px 0px', 'border-radius': '12px', 'box-sizing': 'border-box', 'margin': '8px 0px'}">
-						<div v-for="item in items" :key="item.id">
-							<TaskItem :item="item" :isHovered="Hovered == item.id" @mouseenter="Hovered = item.id"  @mouseleave="Hovered = ''" :key="item.id + item.fingerprint"/>
-						</div>
-					</div>
-				</section>
-			</section>
-		</section>
-	</section>
+  <section class="container-tags">
+    <section class="browser">
+      <template
+        v-for="tag in tags"
+        :key="tag.id"
+      >
+        <div
+          class="tag"
+          :class="{ hovered: (hovered == tag.id || selected == tag.id) }"
+          @mouseenter="hovered=tag.id"
+          @mouseleave="hovered=''"
+          @click="selected = tag.id"
+        >
+          <TagsContainer
+            :key="tag.id + tag.tag + tag.color.join()"
+            :color="getTagColor(tag)"
+            :text-color="getTagTextColor(tag)"
+            :text="tag.tag"
+            size="small"
+            opaque
+          />
+        </div>
+      </template>
+      <div
+        class="tag"
+        :class="{ hovered: (hovered == 'new') }"
+        style="justify-content: center; display: flex;"
+        @mouseenter="hovered='new'"
+        @mouseleave="hovered=''"
+        @click="selected = 'new'"
+      >
+        <Icon
+          :height="18"
+          :width="18"
+        >
+          <Plus />
+        </Icon>
+      </div>
+    </section>
+    <section
+      v-if="selectedItem"
+      class="tag-content"
+    >
+      <section class="data">
+        <section class="preview">
+          <TagsContainer
+            :key="Math.random()"
+            :color="getTagColor(selectedItem)"
+            :text-color="getTagTextColor(selectedItem)"
+            :text="selectedItem.tag"
+            size="medium"
+          />
+          <div>Preview</div>
+        </section>
+        <section class="tag-data">
+          <div class="property">
+            <div style="display: flex; align-items: center;">
+              <Icon
+                style="margin-right: 4px"
+                :height="18"
+                :width="18"
+              >
+                <Tags />
+              </Icon>Name
+            </div>
+            <div>
+              <input
+                ref="titleInput"
+                v-model="selectedItem.tag"
+                class="text-input"
+                placeholder="Untitled"
+              >
+            </div>
+          </div>
+          <div class="property">
+            <div style="display: flex; align-items: center;">
+              <Icon
+                style="margin-right: 4px"
+                :height="18"
+                :width="18"
+              >
+                <Palette />
+              </Icon>Colors
+            </div>
+            <div style="flex-wrap: wrap">
+              <template v-for="(c, index) in selectedItem.color">
+                <span
+                  style="transition: 0.2s all ease; padding: 0px 4px; border-radius: 8px; display: inline-block; cursor: default;"
+                  :style="{ backgroundColor: (color.pastel[c as PastelKey] + ((hovered == selectedItem.id + c + index) ? '60' : '00')) }"
+                  @mouseenter="hovered=selectedItem.id + c + index"
+                  @mouseleave="hovered=''"
+                  @click="removeItem(index)"
+                >
+                  <Icon
+                    style="margin-right: 2px"
+                    :height="12"
+                    :width="12"
+                  ><Circle
+                    :fill-color="color.pastel[c as PastelKey]"
+                    :stroke-color="color.pastel[c as PastelKey]"
+                  /></Icon>
+                  {{ c.charAt(0).toUpperCase() + c.substring(1) }}
+                </span>
+              </template>
+            </div>
+          </div>
+        </section>
+        <section class="color-picker">
+          <template v-for="(c, name) in color.pastel">
+            <span
+              style="transition: 0.2s all ease; padding: 2px; border-radius: 24px; align-items: center; justify-content: center; display: flex;"
+              :style="{ backgroundColor: (c + ((hovered == name + c + 'button') ? '60' : '00')) }"
+              @click="selectedItem.color.push(name)"
+              @mouseenter="hovered=name + c + 'button' "
+              @mouseleave="hovered=''"
+            >
+              <Icon
+                :height="18"
+                :width="18"
+              ><Circle
+                :fill-color="c"
+                :stroke-color="c"
+              /></Icon>
+            </span>
+          </template>
+        </section>
+      </section>
+      <section
+        v-if="items && items.length > 0"
+        class="tags-tasks"
+      >
+        <section style="width: 320px; height: 100%;">
+          <div :style="{ 'backgroundImage': backgroundGradient, 'width': 'auto', 'padding': '8px 0px', 'border-radius': '12px', 'box-sizing': 'border-box', 'margin': '8px 0px' }">
+            <div
+              v-for="item in items"
+              :key="item.id"
+            >
+              <TaskItem
+                :key="item.id + item.fingerprint"
+                :item="item"
+                :is-hovered="Hovered == item.id"
+                @mouseenter="Hovered = item.id"
+                @mouseleave="Hovered = ''"
+              />
+            </div>
+          </div>
+        </section>
+      </section>
+    </section>
+  </section>
 </template>
 
 <style scoped>
@@ -187,11 +269,11 @@ import { nanoid } from 'nanoid'
 		grid-column: 1;
 		grid-row-start: 1;
 		grid-row-end: 3;
-	}	
+	}
 	.tag-data {
 		display: grid;
-		grid-template-columns: auto 1fr;		
-		gap: 0.5rem 1rem;	
+		grid-template-columns: auto 1fr;
+		gap: 0.5rem 1rem;
 		align-items: center;
 		padding: 24px;
 		background-color: var(--foam);
@@ -228,5 +310,4 @@ import { nanoid } from 'nanoid'
 	.text-input:focus {
 		border: 1px solid var(--lavender);
 	}
-
 </style>

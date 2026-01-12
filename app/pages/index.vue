@@ -1,9 +1,10 @@
 <script setup>
-const router = useRouter();
+const router = useRouter()
 onMounted(() => {
-  router.replace('/dashboard');
-  DatabaseInit();
-});
+  router.replace('/dashboard')
+  DatabaseInit()
+})
 </script>
+
 <template>
 </template>

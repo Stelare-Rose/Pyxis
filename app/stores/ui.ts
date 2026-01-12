@@ -1,4 +1,3 @@
 export const uiStore = reactive({
-  canscroll: true
+  canscroll: true,
 })
-

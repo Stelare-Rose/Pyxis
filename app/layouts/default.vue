@@ -1,32 +1,37 @@
 <script setup lang=ts>
-import { uiStore } from '~/stores/ui';
-import hotkeys from 'hotkeys-js';
+import { uiStore } from '~/stores/ui'
+import hotkeys from 'hotkeys-js'
 
 hotkeys('ctrl + n', () => {
-	ShowTaskModal();
+  ShowTaskModal()
 })
 </script>
+
 <template>
-	<div class="container">
-		<div class="sidebar-container">
-			<div class="sidebar">
-				<Sidebar />
-			</div>
-			<main class="content" :class="{'can-scroll': uiStore.canscroll}" ref="content">
-				<slot />
-			</main>
-		</div>
-		<div class="topbar">
-			<div class="left">
-				<NewTask />
-				<NewIdea />
-			</div>
-			<div class="right">
-				<Done />
-			</div>
-		</div>
-	</div>
-	<TaskDetailsModal />
+  <div class="container">
+    <div class="sidebar-container">
+      <div class="sidebar">
+        <Sidebar />
+      </div>
+      <main
+        ref="content"
+        class="content"
+        :class="{ 'can-scroll': uiStore.canscroll }"
+      >
+        <slot />
+      </main>
+    </div>
+    <div class="topbar">
+      <div class="left">
+        <NewTask />
+        <NewIdea />
+      </div>
+      <div class="right">
+        <Done />
+      </div>
+    </div>
+  </div>
+  <TaskDetailsModal />
 </template>
 
 <style scoped>

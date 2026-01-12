@@ -1,51 +1,54 @@
 <script setup lang=ts>
-	const props = defineProps({
-	  modelValue: {
-	  	type: String,
-	  },
-	})	
-	const emit = defineEmits(['update:modelValue']);
-	const internalValue = computed({
-	get() {
-		return props.modelValue;
-	},
-	set(value: string) {
-		return emit('update:modelValue', value);
-	},
-});
-  import { Milkdown, useEditor } from "@milkdown/vue";
-  import { Crepe, type CrepeConfig } from "@milkdown/crepe";
-  import "@milkdown/crepe/theme/common/style.css";
+import { Milkdown, useEditor } from '@milkdown/vue'
+import { Crepe, type CrepeConfig } from '@milkdown/crepe'
+import '@milkdown/crepe/theme/common/style.css'
 
-  //TODO: Refactor this mess.
-  const editorRef = ref<Crepe | null>(null);
-  useEditor((root) => {
-	const editor = new Crepe({
-	  root, 
-	  features: {[Crepe.Feature.ImageBlock]: false},
-	  featureConfigs: {
-        [Crepe.Feature.BlockEdit]: {
-		  handleAddIcon: '',
-		  handleDragIcon: '',
-		  blockHandle: {
-			shouldShow: () => false
-		  }
-		}
-	  },
-	  defaultValue: props.modelValue || '',
-	}) 
-	editorRef.value = editor;
-	editor.on((api) => {
-		api.updated(() => {
-			internalValue.value = editor.getMarkdown();
-		})
-	})
-	return editor
-  });
+const props = defineProps({
+  modelValue: {
+    type: String,
+  },
+})
+const emit = defineEmits(['update:modelValue'])
+const internalValue = computed({
+  get() {
+    return props.modelValue
+  },
+  set(value: string) {
+    return emit('update:modelValue', value)
+  },
+})
+
+// TODO: Refactor this mess.
+const editorRef = ref<Crepe | null>(null)
+useEditor((root) => {
+  const editor = new Crepe({
+    root,
+    features: { [Crepe.Feature.ImageBlock]: false },
+    featureConfigs: {
+      [Crepe.Feature.BlockEdit]: {
+        handleAddIcon: '',
+        handleDragIcon: '',
+        blockHandle: {
+          shouldShow: () => false,
+        },
+      },
+    },
+    defaultValue: props.modelValue || '',
+  })
+  editorRef.value = editor
+  editor.on((api) => {
+    api.updated(() => {
+      internalValue.value = editor.getMarkdown()
+    })
+  })
+  return editor
+})
 </script>
+
 <template>
-	<Milkdown />
+  <Milkdown />
 </template>
+
 <style>
 .milkdown {
   /* Background Colors */
@@ -87,8 +90,8 @@
 }
 .cm-activeLineGutter {
   background-color: var(--pink) !important;
-} 
-.cm-activeLine { 
+}
+.cm-activeLine {
   background-color: #DBB4D340 !important;
 }
 .cm-line {

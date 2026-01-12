@@ -1,116 +1,220 @@
 <script setup lang=ts>
-	import { isNaN } from 'lodash';
-	import moment from 'moment';
-	const props = defineProps<{
-		item: Item,
-		remove?: string[];
-		isHovered?: boolean;
-		isPriority?: boolean;
-	}>()
-	const item = props.item
-	const colors = useColors();
+import { isNaN } from 'lodash'
+import moment from 'moment'
 
-	const OpenItem = (e: any) => {
-		if(e.ctrlKey) return;
-		console.log(item);
-		console.log("Showing Task Modal!");
-		ShowTaskModal(item);
-	}
-	//TODO: Add Comments you fool
-	const isOverdue = () => {
-		const start = moment(item.startDate).unix();
-		const end = moment(item.endDate).unix();
-		const now = moment().unix();
-		if(item.status == 'Done') return 'none';
-		if(now > (isNaN(end) ? now : end)){
-			return 'Overdue'
-		}
-		if(moment(item.startDate).startOf('day').unix() == moment().startOf('day').unix() || moment(item.endDate).startOf('day').unix() == moment().startOf('day').unix()){
-			return 'Today'
-		}
-		if(start < now && now < end && !isNaN(start) && !isNaN(end)){
-			return 'In Progress'
-		}
-		if(now < (isNaN(start) ? end : start)){
-			return 'Not Started'
-		}
-		if(now > (isNaN(start) ? now : start)){
-			return 'In Progress'
-		}
-		return 'none'
-	}
+const props = defineProps<{
+  item: Item
+  remove?: string[]
+  isHovered?: boolean
+  isPriority?: boolean
+}>()
+const item = props.item
+const colors = useColors()
 
-	const starColor = (s: string) => {
-		switch(s){
-			case 'In Progress':
-				return colors.pastel.lemon;
-			case 'Not Started':
-				return colors.pastel.leaf;
-			case 'Overdue':
-				return colors.pastel.strawberry;
-			case 'Today':
-				return colors.pastel.plum;
-		}
-	}
+const OpenItem = (e: any) => {
+  if (e.ctrlKey) return
+  console.log(item)
+  console.log('Showing Task Modal!')
+  ShowTaskModal(item)
+}
+// TODO: Add Comments you fool
+const isOverdue = () => {
+  const start = moment(item.startDate).unix()
+  const end = moment(item.endDate).unix()
+  const now = moment().unix()
+  if (item.status == 'Done') return 'none'
+  if (now > (isNaN(end) ? now : end)) {
+    return 'Overdue'
+  }
+  if (moment(item.startDate).startOf('day').unix() == moment().startOf('day').unix() || moment(item.endDate).startOf('day').unix() == moment().startOf('day').unix()) {
+    return 'Today'
+  }
+  if (start < now && now < end && !isNaN(start) && !isNaN(end)) {
+    return 'In Progress'
+  }
+  if (now < (isNaN(start) ? end : start)) {
+    return 'Not Started'
+  }
+  if (now > (isNaN(start) ? now : start)) {
+    return 'In Progress'
+  }
+  return 'none'
+}
 
-	const updateStatus = async () => {
-		if(!props.isPriority) item.priorityDate = moment().endOf('day').set({ second: 0, millisecond: 0 }).toISOString(true);
-		else if(item.status == 'Done') item.status = 'Todo';
-		else item.status = 'Done';
-		await useItemStore().upsertItemWithoutDescription(item);
-	}
+const starColor = (s: string) => {
+  switch (s) {
+    case 'In Progress':
+      return colors.pastel.lemon
+    case 'Not Started':
+      return colors.pastel.leaf
+    case 'Overdue':
+      return colors.pastel.strawberry
+    case 'Today':
+      return colors.pastel.plum
+  }
+}
 
-	const updateStatusAlt = async () => {
-		item.priorityDate = moment().add(1, 'day').endOf('day').set({ second: 0, millisecond: 0 }).toISOString(true);
-		await useItemStore().upsertItemWithoutDescription(item);
-	}
+const updateStatus = async () => {
+  if (!props.isPriority) item.priorityDate = moment().endOf('day').set({ second: 0, millisecond: 0 }).toISOString(true)
+  else if (item.status == 'Done') item.status = 'Todo'
+  else item.status = 'Done'
+  await useItemStore().upsertItemWithoutDescription(item)
+}
 
+const updateStatusAlt = async () => {
+  item.priorityDate = moment().add(1, 'day').endOf('day').set({ second: 0, millisecond: 0 }).toISOString(true)
+  await useItemStore().upsertItemWithoutDescription(item)
+}
 </script>
 
 <template>
-	<div @click.ctrl="updateStatus()" @click.right.ctrl="updateStatusAlt()" @contextmenu.prevent v-if="item.type != null" class="container" :class="{'hovered-animation': props.isHovered}" @click="OpenItem">
-		<Icon v-if="isOverdue() != 'none'" :height='18' :width='18' class='top-right'><Star :strokeColor="starColor(isOverdue())" :fillColor="starColor(isOverdue())"/></Icon>
-		<div class="content">
-			<div class="row">
-				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" >
-				<template v-if="item.type == 'Task'"><Clipboard :strokeColor="colors.text.orange"/></template>
-				<template v-if="item.type == 'Event'"><Calendar :strokeColor="colors.text.blueberry"/></template>
-				</Icon>
-				<span class="small-text">{{item.type}}</span>
-			</div>
-			<div class="large-text">
-				{{item.name}}
-			</div>
-			<div v-if="(item.status && !(remove?.includes('status'))) || item.endDate || item.tags" class="divider" />
-			<div v-if="item.status && !(remove?.includes('status'))" class="row">
-				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Question /></Icon>
-				<TagsContainer :textColor='getStatusTextColor(item.status)' :color='getStatusColor(item.status)' :text='item.status' :key='item.status'/>
-			</div>
-			<div v-if="item.startDate" class="row">
-				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarCheck :strokeColor="colors.text.leaf" /></Icon>
-				<span v-if="!item.startDate.includes('T') || (moment(item.startDate).isSame(moment(item.startDate).endOf('day').seconds(0).milliseconds(0)))" class="medium-text" >{{moment(item.startDate).format("LL")}}</span>
-				<span v-else class="medium-text">{{moment(item.startDate).format("LLL")}}</span>
-			</div>
-			<div v-if="item.endDate" class="row">
-				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><CalendarExclamation :strokeColor="colors.text.strawberry" /></Icon>
-				<span v-if="!item.endDate.includes('T') || (moment(item.endDate).isSame(moment(item.endDate).endOf('day').seconds(0).milliseconds(0)))" class="medium-text" >{{moment(item.endDate).format("LL")}}</span>
-				<span v-else class="medium-text">{{moment(item.endDate).format("LLL")}}</span>
-			</div>
-			<div v-if="item.priorityDate && !(remove?.includes('priorityDate')) && moment(item.priorityDate).unix() > moment().unix()" class="row">
-				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Star :strokeColor="colors.text.lilac" /></Icon>
-				<span v-if="!item.priorityDate.includes('T') || (moment(item.priorityDate).isSame(moment(item.priorityDate).endOf('day').seconds(0).milliseconds(0)))" class="medium-text" >{{moment(item.priorityDate).format("LL")}}</span>
-				<span v-else class="medium-text">{{moment(item.priorityDate).format("LL")}}</span>
-			</div>
-			<div v-if="item.tags" class="row">
-				<Icon :height='18' :width='18' style="margin: 0 4px 0 0" ><Tags /></Icon>
-				<div class="tags">
-					<template v-for="tag in item.tags" key="tag">
-						<TagsContainer :textColor='getTagTextColor(tag)' :color='getTagColor(tag)' :text='tag.tag' />
-					</template>
-				</div>
-			</div>
-		</div>
-	</div>
+  <div
+    v-if="item.type != null"
+    class="container"
+    :class="{ 'hovered-animation': props.isHovered }"
+    @click.ctrl="updateStatus()"
+    @click.right.ctrl="updateStatusAlt()"
+    @contextmenu.prevent
+    @click="OpenItem"
+  >
+    <Icon
+      v-if="isOverdue() != 'none'"
+      :height="18"
+      :width="18"
+      class="top-right"
+    >
+      <Star
+        :stroke-color="starColor(isOverdue())"
+        :fill-color="starColor(isOverdue())"
+      />
+    </Icon>
+    <div class="content">
+      <div class="row">
+        <Icon
+          :height="18"
+          :width="18"
+          style="margin: 0 4px 0 0"
+        >
+          <template v-if="item.type == 'Task'">
+            <Clipboard :stroke-color="colors.text.orange" />
+          </template>
+          <template v-if="item.type == 'Event'">
+            <Calendar :stroke-color="colors.text.blueberry" />
+          </template>
+        </Icon>
+        <span class="small-text">{{ item.type }}</span>
+      </div>
+      <div class="large-text">
+        {{ item.name }}
+      </div>
+      <div
+        v-if="(item.status && !(remove?.includes('status'))) || item.endDate || item.tags"
+        class="divider"
+      />
+      <div
+        v-if="item.status && !(remove?.includes('status'))"
+        class="row"
+      >
+        <Icon
+          :height="18"
+          :width="18"
+          style="margin: 0 4px 0 0"
+        >
+          <Question />
+        </Icon>
+        <TagsContainer
+          :key="item.status"
+          :text-color="getStatusTextColor(item.status)"
+          :color="getStatusColor(item.status)"
+          :text="item.status"
+        />
+      </div>
+      <div
+        v-if="item.startDate"
+        class="row"
+      >
+        <Icon
+          :height="18"
+          :width="18"
+          style="margin: 0 4px 0 0"
+        >
+          <CalendarCheck :stroke-color="colors.text.leaf" />
+        </Icon>
+        <span
+          v-if="!item.startDate.includes('T') || (moment(item.startDate).isSame(moment(item.startDate).endOf('day').seconds(0).milliseconds(0)))"
+          class="medium-text"
+        >{{ moment(item.startDate).format("LL") }}</span>
+        <span
+          v-else
+          class="medium-text"
+        >{{ moment(item.startDate).format("LLL") }}</span>
+      </div>
+      <div
+        v-if="item.endDate"
+        class="row"
+      >
+        <Icon
+          :height="18"
+          :width="18"
+          style="margin: 0 4px 0 0"
+        >
+          <CalendarExclamation :stroke-color="colors.text.strawberry" />
+        </Icon>
+        <span
+          v-if="!item.endDate.includes('T') || (moment(item.endDate).isSame(moment(item.endDate).endOf('day').seconds(0).milliseconds(0)))"
+          class="medium-text"
+        >{{ moment(item.endDate).format("LL") }}</span>
+        <span
+          v-else
+          class="medium-text"
+        >{{ moment(item.endDate).format("LLL") }}</span>
+      </div>
+      <div
+        v-if="item.priorityDate && !(remove?.includes('priorityDate')) && moment(item.priorityDate).unix() > moment().unix()"
+        class="row"
+      >
+        <Icon
+          :height="18"
+          :width="18"
+          style="margin: 0 4px 0 0"
+        >
+          <Star :stroke-color="colors.text.lilac" />
+        </Icon>
+        <span
+          v-if="!item.priorityDate.includes('T') || (moment(item.priorityDate).isSame(moment(item.priorityDate).endOf('day').seconds(0).milliseconds(0)))"
+          class="medium-text"
+        >{{ moment(item.priorityDate).format("LL") }}</span>
+        <span
+          v-else
+          class="medium-text"
+        >{{ moment(item.priorityDate).format("LL") }}</span>
+      </div>
+      <div
+        v-if="item.tags"
+        class="row"
+      >
+        <Icon
+          :height="18"
+          :width="18"
+          style="margin: 0 4px 0 0"
+        >
+          <Tags />
+        </Icon>
+        <div class="tags">
+          <template
+            v-for="tag in item.tags"
+            key="tag"
+          >
+            <TagsContainer
+              :text-color="getTagTextColor(tag)"
+              :color="getTagColor(tag)"
+              :text="tag.tag"
+            />
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -207,5 +311,4 @@
 		initial-value: 0deg;
 		inherits: false;
 	}
-	
 </style>

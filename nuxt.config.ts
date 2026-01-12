@@ -1,22 +1,28 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: false,
-  compatibilityDate: '2025-05-15',
-  devtools: { enabled: true },
-  srcDir: './app/',
-  components: [ 
-	  {
-		  path: '~/components/',
-		  pathPrefix: false,
-	  }
-  ],
   modules: [
     '@pinia/nuxt',
+    '@nuxt/eslint',
   ],
+  ssr: false,
+  components: [
+    {
+      path: '~/components/',
+      pathPrefix: false,
+    },
+  ],
+  devtools: { enabled: true },
+  srcDir: './app/',
   build: {
-	  transpile: ['@vuepic/vue-datepicker']
+    transpile: ['@vuepic/vue-datepicker'],
   },
+  compatibilityDate: '2025-05-15',
   nitro: {
-    preset: 'static'
-  }
+    preset: 'static',
+  },
+  eslint: {
+    config: {
+      stylistic: true,
+    },
+  },
 })
