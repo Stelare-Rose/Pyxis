@@ -1,5 +1,5 @@
 export const ReloadDatabase = () => {
-  SendDatabaseBus('reload')
+  SendDatabaseBus('reload', true)
 }
 
 export const ShowTaskModal = (item?: Item) => {
@@ -11,4 +11,15 @@ export const ShowTaskModal = (item?: Item) => {
 
 export const HideTaskModal = () => {
   SendTaskModalBus('active', false)
+}
+
+export const ShowIdeaModal = (item?: Idea) => {
+  SendIdeaModalBus('active', true)
+  if (item) {
+    SendIdeaModalBus('item', item)
+  }
+}
+
+export const HideIdeaModal = () => {
+  SendIdeaModalBus('active', false)
 }

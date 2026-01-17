@@ -1,5 +1,4 @@
 <script setup lang=ts>
-import { isNaN } from 'lodash'
 import moment from 'moment'
 import SquareExclamation from '../Icons/Square-Exclamation.vue'
 
@@ -12,8 +11,9 @@ const props = defineProps<{
 const item = props.item
 const colors = useColors()
 
-const OpenItem = (e: any) => {
+const OpenItem = (e: MouseEvent) => {
   if (e.ctrlKey) return
+  ShowIdeaModal(item)
 }
 // TODO: Add Comments you fool
 const isOverdue = () => {
@@ -97,7 +97,7 @@ const starColor = (s: string) => {
           :width="18"
           style="margin: 0 4px 0 0"
         >
-          <CalendarExclamation :stroke-color="colors.text.strawberry" />
+          <CalendarExclamation :stroke-color="colors.text.leaf" />
         </Icon>
         <span
           v-if="!item.createdDate.includes('T') || (moment(item.createdDate).isSame(moment(item.createdDate).endOf('day').seconds(0).milliseconds(0)))"
@@ -142,7 +142,7 @@ const starColor = (s: string) => {
         <div class="tags">
           <template
             v-for="tag in item.tags"
-            key="tag"
+            :key="tag.id + tag.color"
           >
             <TagsContainer
               :text-color="getTagTextColor(tag)"

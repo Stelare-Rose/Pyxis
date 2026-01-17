@@ -8,30 +8,33 @@ hotkeys('ctrl + n', () => {
 </script>
 
 <template>
-  <div class="container">
-    <div class="sidebar-container">
-      <div class="sidebar">
-        <Sidebar />
+  <div>
+    <div class="container">
+      <div class="sidebar-container">
+        <div class="sidebar">
+          <Sidebar />
+        </div>
+        <main
+          ref="content"
+          class="content"
+          :class="{ 'can-scroll': uiStore.canscroll }"
+        >
+          <slot />
+        </main>
       </div>
-      <main
-        ref="content"
-        class="content"
-        :class="{ 'can-scroll': uiStore.canscroll }"
-      >
-        <slot />
-      </main>
+      <div class="topbar">
+        <div class="left">
+          <NewTask />
+          <NewIdea />
+        </div>
+        <div class="right">
+          <Done />
+        </div>
+      </div>
     </div>
-    <div class="topbar">
-      <div class="left">
-        <NewTask />
-        <NewIdea />
-      </div>
-      <div class="right">
-        <Done />
-      </div>
-    </div>
+    <TaskDetailsModal />
+    <IdeaDetailsModal />
   </div>
-  <TaskDetailsModal />
 </template>
 
 <style scoped>
