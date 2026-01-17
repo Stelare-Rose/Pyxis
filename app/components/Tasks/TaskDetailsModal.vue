@@ -5,17 +5,23 @@ import { VueDatePicker } from '@vuepic/vue-datepicker'
 import { v4 as uuidv4 } from 'uuid'
 import { uiStore } from '~/stores/ui'
 import hotkeys from 'hotkeys-js'
-
 // Style Imports
 import '@vuepic/vue-datepicker/dist/main.css'
 import '@vueform/multiselect/themes/default.css'
-import FileInfo from '../../Icons/File-Info.vue'
-import Question from '../../Icons/Question.vue'
-import Check from '../../Icons/Check.vue'
-import CalendarCheck from '../../Icons/CalendarCheck.vue'
-import CalendarExclamation from '../../Icons/CalendarExclamation.vue'
-import Star from '../../Icons/Star.vue'
-import Tags from '../../Icons/Tags.vue'
+import FileInfo from '../Icons/File-Info.vue'
+import Question from '../Icons/Question.vue'
+import Check from '../Icons/Check.vue'
+import CalendarCheck from '../Icons/CalendarCheck.vue'
+import CalendarExclamation from '../Icons/CalendarExclamation.vue'
+import Star from '../Icons/Star.vue'
+import Tags from '../Icons/Tags.vue'
+
+// Types
+interface MultiselectStatus {
+  value: string[]
+  label: ItemStatus
+  color: string
+}
 
 // Shortcuts
 hotkeys.filter = () => true
@@ -37,12 +43,22 @@ const startDate = ref()
 const endDate = ref()
 const priorityDate = ref()
 const completedDate = ref()
-const tagList = ref<({ value: string, label: string, color: string[] } | undefined)[]>()
+const tagList = computed({
+  get: () => {
+    return item.value.tags
+      ?.flatMap(x => tagsOptions.value.find(t => t.label == x.tag))
+      ?.filter((t): t is MultiselectTags => t !== undefined)
+  },
+  set: (val: MultiselectTags[]) => {
+    const mapped = val.map((x: MultiselectTags | undefined) => tags.value.find(t => t.id == x?.value)).filter((t): t is Tag => t !== undefined)
+    item.value.tags = mapped.length > 0 ? mapped : undefined
+  },
+})
 const description = ref<string>()
 
 // Default Values
 const { tags } = storeToRefs(useTagsStore())
-const tagsOptions = ref(tags.value.map(x => ({ label: x.tag, value: x.id, color: x.color })))
+const tagsOptions = ref<MultiselectTags[]>(tags.value.map(x => ({ label: x.tag, value: x.id, color: x.color })))
 const startTime = ref({ hours: 23, minutes: 59 })
 const types = ref([
   { value: ['Task', 'orange, lemon'], label: 'Task', color: 'orange,lemon' },
@@ -67,17 +83,10 @@ const UpdateType = (option: any) => {
   }
   item.value.type = option.label
 }
-const UpdateStatus = (option: any) => {
+const UpdateStatus = (option: MultiselectStatus) => {
   item.value.status = option.label
 }
-const UpdateTags = (option: any) => {
-  item.value.tags = option.map((x: any) => {
-    return tags.value.find(t => t.id == x.value)
-  })
-  if (option.length == 0) {
-    delete item.value.tags
-  }
-}
+
 const { updateDate } = useDateUpdate(item)
 
 // Event Handlers
@@ -113,7 +122,6 @@ const loadItem = async (i: Item) => {
   endDate.value = item.value.endDate
   priorityDate.value = item.value.priorityDate
   completedDate.value = item.value.completedDate
-  tagList.value = item.value.tags?.flatMap(x => (tagsOptions.value.find(t => t.label == x.tag))) ?? []
 }
 
 // Event Listeners
@@ -296,7 +304,6 @@ const Delete = async () => {
                     :close-on-select="false"
                     :caret="false"
                     :searchable="true"
-                    @change="UpdateTags"
                   >
                     <template #tag="{ option, handleTagRemove }">
                       <TagsContainer

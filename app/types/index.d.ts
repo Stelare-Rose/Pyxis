@@ -1,10 +1,12 @@
+export {}
 declare global {
+  // Item Types
   interface Item {
-    type: 'Task' | 'Event' | null
+    type: ItemType
     id: string
     name: string
     path?: string
-    status: 'Todo' | 'Doing' | 'Done' | 'Scheduled'
+    status: ItemStatus
     endDate?: DateTime
     startDate?: DateTime
     priorityDate?: DateTime
@@ -15,11 +17,11 @@ declare global {
     description?: string
   }
   interface ItemRow {
-    type: 'Task' | 'Event' | null
+    type: ItemType
     id: string
     name: string
     path: string
-    status?: 'Todo' | 'Doing' | 'Done' | 'Scheduled'
+    status?: ItemStatus
     endDate?: DateTime
     startDate?: DateTime
     priorityDate?: DateTime
@@ -32,7 +34,7 @@ declare global {
   interface Idea {
     id: string
     name: string
-    status: 'Pending' | 'Done'
+    status: IdeaStatus
     createdDate?: DateTime
     priorityDate?: DateTime
     completedDate?: DateTime
@@ -44,7 +46,7 @@ declare global {
   interface IdeaRow {
     id: string
     name: string
-    status?: 'Pending' | 'Done'
+    status?: IdeaStatus
     createdDate?: DateTime
     priorityDate?: DateTime
     completedDate?: DateTime
@@ -70,6 +72,18 @@ declare global {
     tag: string
     color: string
   }
-}
 
-export type Query = { type: 'all' } | { type: 'tags', value: string }
+  // Pinia
+  type Query = { type: 'all' } | { type: 'tags', value: string }
+  type ItemStatus = 'Todo' | 'Doing' | 'Scheduled' | 'Done'
+  type IdeaStatus = 'Pending' | 'Done'
+  type ItemType = 'Task' | 'Event'
+
+  // Input
+  interface MultiselectTags {
+    value: string
+    label: string
+    color: string[]
+  }
+
+}
