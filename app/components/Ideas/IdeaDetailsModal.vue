@@ -39,7 +39,7 @@ const item = ref<Idea>({ id: '0', name: '', status: 'Pending', fingerprint: '0' 
 const titleInput = ref()
 const status = computed({
   get: () => {
-    return item.value.status
+    return statuses.value.find(x => x.label == item.value.status)
   },
   set: (val: MultiselectStatus) => {
     item.value.status = val.label
@@ -85,7 +85,6 @@ const description = ref<string>()
 // Default Values
 const { tags } = storeToRefs(useTagsStore())
 const tagsOptions = ref<MultiselectTags[]>(tags.value.map(x => ({ label: x.tag, value: x.id, color: x.color })))
-const startTime = ref({ hours: 23, minutes: 59 })
 const statuses = ref<MultiselectStatus[]>([
   { value: ['Pending', 'lilac'], label: 'Pending', color: 'lilac' },
   { value: ['Done', 'mint'], label: 'Done', color: 'mint' },
