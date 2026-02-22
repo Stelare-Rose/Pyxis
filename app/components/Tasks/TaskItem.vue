@@ -75,7 +75,7 @@ const updateStatusAlt = async () => {
     @click.ctrl="updateStatus()"
     @click.right.ctrl="updateStatusAlt()"
     @contextmenu.prevent
-    @click="OpenItem"
+    @click.exact="OpenItem"
   >
     <Icon
       v-if="isOverdue() != 'none'"
