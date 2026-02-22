@@ -17,29 +17,6 @@ const OpenItem = (e: any) => {
   console.log('Showing Task Modal!')
   ShowTaskModal(item)
 }
-// TODO: Add Comments you fool
-const isOverdue = () => {
-  const start = moment(item.startDate).unix()
-  const end = moment(item.endDate).unix()
-  const now = moment().unix()
-  if (item.status == 'Done') return 'none'
-  if (now > (isNaN(end) ? now : end)) {
-    return 'Overdue'
-  }
-  if (moment(item.startDate).startOf('day').unix() == moment().startOf('day').unix() || moment(item.endDate).startOf('day').unix() == moment().startOf('day').unix()) {
-    return 'Today'
-  }
-  if (start < now && now < end && !isNaN(start) && !isNaN(end)) {
-    return 'In Progress'
-  }
-  if (now < (isNaN(start) ? end : start)) {
-    return 'Not Started'
-  }
-  if (now > (isNaN(start) ? now : start)) {
-    return 'In Progress'
-  }
-  return 'none'
-}
 
 const starColor = (s: string) => {
   switch (s) {
@@ -78,14 +55,14 @@ const updateStatusAlt = async () => {
     @click.exact="OpenItem"
   >
     <Icon
-      v-if="isOverdue() != 'none'"
+      v-if="isOverdue(item.startDate, item.endDate) != 'none'"
       :height="18"
       :width="18"
       class="top-right"
     >
       <Star
-        :stroke-color="starColor(isOverdue())"
-        :fill-color="starColor(isOverdue())"
+        :stroke-color="starColor(isOverdue(item.startDate, item.endDate))"
+        :fill-color="starColor(isOverdue(item.startDate, item.endDate))"
       />
     </Icon>
     <div class="content">
