@@ -15,6 +15,7 @@ import CalendarCheck from '../Icons/CalendarCheck.vue'
 import CalendarExclamation from '../Icons/CalendarExclamation.vue'
 import Star from '../Icons/Star.vue'
 import Tags from '../Icons/Tags.vue'
+import { debounce } from 'lodash'
 
 // Types
 interface MultiselectStatus {
@@ -137,6 +138,14 @@ onBeforeUnmount(() => {
 })
 
 // Filesystem Bindings
+watch(description, async () => {
+  saveDebounced()
+})
+
+const saveDebounced = debounce(async () => {
+  if (item.value.name && item.value.type && item.value.status) await SaveData()
+}, 500)
+
 const SaveData = async () => {
   item.value.description = description.value
   await useItemStore().upsertItem(item.value)
@@ -435,6 +444,7 @@ const Delete = async () => {
 		height: 100%;
 		overflow-y: scroll;
 		overflow-x: hidden;
+		padding-left: 8px;
 	}
 	.large-text-input {
 		font-size: 20pt;
