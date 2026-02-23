@@ -7,7 +7,6 @@ const today = moment().endOf('day').seconds(0).milliseconds(0).format('YYYY-MM-D
 const ItemsTodo = computed(() => buckets.value.Todo)
 const ItemsDoing = computed(() => buckets.value.Doing)
 const ItemsScheduled = computed(() => buckets.value.Scheduled)
-const ItemsDone = computed(() => buckets.value.Done.reverse())
 const ItemsPriority = computed(() => buckets.value.Priority)
 const { items } = storeToRefs(useItemStore())
 
