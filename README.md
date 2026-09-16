@@ -12,12 +12,12 @@ Nearly all task managers ask me to adapt to their system. Pyxis was built as a v
 > This is the Front-End version of the repo. For the service, see [Pyxis-Service](https://github.com/Stelare-Rose/Pyxis-Service)
 
 Pyxis is split into two parts:
-    - Front-End  
-    The front-end is written in Nuxt and Tauri, as a standalone user-facing application. Currently, only the Linux version works and is tested.
-    - Background Service  
-    The background service is written in Go, and handles generation of the cache layer from the given data.
+ - Front-End  
+ The front-end is written in Nuxt and Tauri, as a standalone user-facing application. Currently, only the Linux version works and is tested.
+ - Background Service  
+ The background service is written in Go, and handles generation of the cache layer from the given data.
     
-The data flow is intentionally cyclically one-directional:
+The data flow is intentionally a unidirectional cycle:
 ```
 Data -> Indexer -> Cache -> Front-End App -> Data
 ```
